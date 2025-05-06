@@ -37,6 +37,11 @@ spring:
     open-in-view: false
 
 logging:
+  file:
+    name: ./logs/rococo-auth/app.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
   level:
     root: INFO
     org.springframework.web: DEBUG
