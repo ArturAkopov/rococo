@@ -2,12 +2,36 @@ plugins {
     id 'java'
 }
 
-group = 'guru.qa'
-sourceCompatibility = '17'
+group = 'anbrain.qa'
 
-subprojects {
+allprojects {
+    apply plugin: 'java'
+
     repositories {
         mavenCentral()
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+}
+
+
+subprojects {
+    ext {
+        dockerHubName = "arturakopov"
+
+        lombokVersion = '1.18.34'
+        mysqlDriverVersion = '8.0.33'
+
+        dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64v8/eclipse-temurin:21-jdk"
+                : "eclipse-temurin:21-jdk"
+        dockerArch = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64"
+                : "amd64"
     }
 }
 
