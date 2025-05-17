@@ -1,0 +1,59 @@
+<svg width="36" height="36" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+    <!-- Улучшенная щетина (оранжевая часть) -->
+    <radialGradient id="brushTipGradient" cx="30%" cy="70%" r="65%">
+        <stop offset="0%" stop-color="#FF9800"/>
+        <stop offset="40%" stop-color="#F57C00"/>
+        <stop offset="100%" stop-color="#E65100"/>
+    </radialGradient>
+
+    <path d="M48.06 90.75c0 0-5.46-8.56-9.81-6.94-6.62 2.48-4.57 1.64-11.62 4.81-17.66 7.93-4.81 18.13-21.78 31.46-1.66 1.3-0.72 3.98 1.38 3.91 9.42-0.31 24.9-2.91 31.18-11.72C43.93 103.1 40.31 97 48.06 90.75z"
+          fill="url(#brushTipGradient)"
+          filter="url(#brushShadow)"/>
+
+    <!-- Улучшенная основа щетины (красная часть) -->
+    <radialGradient id="brushBaseGradient" cx="40%" cy="80%" r="60%">
+        <stop offset="0%" stop-color="#FF5252"/>
+        <stop offset="100%" stop-color="#D32F2F"/>
+    </radialGradient>
+
+    <path d="M27.62 113.12c-6.68 2.49-7.46 0.31-7.3-8.39 0.06-3.45-2.03-3.84-4.65-3.02-1.23 5.22-1.67 11.19-10.81 18.37-1.66 1.3-0.72 3.87 1.38 3.91 12.1 0.25 23.43-2.65 30.19-10.5C35.43 112.02 31.87 111.53 27.62 113.12z"
+          fill="url(#brushBaseGradient)"/>
+
+    <!-- Улучшенная ручка (синяя часть) -->
+    <linearGradient id="handleGradient" x1="90%" y1="10%" x2="10%" y2="90%">
+        <stop offset="0%" stop-color="#42A5F5"/>
+        <stop offset="50%" stop-color="#1E88E5"/>
+        <stop offset="100%" stop-color="#0D47A1"/>
+    </linearGradient>
+
+    <path d="M122.78 16.2c1.98-3.14 1.5-7.23-1.12-9.85-2.62-2.62-6.72-3.1-9.85-1.12-8.25 5.21-24.91 18.39-53.84 49.56l16.25 16.25C105.38 42.1 117.58 24.45 122.78 16.2z"
+          fill="url(#handleGradient)"/>
+
+    <!-- Металлическое крепление -->
+    <radialGradient id="ferruleGradient" cx="55" cy="60" r="50%">
+        <stop offset="0%" stop-color="#E0E0E0"/>
+        <stop offset="100%" stop-color="#9E9E9E"/>
+    </radialGradient>
+
+    <path d="M57.96 54.79c-7.65 8.24-15.38 18.41-24.58 29.4-0.67 0.79-0.62 1.97 0.11 2.7l8.72 8.72c0.73 0.73 1.91 0.78 2.7 0.11 10.99-9.21 21.05-17.04 29.29-24.69L57.96 54.79z"
+          fill="url(#ferruleGradient)"/>
+
+    <!-- Эффекты объема -->
+    <filter id="brushShadow">
+        <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#BF360C" flood-opacity="0.6"/>
+    </filter>
+
+    <!-- Блеск на ручке -->
+    <path d="M115 12c2 0 4 1 5 3-8 15-20 30-40 50"
+          stroke="rgba(255,255,255,0.4)"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          fill="none"/>
+
+    <!-- Текстура щетины -->
+    <g opacity="0.3">
+        <path d="M35 95L25 105" stroke="#FF5722" stroke-width="0.8"/>
+        <path d="M40 90L30 100" stroke="#FF5722" stroke-width="0.8"/>
+        <path d="M45 85L35 95" stroke="#FF5722" stroke-width="0.8"/>
+    </g>
+</svg>
