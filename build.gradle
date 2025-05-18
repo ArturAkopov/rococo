@@ -29,6 +29,7 @@ subprojects {
         springJdbcVersion = '6.1.12'
         atomicosVersion = '6.0.0'
         springKafkaVersion = '3.2.2'
+        h2Version = '2.3.232'
 
         dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
                 ? "arm64v8/eclipse-temurin:21-jdk"
