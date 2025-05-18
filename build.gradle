@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.ben-manes.versions' version '0.51.0'
 }
 
 group = 'anbrain.qa'
@@ -25,6 +26,9 @@ subprojects {
 
         lombokVersion = '1.18.34'
         mysqlDriverVersion = '8.0.33'
+        springJdbcVersion = '6.1.12'
+        atomicosVersion = '6.0.0'
+        springKafkaVersion = '3.2.2'
 
         dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
                 ? "arm64v8/eclipse-temurin:21-jdk"

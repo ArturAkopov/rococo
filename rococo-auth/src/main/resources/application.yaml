@@ -1,5 +1,9 @@
 server:
   port: 9000
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
 
 spring:
   application:
@@ -22,7 +26,7 @@ spring:
     locations: classpath:db/migration/rococo-auth
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         jdbc:
@@ -51,29 +55,35 @@ spring:
   config:
     activate:
       on-profile: 'local'
+  kafka:
+    bootstrap-servers: 'localhost:9092'
   datasource:
-    url: 'jdbc:mysql://127.0.0.1:3306/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    url: 'jdbc:mysql://127.0.0.1:3307/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
-  rococo-front:
-    base-uri: 'http://127.0.0.1:3000'
-  rococo-auth:
-    base-uri: 'http://127.0.0.1:9000'
-  oauth2:
-    client-id: 'client'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+rococo-front:
+  base-uri: 'http://127.0.0.1:3000'
+rococo-auth:
+  base-uri: 'http://127.0.0.1:9000'
+oauth2:
+  client-id: 'client'
 
 ---
 spring:
   config:
     activate:
       on-profile: 'docker'
+  kafka:
+    bootstrap-servers: 'localhost:9092'
   datasource:
-    url: 'jdbc:mysql://rococo-all-db:3306/rococo-auth'
-    username: postgres
+    url: 'jdbc:mysql://rococo-all-db:3307/rococo-auth'
+    username: root
     password: secret
-  rococo-front:
-    base-uri: 'http://frontend.rococo.dc'
-  rococo-auth:
-    base-uri: 'http://auth.rococo.dc:9000'
-  oauth2:
-    client-id: 'client'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+rococo-front:
+  base-uri: 'http://frontend.rococo.dc'
+rococo-auth:
+  base-uri: 'http://auth.rococo.dc:9000'
+oauth2:
+  client-id: 'client'

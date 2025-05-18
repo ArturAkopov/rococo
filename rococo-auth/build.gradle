@@ -7,13 +7,25 @@ group = 'anbrain.qa'
 version = '0.0.1'
 
 dependencies {
+    //security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    //web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    //validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    //monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    //Kafka
+    implementation "org.springframework.kafka:spring-kafka:${project.ext.springKafkaVersion}"
+    //DB
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-mysql")
+    runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
+    //Lombok
     annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
-    runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
+
 }
