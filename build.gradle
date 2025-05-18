@@ -1,13 +1,42 @@
 plugins {
     id 'java'
+    id 'com.github.ben-manes.versions' version '0.51.0'
 }
 
-group = 'guru.qa'
-sourceCompatibility = '17'
+group = 'anbrain.qa'
 
-subprojects {
+allprojects {
+    apply plugin: 'java'
+
     repositories {
         mavenCentral()
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+}
+
+
+subprojects {
+    ext {
+        dockerHubName = "arturakopov"
+
+        lombokVersion = '1.18.34'
+        mysqlDriverVersion = '8.0.33'
+        springJdbcVersion = '6.1.12'
+        atomicosVersion = '6.0.0'
+        springKafkaVersion = '3.2.2'
+        h2Version = '2.3.232'
+
+        dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64v8/eclipse-temurin:21-jdk"
+                : "eclipse-temurin:21-jdk"
+        dockerArch = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
+                ? "arm64"
+                : "amd64"
     }
 }
 

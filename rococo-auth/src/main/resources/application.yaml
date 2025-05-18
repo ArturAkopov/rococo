@@ -1,5 +1,9 @@
 server:
   port: 9000
+  error:
+    whitelabel:
+      enabled: false
+    path: /error
 
 spring:
   application:
@@ -7,7 +11,6 @@ spring:
   mvc:
     log-request-details: true
   datasource:
-    url: 'jdbc:mysql://127.0.0.1:3306/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
     hikari:
       connection-timeout: 20000
       minimum-idle: 10
@@ -15,8 +18,6 @@ spring:
       idle-timeout: 10000
       max-lifetime: 1000
       auto-commit: true
-    username: root
-    password: secret
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -25,7 +26,7 @@ spring:
     locations: classpath:db/migration/rococo-auth
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         jdbc:
@@ -37,6 +38,11 @@ spring:
     open-in-view: false
 
 logging:
+  file:
+    name: ./logs/rococo-auth/app.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
   level:
     root: INFO
     org.springframework.web: DEBUG
@@ -44,7 +50,40 @@ logging:
     org.springframework.security.oauth2: DEBUG
     org.springframework.boot.autoconfigure: DEBUG
 
+---
+spring:
+  config:
+    activate:
+      on-profile: 'local'
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+  datasource:
+    url: 'jdbc:mysql://127.0.0.1:3307/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    username: root
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
 rococo-front:
   base-uri: 'http://127.0.0.1:3000'
 rococo-auth:
   base-uri: 'http://127.0.0.1:9000'
+oauth2:
+  client-id: 'client'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 'docker'
+  kafka:
+    bootstrap-servers: 'localhost:9092'
+  datasource:
+    url: 'jdbc:mysql://rococo-all-db:3307/rococo-auth'
+    username: root
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+rococo-front:
+  base-uri: 'http://frontend.rococo.dc'
+rococo-auth:
+  base-uri: 'http://auth.rococo.dc:9000'
+oauth2:
+  client-id: 'client'
