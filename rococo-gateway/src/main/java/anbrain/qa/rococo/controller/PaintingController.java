@@ -5,7 +5,6 @@ import anbrain.qa.rococo.model.page.RestPage;
 import anbrain.qa.rococo.service.api.PaintingClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
