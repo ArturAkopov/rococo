@@ -28,32 +28,27 @@ dependencyManagement {
 }
 
 dependencies {
-    //security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
-    //web
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    //validation
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    //monitoring
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // gRPC
     implementation 'io.grpc:grpc-netty'
     implementation 'io.grpc:grpc-protobuf'
     implementation 'io.grpc:grpc-stub'
     // Spring Boot gRPC интеграция
-    implementation "net.devh:grpc-client-spring-boot-starter:${project.ext.springGrpcVersion}"
-    //OpenApi
-    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.ext.openapiVersion}"
-    //DB
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    //monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     //Lombok
     annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
     //UnitTests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation "com.h2database:h2:${project.ext.h2Version}"
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
 }
 
 protobuf {

@@ -1,7 +1,9 @@
 package anbrain.qa.rococo.exception;
 
 import anbrain.qa.rococo.model.ApiError;
-import io.swagger.v3.oas.annotations.Operation;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -15,18 +17,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
-
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @Operation(
-            hidden = true // Скрываем обработчик ошибок из документации
-    )
+    @Hidden
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleAllExceptions(Exception ex, @Nonnull HttpServletRequest request) {
-        log.error("Unhandled exception occurred: {}", ex.getMessage(), ex);
+    public ResponseEntity<ApiError> handleAllExceptions(
+            Exception ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        log.error("Unhandled exception: {} {}", request.getRequestURI(), ex.getMessage(), ex);
         return buildErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 "Internal Server Error",
@@ -35,9 +38,42 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(StatusRuntimeException.class)
+    public ResponseEntity<ApiError> handleGrpcException(
+            @Nonnull StatusRuntimeException ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        HttpStatus status = mapGrpcStatusToHttp(ex.getStatus());
+        log.warn("gRPC error [{}]: {}", status.value(), ex.getMessage());
+
+        return buildErrorResponse(
+                status,
+                status.getReasonPhrase(),
+                extractGrpcErrorMessage(ex),
+                request.getRequestURI()
+        );
+    }
+
+    @ExceptionHandler(TimeoutException.class)
+    public ResponseEntity<ApiError> handleTimeoutException(
+            @Nonnull TimeoutException ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        log.warn("Timeout: {} {}", request.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(
+                HttpStatus.GATEWAY_TIMEOUT,
+                "Gateway Timeout",
+                "Request timed out",
+                request.getRequestURI()
+        );
+    }
+
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFoundException(@Nonnull NotFoundException ex, @Nonnull HttpServletRequest request) {
-        log.warn("Resource not found: {}", ex.getMessage());
+    public ResponseEntity<ApiError> handleNotFoundException(
+            @Nonnull NotFoundException ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        log.warn("Not found: {} {}", request.getRequestURI(), ex.getMessage());
         return buildErrorResponse(
                 HttpStatus.NOT_FOUND,
                 "Not Found",
@@ -47,8 +83,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({ValidationException.class, IllegalArgumentException.class})
-    public ResponseEntity<ApiError> handleValidationException(@Nonnull RuntimeException ex, @Nonnull HttpServletRequest request) {
-        log.warn("Validation error: {}", ex.getMessage());
+    public ResponseEntity<ApiError> handleValidationException(
+            @Nonnull RuntimeException ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        log.warn("Validation error: {} {}", request.getRequestURI(), ex.getMessage());
         return buildErrorResponse(
                 HttpStatus.BAD_REQUEST,
                 "Bad Request",
@@ -58,11 +97,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleMethodArgumentNotValid(@Nonnull MethodArgumentNotValidException ex,
-                                                                 @Nonnull HttpServletRequest request) {
-        log.warn("Validation error: {}", ex.getMessage());
+    public ResponseEntity<ApiError> handleMethodArgumentNotValid(
+            @Nonnull MethodArgumentNotValidException ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        log.warn("Validation error: {} {}", request.getRequestURI(), ex.getMessage());
 
-        List<ApiError.ValidationError> validationErrors = ex.getBindingResult()
+        List<ApiError.ValidationError> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(this::mapToValidationError)
@@ -74,36 +115,65 @@ public class GlobalExceptionHandler {
                 "Invalid request parameters",
                 request.getRequestURI()
         );
-        apiError.setValidationErrors(validationErrors);
+        apiError.setValidationErrors(errors);
 
         return ResponseEntity.badRequest().body(apiError);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ApiError> handleBadCredentials(@Nonnull BadCredentialsException ex, @Nonnull HttpServletRequest request) {
-        log.warn("Authentication failed: {}", ex.getMessage());
+    public ResponseEntity<ApiError> handleBadCredentials(
+            @Nonnull BadCredentialsException ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        log.warn("Auth failed: {} {}", request.getRequestURI(), ex.getMessage());
         return buildErrorResponse(
                 HttpStatus.UNAUTHORIZED,
                 "Unauthorized",
-                "Invalid credentials provided",
+                "Invalid credentials",
                 request.getRequestURI()
         );
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiError> handleAccessDenied(@Nonnull AccessDeniedException ex, @Nonnull HttpServletRequest request) {
-        log.warn("Access denied: {}", ex.getMessage());
+    public ResponseEntity<ApiError> handleAccessDenied(
+            @Nonnull AccessDeniedException ex,
+            @Nonnull HttpServletRequest request
+    ) {
+        log.warn("Access denied: {} {}", request.getRequestURI(), ex.getMessage());
         return buildErrorResponse(
                 HttpStatus.FORBIDDEN,
                 "Forbidden",
-                "You don't have permission to access this resource",
+                "Access denied",
                 request.getRequestURI()
         );
     }
 
+    // Вспомогательные методы
+    private HttpStatus mapGrpcStatusToHttp(@Nonnull Status status) {
+        return switch (status.getCode()) {
+            case NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case INVALID_ARGUMENT -> HttpStatus.BAD_REQUEST;
+            case UNAUTHENTICATED -> HttpStatus.UNAUTHORIZED;
+            case PERMISSION_DENIED -> HttpStatus.FORBIDDEN;
+            case UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
+            case DEADLINE_EXCEEDED -> HttpStatus.GATEWAY_TIMEOUT;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+    }
+
+    private String extractGrpcErrorMessage(@Nonnull StatusRuntimeException ex) {
+        return ex.getStatus().getDescription() != null
+                ? ex.getStatus().getDescription()
+                : "gRPC service error";
+    }
+
     @Nonnull
-    private ResponseEntity<ApiError> buildErrorResponse(HttpStatus status, String error,
-                                                        String message, String path) {
+    private ResponseEntity<ApiError> buildErrorResponse(
+            HttpStatus status,
+            String error,
+            String message,
+            String path
+    ) {
         return ResponseEntity
                 .status(status)
                 .body(new ApiError(status.value(), error, message, path));
@@ -113,7 +183,9 @@ public class GlobalExceptionHandler {
     private ApiError.ValidationError mapToValidationError(@Nonnull FieldError fieldError) {
         return new ApiError.ValidationError(
                 fieldError.getField(),
-                fieldError.getDefaultMessage() != null ? fieldError.getDefaultMessage() : "Invalid value"
+                fieldError.getDefaultMessage() != null
+                        ? fieldError.getDefaultMessage()
+                        : "Invalid value"
         );
     }
 }

@@ -38,3 +38,10 @@ spring:
 
 rococo-front:
   base-uri: 'http://127.0.0.1:3000'
+
+grpc:
+  client:
+    userdata-service:
+      address: static://localhost:9090  # Адрес rococo-userdata
+      enable-keep-alive: true
+      negotiation-type: plaintext
