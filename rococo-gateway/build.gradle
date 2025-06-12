@@ -1,0 +1,40 @@
+plugins {
+    id 'org.springframework.boot' version '3.3.2'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'anbrain.qa'
+version = '0.0.1'
+
+dependencies {
+    //security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-authorization-server'
+    //web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    //monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    //OpenApi
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${project.ext.openapiVersion}"
+    //DB
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    //Lombok
+    annotationProcessor "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
+    //UnitTests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation "com.h2database:h2:${project.ext.h2Version}"
+}
+
+tasks.register('printVersion') {
+    doLast {
+        println project.version
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
