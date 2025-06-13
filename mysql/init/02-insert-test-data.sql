@@ -1,3 +1,5 @@
+USE `rococo-auth`;
+
 -- Вставка тестового пользователя (пароль: "password" в bcrypt)
 INSERT INTO `user` (id, username, password) VALUES
 (UUID_TO_BIN(UUID()), 'testuser', '$2a$10$fqEmpFwjWwEB4aUwOPDgAOENQaOXT8PZhBJMEEdb/dgL7BCGP2kwS');

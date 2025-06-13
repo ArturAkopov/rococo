@@ -1,3 +1,5 @@
+USE `rococo-auth`;
+
 -- Включение необходимых функций для UUID
 SET GLOBAL log_bin_trust_function_creators = 1;
 
