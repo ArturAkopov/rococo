@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class UserGrpcClient {
 
-    @GrpcClient("userdata-service")
+    @GrpcClient("rococo-userdata")
     private UserdataGrpc.UserdataBlockingStub userServiceStub;
 
     public UserJson getUser(String username) {

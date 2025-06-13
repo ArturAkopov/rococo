@@ -1,7 +1,7 @@
 package anbrain.qa.rococo.controller;
 
 import anbrain.qa.rococo.model.UserJson;
-import anbrain.qa.rococo.service.api.UserClient;
+import anbrain.qa.rococo.service.grpc.UserGrpcClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/user")
 public class UserController {
 
-    private final UserClient userClient;
+    private final UserGrpcClient userGrpcClient;
 
     @Autowired
-    public UserController(UserClient userClient) {
-        this.userClient = userClient;
+    public UserController(UserGrpcClient userGrpcClient) {
+        this.userGrpcClient = userGrpcClient;
     }
 
     @Operation(
@@ -39,7 +39,7 @@ public class UserController {
             @AuthenticationPrincipal Jwt principal
     ) {
         String username = principal.getClaim("sub");
-        return userClient.getUser(username);
+        return userGrpcClient.getUser(username);
     }
 
     @Operation(summary = "Обновить данные пользователя")
@@ -56,6 +56,6 @@ public class UserController {
             @Valid @RequestBody UserJson updateRequest) {
 
         String username = principal.getClaim("sub");
-        return userClient.updateUser(username, updateRequest);
+        return userGrpcClient.updateUser(username, updateRequest);
     }
 }

@@ -41,7 +41,11 @@ rococo-front:
 
 grpc:
   client:
-    userdata-service:
-      address: static://localhost:9090  # Адрес rococo-userdata
+    rococo-userdata:
+      address: static://localhost:9090
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-artist:
+      address: static://localhost:9091
       enable-keep-alive: true
       negotiation-type: plaintext

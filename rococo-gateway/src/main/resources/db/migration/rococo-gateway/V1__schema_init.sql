@@ -17,15 +17,6 @@ create table if not exists `museum`
     constraint fk_country_id foreign key (country_id) references `country` (id)
     );
 
-create table if not exists `artist`
-(
-    id        binary(16)    unique not null default (UUID_TO_BIN(UUID(), true)),
-    name      varchar(255)  unique not null,
-    biography varchar(2000) not null,
-    photo     longblob,
-    primary key (id)
-    );
-
 create table if not exists `painting`
 (
     id          binary(16)      unique not null default (UUID_TO_BIN(UUID(), true)),
