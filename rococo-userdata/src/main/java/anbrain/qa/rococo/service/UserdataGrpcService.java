@@ -1,5 +1,6 @@
 package anbrain.qa.rococo.service;
 
+import anbrain.qa.rococo.grpc.UpdateUserRequest;
 import anbrain.qa.rococo.grpc.UserRequest;
 import anbrain.qa.rococo.grpc.UserResponse;
 import anbrain.qa.rococo.grpc.UserdataGrpc;
@@ -8,6 +9,8 @@ import io.grpc.stub.StreamObserver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.grpc.server.service.GrpcService;
 import org.springframework.lang.NonNull;
+
+import static anbrain.qa.rococo.utils.GrpcUserConverter.convertToGrpcResponse;
 
 @GrpcService
 public class UserdataGrpcService extends UserdataGrpc.UserdataImplBase {
@@ -19,21 +22,17 @@ public class UserdataGrpcService extends UserdataGrpc.UserdataImplBase {
         this.userdataService = userdataService;
     }
 
-
     @Override
     public void getUser(@NonNull UserRequest request, @NonNull StreamObserver<UserResponse> responseObserver) {
-        UserJson user = userdataService.getUser(request.getUsername());
+        UserJson userJson = userdataService.getUser(request.getUsername());
+        responseObserver.onNext(convertToGrpcResponse(userJson));
+        responseObserver.onCompleted();
+    }
 
-        // Преобразуем UserJson в gRPC-ответ
-        UserResponse response = UserResponse.newBuilder()
-                .setId(user.id().toString())
-                .setUsername(user.username())
-                .setFirstname(user.firstname())
-                .setLastname(user.lastname())
-                .setAvatar(user.avatar())
-                .build();
-
-        responseObserver.onNext(response);
+    @Override
+    public void updateUser(@NonNull UpdateUserRequest request, @NonNull StreamObserver<UserResponse> responseObserver) {
+        UserJson userJson = userdataService.updateUser(request);
+        responseObserver.onNext(convertToGrpcResponse(userJson));
         responseObserver.onCompleted();
     }
 }

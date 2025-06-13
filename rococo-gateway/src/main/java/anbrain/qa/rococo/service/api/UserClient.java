@@ -18,4 +18,8 @@ public class UserClient {
     public UserJson getUser(String username) {
         return userGrpcClient.getUser(username);
     }
+
+    public UserJson updateUser(String username, UserJson updateRequest) {
+        return userGrpcClient.updateUser(username, updateRequest);
+    }
 }

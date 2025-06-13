@@ -6,6 +6,7 @@ option java_outer_classname = "UserdataProto";
 
 service Userdata {
   rpc GetUser (UserRequest) returns (UserResponse) {}
+  rpc UpdateUser (UpdateUserRequest) returns (UserResponse) {}
 }
 
 message UserRequest {
@@ -18,4 +19,11 @@ message UserResponse {
   string firstname = 3;
   string lastname = 4;
   string avatar = 5;
+}
+
+message UpdateUserRequest {
+  string username = 1;
+  string firstname = 2;
+  string lastname = 3;
+  string avatar = 4;
 }

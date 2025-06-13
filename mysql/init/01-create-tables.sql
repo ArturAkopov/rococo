@@ -1,5 +1,19 @@
+-- Создание баз данных
+CREATE DATABASE IF NOT EXISTS `rococo-auth`
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
+CREATE DATABASE IF NOT EXISTS `rococo-userdata`
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
+
 -- Включение необходимых функций для UUID
 SET GLOBAL log_bin_trust_function_creators = 1;
+
+-- =============================================
+-- БД rococo-auth (аутентификация и авторизация)
+-- =============================================
+USE `rococo-auth`;
 
 -- Таблица пользователей
 CREATE TABLE IF NOT EXISTS `user` (
@@ -19,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 CREATE TABLE IF NOT EXISTS `authority` (
     id        BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), TRUE)),
     user_id   BINARY(16) NOT NULL,
-    authority ENUM('READ', 'WRITE') NOT NULL COMMENT 'Базовые роли доступа',
+    authority ENUM('READ', 'WRITE', 'ADMIN') NOT NULL COMMENT 'Роли доступа',
 
     UNIQUE INDEX uq_authority_user (user_id, authority),
     CONSTRAINT fk_authority_user
@@ -29,3 +43,21 @@ CREATE TABLE IF NOT EXISTS `authority` (
     INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
   COMMENT='Таблица прав доступа пользователей';
+
+-- =============================================
+-- БД rococo-userdata (профили пользователей)
+-- =============================================
+USE `rococo-userdata`;
+
+-- Таблица профилей пользователей
+CREATE TABLE IF NOT EXISTS `user_profile` (
+    id          BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), TRUE)),
+    username    VARCHAR(50) UNIQUE NOT NULL,
+    firstname   VARCHAR(100),
+    lastname    VARCHAR(100),
+    avatar      LONGBLOB COMMENT 'Бинарные данные изображения',
+
+    INDEX idx_username (username),
+    INDEX idx_name (firstname, lastname)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  COMMENT='Профили пользователей с дополнительными данными';

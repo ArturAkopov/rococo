@@ -32,6 +32,14 @@ dependencies {
     implementation 'io.grpc:grpc-netty'
     implementation 'io.grpc:grpc-protobuf'
     implementation 'io.grpc:grpc-stub'
+    // Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
+    // MySQL
+    runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
     // Spring Boot gRPC интеграция
     implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
     // Jackson
