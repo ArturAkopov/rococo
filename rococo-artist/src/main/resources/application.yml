@@ -1,6 +1,6 @@
 spring:
   application:
-    name: rococo-userdata
+    name: rococo-artist
   main:
     web-application-type: none
   datasource:
@@ -15,10 +15,10 @@ spring:
     enabled: true
     baseline-version: 0
     baseline-on-migrate: true
-    schemas: rococo-userdata
+    schemas: rococo-artist
     user: root
     password: secret
-    locations: classpath:db/migration/rococo-userdata
+    locations: classpath:db/migration/rococo-artist
   jpa:
     hibernate:
       ddl-auto: validate
@@ -35,10 +35,10 @@ spring:
     server:
       servlet:
         enabled: false
-      port: 9090
+      port: 9091
 logging:
   file:
-    path: ./logs/rococo-userdata
+    path: ./logs/rococo-artist
   level:
     root: INFO
     org.springframework.kafka: INFO
@@ -50,12 +50,7 @@ spring:
     activate:
       on-profile: 'local'
   datasource:
-    url: "jdbc:mysql://localhost:3307/rococo-userdata?useSSL=false&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://localhost:3307/rococo-artist?useSSL=false&allowPublicKeyRetrieval=true"
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
-  kafka:
-    bootstrap-servers: 'localhost:9092'
-    consumer:
-      group-id: 'userdata'
-      auto-offset-reset: earliest
