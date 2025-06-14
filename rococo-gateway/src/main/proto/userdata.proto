@@ -5,14 +5,18 @@ option java_package = "anbrain.qa.rococo.grpc";
 option java_outer_classname = "UserdataProto";
 
 service Userdata {
+  // Получить пользователя
   rpc GetUser (UserRequest) returns (UserResponse) {}
+  // Обновить пользователя
   rpc UpdateUser (UpdateUserRequest) returns (UserResponse) {}
 }
 
+// Запрос на получение пользователя
 message UserRequest {
   string username = 1;
 }
 
+// Ответ с данными пользователя
 message UserResponse {
   string id = 1;
   string username = 2;
@@ -21,6 +25,7 @@ message UserResponse {
   string avatar = 5;
 }
 
+// Ответ с обновленными данными пользователя
 message UpdateUserRequest {
   string username = 1;
   string firstname = 2;

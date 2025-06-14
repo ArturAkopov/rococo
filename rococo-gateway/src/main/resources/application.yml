@@ -35,17 +35,21 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: 'http://127.0.0.1:9000'
+  grpc:
+    client:
+      rococo-userdata:
+        address: static://localhost:9090
+        enable-keep-alive: true
+        negotiation-type: plaintext
+      rococo-artist:
+        address: static://localhost:9091
+        enable-keep-alive: true
+        negotiation-type: plaintext
+      rococo-museum:
+        address: static://localhost:9093
+        enable-keep-alive: true
+        negotiation-type: plaintext
 
 rococo-front:
   base-uri: 'http://127.0.0.1:3000'
 
-grpc:
-  client:
-    rococo-userdata:
-      address: static://localhost:9090
-      enable-keep-alive: true
-      negotiation-type: plaintext
-    rococo-artist:
-      address: static://localhost:9091
-      enable-keep-alive: true
-      negotiation-type: plaintext
