@@ -15,16 +15,10 @@ import java.util.UUID;
 public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImplBase {
 
     private final PaintingClient paintingClient;
-    private final ArtistGrpcClient artistClient;
-    private final MuseumGrpcClient museumClient;
 
     @Autowired
-    public PaintingGrpcService(PaintingClient paintingClient,
-                               ArtistGrpcClient artistClient,
-                               MuseumGrpcClient museumClient) {
+    public PaintingGrpcService(PaintingClient paintingClient) {
         this.paintingClient = paintingClient;
-        this.artistClient = artistClient;
-        this.museumClient = museumClient;
     }
 
     @Override
@@ -33,10 +27,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
             UUID id = UUID.fromString(request.getId());
             PaintingEntity painting = paintingClient.getPainting(id);
 
-            ArtistResponse artist = artistClient.getArtist(painting.getArtistId().toString());
-            MuseumResponse museum = museumClient.getMuseum(painting.getMuseumId().toString());
-
-            responseObserver.onNext(buildPaintingResponse(painting, artist, museum));
+            responseObserver.onNext(buildPaintingResponse(painting));
             responseObserver.onCompleted();
         } catch (Exception e) {
             responseObserver.onError(e);
@@ -53,9 +44,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
                     .setTotalCount((int) paintings.getTotalElements());
 
             paintings.getContent().forEach(painting -> {
-                ArtistResponse artist = artistClient.getArtist(painting.getArtistId().toString());
-                MuseumResponse museum = museumClient.getMuseum(painting.getMuseumId().toString());
-                responseBuilder.addPaintings(buildPaintingResponse(painting, artist, museum));
+                responseBuilder.addPaintings(buildPaintingResponse(painting));
             });
 
             responseObserver.onNext(responseBuilder.build());
@@ -73,14 +62,11 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
                     artistId,
                     PageRequest.of(request.getPage(), request.getSize()));
 
-            ArtistResponse artist = artistClient.getArtist(artistId.toString());
-
             AllPaintingsResponse.Builder responseBuilder = AllPaintingsResponse.newBuilder()
                     .setTotalCount((int) paintings.getTotalElements());
 
             paintings.getContent().forEach(painting -> {
-                MuseumResponse museum = museumClient.getMuseum(painting.getMuseumId().toString());
-                responseBuilder.addPaintings(buildPaintingResponseWithArtist(painting, museum, artist));
+                responseBuilder.addPaintings(buildPaintingResponse(painting));
             });
 
             responseObserver.onNext(responseBuilder.build());
@@ -102,10 +88,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
 
             PaintingEntity savedPainting = paintingClient.createPainting(painting);
 
-            ArtistResponse artist = artistClient.getArtist(request.getArtistId());
-            MuseumResponse museum = museumClient.getMuseum(request.getMuseumId());
-
-            responseObserver.onNext(buildPaintingResponse(savedPainting, artist, museum));
+            responseObserver.onNext(buildPaintingResponse(savedPainting));
             responseObserver.onCompleted();
         } catch (Exception e) {
             responseObserver.onError(e);
@@ -126,10 +109,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
 
             PaintingEntity updatedPainting = paintingClient.updatePainting(painting);
 
-            ArtistResponse artist = artistClient.getArtist(request.getArtistId());
-            MuseumResponse museum = museumClient.getMuseum(request.getMuseumId());
-
-            responseObserver.onNext(buildPaintingResponse(updatedPainting, artist, museum));
+            responseObserver.onNext(buildPaintingResponse(updatedPainting));
             responseObserver.onCompleted();
         } catch (Exception e) {
             responseObserver.onError(e);
@@ -137,64 +117,15 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
     }
 
     @Nonnull
-    private PaintingResponse buildPaintingResponse(@Nonnull PaintingEntity painting,
-                                                   @Nonnull ArtistResponse artist,
-                                                   @Nonnull MuseumResponse museum) {
+    private PaintingResponse buildPaintingResponse(@Nonnull PaintingEntity painting) {
         return PaintingResponse.newBuilder()
                 .setId(painting.getId().toString())
                 .setTitle(painting.getTitle())
                 .setDescription(painting.getDescription())
                 .setContent(new String(painting.getContent()))
-                .setArtist(Artist.newBuilder()
-                        .setId(artist.getId())
-                        .setName(artist.getName())
-                        .setBiography(artist.getBiography())
-                        .setPhoto(artist.getPhoto())
-                        .build())
-                .setMuseum(Museum.newBuilder()
-                        .setId(museum.getId())
-                        .setTitle(museum.getTitle())
-                        .setDescription(museum.getDescription())
-                        .setPhoto(museum.getPhoto())
-                        .setGeo(Geo.newBuilder()
-                                .setCity(museum.getGeo().getCity())
-                                .setCountry(Country.newBuilder()
-                                        .setId(museum.getGeo().getCountry().getId())
-                                        .setName(museum.getGeo().getCountry().getName())
-                                        .build())
-                                .build())
-                        .build())
-                .build();
+                .setMuseumId(String.valueOf(painting.getMuseumId()))
+                .setArtistId(String.valueOf(painting.getArtistId())).
+                build();
     }
 
-    @Nonnull
-    private PaintingResponse buildPaintingResponseWithArtist(@Nonnull PaintingEntity painting,
-                                                             @Nonnull MuseumResponse museum,
-                                                             @Nonnull ArtistResponse artist) {
-        return PaintingResponse.newBuilder()
-                .setId(painting.getId().toString())
-                .setTitle(painting.getTitle())
-                .setDescription(painting.getDescription())
-                .setContent(new String(painting.getContent()))
-                .setArtist(Artist.newBuilder()
-                        .setId(artist.getId())
-                        .setName(artist.getName())
-                        .setBiography(artist.getBiography())
-                        .setPhoto(artist.getPhoto())
-                        .build())
-                .setMuseum(Museum.newBuilder()
-                        .setId(museum.getId())
-                        .setTitle(museum.getTitle())
-                        .setDescription(museum.getDescription())
-                        .setPhoto(museum.getPhoto())
-                        .setGeo(Geo.newBuilder()
-                                .setCity(museum.getGeo().getCity())
-                                .setCountry(Country.newBuilder()
-                                        .setId(museum.getGeo().getCountry().getId())
-                                        .setName(museum.getGeo().getCountry().getName())
-                                        .build())
-                                .build())
-                        .build())
-                .build();
-    }
 }

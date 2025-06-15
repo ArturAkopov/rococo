@@ -3,13 +3,15 @@ package anbrain.qa.rococo.exception;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Nonnull;
-import org.lognet.springboot.grpc.recovery.GRpcExceptionHandler;
-import org.lognet.springboot.grpc.recovery.GRpcServiceAdvice;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@GRpcServiceAdvice
+@Slf4j
+@RestControllerAdvice
 public class GrpcExceptionHandler {
 
-    @GRpcExceptionHandler
+    @ExceptionHandler
     public StatusRuntimeException handleNotFoundException(@Nonnull ArtistNotFoundException e) {
         return Status.NOT_FOUND
                 .withDescription(e.getMessage())
@@ -17,7 +19,7 @@ public class GrpcExceptionHandler {
                 .asRuntimeException();
     }
 
-    @GRpcExceptionHandler
+    @ExceptionHandler
     public StatusRuntimeException handleIllegalArgumentException(@Nonnull IllegalArgumentException e) {
         return Status.INVALID_ARGUMENT
                 .withDescription(e.getMessage())
@@ -25,7 +27,7 @@ public class GrpcExceptionHandler {
                 .asRuntimeException();
     }
 
-    @GRpcExceptionHandler
+    @ExceptionHandler
     public StatusRuntimeException handleAllExceptions(@Nonnull Exception e) {
         return Status.INTERNAL
                 .withDescription("Internal server error")

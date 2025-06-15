@@ -28,10 +28,15 @@ dependencyManagement {
 }
 
 dependencies {
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
     // gRPC
     implementation 'io.grpc:grpc-netty'
     implementation 'io.grpc:grpc-protobuf'
     implementation 'io.grpc:grpc-stub'
+    implementation "io.grpc:grpc-core:1.70.0"
+    // Spring Boot gRPC интеграция
+    implementation "net.devh:grpc-client-spring-boot-starter:${project.ext.springGrpcVersion}"
+    implementation "net.devh:grpc-server-spring-boot-starter:${project.ext.springGrpcVersion}"
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -40,9 +45,6 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
     // MySQL
     runtimeOnly "mysql:mysql-connector-java:${project.ext.mysqlDriverVersion}"
-    // gRPC
-    implementation 'org.springframework.grpc:spring-grpc-spring-boot-starter'
-    implementation 'io.github.lognet:grpc-spring-boot-starter:4.9.1'
     // Jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.core:jackson-annotations'

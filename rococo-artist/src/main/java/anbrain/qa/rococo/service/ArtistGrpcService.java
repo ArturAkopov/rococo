@@ -8,9 +8,9 @@ import io.grpc.stub.StreamObserver;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.grpc.server.service.GrpcService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
