@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +22,7 @@ import java.util.concurrent.TimeoutException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // Обработка всех необработанных исключений
     @Hidden
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAllExceptions(
@@ -38,64 +38,44 @@ public class GlobalExceptionHandler {
         );
     }
 
+    // Обработка gRPC исключений, которые не были преобразованы GrpcExceptionHandler
     @ExceptionHandler(StatusRuntimeException.class)
-    public ResponseEntity<ApiError> handleGrpcException(
+    public ResponseEntity<ApiError> handleUnmappedGrpcException(
             @Nonnull StatusRuntimeException ex,
             @Nonnull HttpServletRequest request
     ) {
         HttpStatus status = mapGrpcStatusToHttp(ex.getStatus());
-        log.warn("gRPC error [{}]: {}", status.value(), ex.getMessage());
+        String message = extractGrpcErrorMessage(ex);
+
+        log.warn("Unhandled gRPC error [{}] for {}: {}", status.value(), request.getRequestURI(), message);
 
         return buildErrorResponse(
                 status,
                 status.getReasonPhrase(),
-                extractGrpcErrorMessage(ex),
+                message,
                 request.getRequestURI()
         );
     }
 
-    @ExceptionHandler(TimeoutException.class)
-    public ResponseEntity<ApiError> handleTimeoutException(
-            @Nonnull TimeoutException ex,
+    // Обработка проблем доступности сервиса
+    @ExceptionHandler({
+            TimeoutException.class,
+            ServiceUnavailableException.class
+    })
+    public ResponseEntity<ApiError> handleServiceUnavailable(
+            @Nonnull Exception ex,
             @Nonnull HttpServletRequest request
     ) {
-        log.warn("Timeout: {} {}", request.getRequestURI(), ex.getMessage());
+        log.warn("Service unavailable: {} {}", request.getRequestURI(), ex.getMessage());
         return buildErrorResponse(
-                HttpStatus.GATEWAY_TIMEOUT,
-                "Gateway Timeout",
-                "Request timed out",
-                request.getRequestURI()
-        );
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFoundException(
-            @Nonnull NotFoundException ex,
-            @Nonnull HttpServletRequest request
-    ) {
-        log.warn("Not found: {} {}", request.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(
-                HttpStatus.NOT_FOUND,
-                "Not Found",
+                HttpStatus.SERVICE_UNAVAILABLE,
+                "Service Unavailable",
                 ex.getMessage(),
                 request.getRequestURI()
         );
     }
 
-    @ExceptionHandler({ValidationException.class, IllegalArgumentException.class})
-    public ResponseEntity<ApiError> handleValidationException(
-            @Nonnull RuntimeException ex,
-            @Nonnull HttpServletRequest request
-    ) {
-        log.warn("Validation error: {} {}", request.getRequestURI(), ex.getMessage());
-        return buildErrorResponse(
-                HttpStatus.BAD_REQUEST,
-                "Bad Request",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-    }
-
+    // Обработка ошибок валидации DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleMethodArgumentNotValid(
             @Nonnull MethodArgumentNotValidException ex,
@@ -120,6 +100,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiError);
     }
 
+    // Обработка ошибок аутентификации
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiError> handleBadCredentials(
             @Nonnull BadCredentialsException ex,
@@ -134,29 +115,34 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiError> handleAccessDenied(
-            @Nonnull AccessDeniedException ex,
+    // Обработка прочих ошибок валидации
+    @ExceptionHandler({
+            ValidationException.class,
+            IllegalArgumentException.class,
+            IllegalStateException.class
+    })
+    public ResponseEntity<ApiError> handleValidationException(
+            @Nonnull RuntimeException ex,
             @Nonnull HttpServletRequest request
     ) {
-        log.warn("Access denied: {} {}", request.getRequestURI(), ex.getMessage());
+        log.warn("Validation error: {} {}", request.getRequestURI(), ex.getMessage());
         return buildErrorResponse(
-                HttpStatus.FORBIDDEN,
-                "Forbidden",
-                "Access denied",
+                HttpStatus.BAD_REQUEST,
+                "Bad Request",
+                ex.getMessage(),
                 request.getRequestURI()
         );
     }
 
-    // Вспомогательные методы
     private HttpStatus mapGrpcStatusToHttp(@Nonnull Status status) {
         return switch (status.getCode()) {
             case NOT_FOUND -> HttpStatus.NOT_FOUND;
-            case INVALID_ARGUMENT -> HttpStatus.BAD_REQUEST;
+            case INVALID_ARGUMENT, FAILED_PRECONDITION -> HttpStatus.BAD_REQUEST;
             case UNAUTHENTICATED -> HttpStatus.UNAUTHORIZED;
             case PERMISSION_DENIED -> HttpStatus.FORBIDDEN;
-            case UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
+            case UNAVAILABLE, ABORTED -> HttpStatus.SERVICE_UNAVAILABLE;
             case DEADLINE_EXCEEDED -> HttpStatus.GATEWAY_TIMEOUT;
+            case ALREADY_EXISTS -> HttpStatus.CONFLICT;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
@@ -164,7 +150,7 @@ public class GlobalExceptionHandler {
     private String extractGrpcErrorMessage(@Nonnull StatusRuntimeException ex) {
         return ex.getStatus().getDescription() != null
                 ? ex.getStatus().getDescription()
-                : "gRPC service error";
+                : "Service error: " + ex.getStatus().getCode().name();
     }
 
     @Nonnull

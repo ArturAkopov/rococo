@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static anbrain.qa.rococo.exception.GrpcExceptionHandler.handleGrpcException;
+
 @Service
 public class ArtistGrpcClient {
 
@@ -29,7 +31,7 @@ public class ArtistGrpcClient {
                             .build());
             return toArtistJson(response);
         } catch (StatusRuntimeException e) {
-            throw new RuntimeException("Error while getting artist", e);
+            throw handleGrpcException(e, "Artist", id.toString());
         }
     }
 
@@ -50,7 +52,7 @@ public class ArtistGrpcClient {
                     PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
                     response.getTotalCount());
         } catch (StatusRuntimeException e) {
-            throw new RuntimeException("Error while getting all artists", e);
+            throw handleGrpcException(e,"Artist", "get all");
         }
     }
 
@@ -72,7 +74,7 @@ public class ArtistGrpcClient {
                     PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
                     response.getTotalCount());
         } catch (StatusRuntimeException e) {
-            throw new RuntimeException("Error while searching artists by name", e);
+            throw handleGrpcException(e, "Artist", "search by name");
         }
     }
 
@@ -86,7 +88,7 @@ public class ArtistGrpcClient {
                             .build());
             return toArtistJson(response);
         } catch (StatusRuntimeException e) {
-            throw new RuntimeException("Error while creating artist", e);
+            throw handleGrpcException(e, "Artist", "creation request");
         }
     }
 
@@ -101,7 +103,7 @@ public class ArtistGrpcClient {
                             .build());
             return toArtistJson(response);
         } catch (StatusRuntimeException e) {
-            throw new RuntimeException("Error while updating artist", e);
+            throw handleGrpcException(e, "Artist", artist.id().toString());
         }
     }
 
@@ -114,4 +116,5 @@ public class ArtistGrpcClient {
                 response.getPhoto()
         );
     }
+
 }
