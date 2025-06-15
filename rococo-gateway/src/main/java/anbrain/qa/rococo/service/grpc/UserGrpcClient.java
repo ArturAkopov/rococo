@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static anbrain.qa.rococo.utils.GrpcExceptionHandler.handleGrpcException;
+import static anbrain.qa.rococo.exception.GrpcExceptionHandler.handleGrpcException;
 
 @Service
 public class UserGrpcClient {

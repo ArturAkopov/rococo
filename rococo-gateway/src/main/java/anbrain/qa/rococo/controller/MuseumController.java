@@ -93,7 +93,7 @@ public class MuseumController {
                                     schema = @Schema(implementation = MuseumJson.class))),
                     @ApiResponse(responseCode = "404", description = "Музей не найден")
             })
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<MuseumJson> updateMuseum(
             @Parameter(description = "Обновленные данные музея", required = true)
             @Valid @RequestBody MuseumJson museum) {

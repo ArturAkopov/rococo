@@ -13,10 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static anbrain.qa.rococo.utils.GrpcExceptionHandler.handleGrpcException;
+import static anbrain.qa.rococo.exception.GrpcExceptionHandler.handleGrpcException;
 
 @Service
 public class MuseumGrpcClient {
@@ -105,12 +106,14 @@ public class MuseumGrpcClient {
 
     @Nonnull
     private Geo toGrpcGeo(@Nonnull GeoJson geo) {
+        Country.Builder countryBuilder = Country.newBuilder()
+                .setId(String.valueOf(geo.country().id()));
+
+        Optional.ofNullable(geo.country().name()).ifPresent(countryBuilder::setName);
+
         return Geo.newBuilder()
                 .setCity(geo.city())
-                .setCountry(Country.newBuilder()
-                        .setId(String.valueOf(geo.country().id()))
-                        .setName(geo.country().name())
-                        .build())
+                .setCountry(countryBuilder.build())
                 .build();
     }
 

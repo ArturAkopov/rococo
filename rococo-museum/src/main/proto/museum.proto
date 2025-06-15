@@ -1,12 +1,10 @@
 syntax = "proto3";
 
-package anbrain.qa.rococo.grpc;
-
 option java_multiple_files = true;
 option java_package = "anbrain.qa.rococo.grpc";
 option java_outer_classname = "MuseumProto";
 
-import "common.proto";
+package anbrain.qa.rococo.grpc;
 
 service MuseumService {
   // Получить музей по ID
@@ -79,4 +77,14 @@ message SearchMuseumsResponse {
 message AllCountriesResponse {
   repeated Country countries = 1;
   int32 total_count = 2;
+}
+
+message Geo {
+  string city = 1;
+  Country country = 2;
+}
+
+message Country {
+  string id = 1;
+  string name = 2;
 }

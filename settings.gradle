@@ -3,4 +3,6 @@ include 'rococo-gateway'
 include 'rococo-auth'
 include 'rococo-userdata'
 include 'rococo-artist'
+include 'rococo-museum'
+include 'rococo-painting'
 

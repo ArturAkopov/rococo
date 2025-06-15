@@ -1,6 +1,6 @@
 spring:
   application:
-    name: rococo-artist
+    name: rococo-painting
   main:
     web-application-type: none
   datasource:
@@ -15,10 +15,10 @@ spring:
     enabled: true
     baseline-version: 0
     baseline-on-migrate: true
-    schemas: rococo-artist
+    schemas: rococo-painting
     user: root
     password: secret
-    locations: classpath:db/migration/rococo-artist
+    locations: classpath:db/migration/rococo-painting
   jpa:
     hibernate:
       ddl-auto: validate
@@ -31,14 +31,21 @@ spring:
     show-sql: false
     generate-ddl: true
     open-in-view: false
-  grpc:
-    server:
-      servlet:
-        enabled: false
-      port: 9091
+grpc:
+  server:
+    servlet:
+      enabled: false
+    port: 9094
+  clients:
+    rococo-artist:
+      address: static://localhost:9091
+      negotiationType: plaintext
+    rococo-museum:
+      address: static://localhost:9093
+      negotiationType: plaintext
 logging:
   file:
-    path: ./logs/rococo-artist
+    path: ./logs/rococo-painting
   level:
     root: INFO
     org.springframework.kafka: INFO
@@ -54,3 +61,17 @@ spring:
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
+grpc:
+  server:
+    servlet:
+      enabled: false
+    port: 9094
+  clients:
+    rococo-artist:
+      address: 'static://localhost:9091'
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-museum:
+      address: 'static://localhost:9093'
+      enable-keep-alive: true
+      negotiation-type: plaintext

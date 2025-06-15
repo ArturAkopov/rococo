@@ -1,9 +1,5 @@
-package anbrain.qa.rococo.utils;
+package anbrain.qa.rococo.exception;
 
-import anbrain.qa.rococo.exception.AccessDeniedException;
-import anbrain.qa.rococo.exception.NotFoundException;
-import anbrain.qa.rococo.exception.ServiceUnavailableException;
-import anbrain.qa.rococo.exception.ValidationException;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Nonnull;
 
