@@ -36,13 +36,6 @@ grpc:
     servlet:
       enabled: false
     port: 9094
-  clients:
-    rococo-artist:
-      address: static://localhost:9091
-      negotiationType: plaintext
-    rococo-museum:
-      address: static://localhost:9093
-      negotiationType: plaintext
 logging:
   file:
     path: ./logs/rococo-painting
@@ -51,6 +44,7 @@ logging:
     org.springframework.kafka: INFO
     org.springframework.web: INFO
     org.springframework.boot.autoconfigure: INFO
+
 ---
 spring:
   config:
@@ -66,12 +60,3 @@ grpc:
     servlet:
       enabled: false
     port: 9094
-  clients:
-    rococo-artist:
-      address: 'static://localhost:9091'
-      enable-keep-alive: true
-      negotiation-type: plaintext
-    rococo-museum:
-      address: 'static://localhost:9093'
-      enable-keep-alive: true
-      negotiation-type: plaintext

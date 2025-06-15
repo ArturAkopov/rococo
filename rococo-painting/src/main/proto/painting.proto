@@ -6,8 +6,6 @@ option java_multiple_files = true;
 option java_package = "anbrain.qa.rococo.grpc";
 option java_outer_classname = "PaintingProto";
 
-import "common.proto";
-
 service PaintingService {
   // Получить картину по ID
   rpc GetPainting(PaintingRequest) returns (PaintingResponse);
@@ -59,26 +57,11 @@ message PaintingResponse {
   string title = 2;
   string description = 3;
   string content = 4;
-  Museum museum = 5;
-  Artist artist = 6;
+  string museum_id = 5;
+  string artist_id = 6;
 }
 // Ответ с пагинированным списком картин
 message AllPaintingsResponse {
   repeated PaintingResponse paintings = 1;
   int32 total_count = 2;
-}
-
-message Museum {
-  string id = 1;
-  string title = 2;
-  string description = 3;
-  string photo = 4;
-  Geo geo = 5;
-}
-
-message Artist {
-  string id = 1;
-  string name = 2;
-  string biography = 3;
-  string photo = 4;
 }

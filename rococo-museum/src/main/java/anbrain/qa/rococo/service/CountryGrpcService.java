@@ -9,9 +9,9 @@ import anbrain.qa.rococo.grpc.CountryServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
+import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.grpc.server.service.GrpcService;
 
 @GrpcService
 @RequiredArgsConstructor

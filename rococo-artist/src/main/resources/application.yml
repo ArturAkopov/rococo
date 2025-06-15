@@ -31,11 +31,11 @@ spring:
     show-sql: false
     generate-ddl: true
     open-in-view: false
-  grpc:
-    server:
-      servlet:
-        enabled: false
-      port: 9091
+grpc:
+  server:
+    servlet:
+      enabled: false
+    port: 9091
 logging:
   file:
     path: ./logs/rococo-artist
