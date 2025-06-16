@@ -14,18 +14,18 @@ import java.util.UUID;
 @GrpcService
 public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImplBase {
 
-    private final PaintingClient paintingClient;
+    private final PaintingDatabaseService paintingDatabaseService;
 
     @Autowired
-    public PaintingGrpcService(PaintingClient paintingClient) {
-        this.paintingClient = paintingClient;
+    public PaintingGrpcService(PaintingDatabaseService paintingDatabaseService) {
+        this.paintingDatabaseService = paintingDatabaseService;
     }
 
     @Override
     public void getPainting(PaintingRequest request, StreamObserver<PaintingResponse> responseObserver) {
         try {
             UUID id = UUID.fromString(request.getId());
-            PaintingEntity painting = paintingClient.getPainting(id);
+            PaintingEntity painting = paintingDatabaseService.getPainting(id);
 
             responseObserver.onNext(buildPaintingResponse(painting));
             responseObserver.onCompleted();
@@ -37,7 +37,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
     @Override
     public void getAllPaintings(AllPaintingsRequest request, StreamObserver<AllPaintingsResponse> responseObserver) {
         try {
-            Page<PaintingEntity> paintings = paintingClient.getAllPaintings(
+            Page<PaintingEntity> paintings = paintingDatabaseService.getAllPaintings(
                     PageRequest.of(request.getPage(), request.getSize()));
 
             AllPaintingsResponse.Builder responseBuilder = AllPaintingsResponse.newBuilder()
@@ -58,7 +58,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
     public void getPaintingsByArtist(PaintingsByArtistRequest request, StreamObserver<AllPaintingsResponse> responseObserver) {
         try {
             UUID artistId = UUID.fromString(request.getArtistId());
-            Page<PaintingEntity> paintings = paintingClient.getPaintingsByArtist(
+            Page<PaintingEntity> paintings = paintingDatabaseService.getPaintingsByArtist(
                     artistId,
                     PageRequest.of(request.getPage(), request.getSize()));
 
@@ -86,7 +86,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
             painting.setArtistId(UUID.fromString(request.getArtistId()));
             painting.setMuseumId(UUID.fromString(request.getMuseumId()));
 
-            PaintingEntity savedPainting = paintingClient.createPainting(painting);
+            PaintingEntity savedPainting = paintingDatabaseService.createPainting(painting);
 
             responseObserver.onNext(buildPaintingResponse(savedPainting));
             responseObserver.onCompleted();
@@ -99,7 +99,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
     public void updatePainting(UpdatePaintingRequest request, StreamObserver<PaintingResponse> responseObserver) {
         try {
             UUID id = UUID.fromString(request.getId());
-            PaintingEntity painting = paintingClient.getPainting(id);
+            PaintingEntity painting = paintingDatabaseService.getPainting(id);
 
             painting.setTitle(request.getTitle());
             painting.setDescription(request.getDescription());
@@ -107,7 +107,7 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
             painting.setArtistId(UUID.fromString(request.getArtistId()));
             painting.setMuseumId(UUID.fromString(request.getMuseumId()));
 
-            PaintingEntity updatedPainting = paintingClient.updatePainting(painting);
+            PaintingEntity updatedPainting = paintingDatabaseService.updatePainting(painting);
 
             responseObserver.onNext(buildPaintingResponse(updatedPainting));
             responseObserver.onCompleted();

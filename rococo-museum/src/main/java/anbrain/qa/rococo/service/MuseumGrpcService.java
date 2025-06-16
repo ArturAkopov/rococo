@@ -1,5 +1,6 @@
 package anbrain.qa.rococo.service;
 
+import anbrain.qa.rococo.data.MuseumEntity;
 import anbrain.qa.rococo.grpc.*;
 import anbrain.qa.rococo.model.CountryJson;
 import anbrain.qa.rococo.model.GeoJson;
@@ -20,23 +21,28 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MuseumGrpcService extends MuseumServiceGrpc.MuseumServiceImplBase {
 
-    private final MuseumService museumService;
+    private final MuseumDatabaseService museumDatabaseService;
 
     @Override
     public void getMuseum(@Nonnull MuseumRequest request, @Nonnull StreamObserver<MuseumResponse> responseObserver) {
-        MuseumJson museum = museumService.findById(UUID.fromString(request.getId()));
-        responseObserver.onNext(toGrpcResponse(museum));
+
+        MuseumJson museum = entityToJson(museumDatabaseService.findById(UUID.fromString(request.getId())));
+
+        responseObserver.onNext(jsonToGrpcResponse(museum));
         responseObserver.onCompleted();
     }
 
     @Override
     public void getAllMuseums(@Nonnull AllMuseumsRequest request, @Nonnull StreamObserver<AllMuseumsResponse> responseObserver) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-        Page<MuseumJson> museumPage = museumService.getAll(pageable);
+
+        Page<MuseumJson> museumPage = museumDatabaseService.getAll(pageable).map(
+                this::entityToJson
+        );
 
         AllMuseumsResponse response = AllMuseumsResponse.newBuilder()
                 .addAllMuseums(museumPage.getContent().stream()
-                        .map(this::toGrpcResponse)
+                        .map(this::jsonToGrpcResponse)
                         .toList())
                 .setTotalCount((int) museumPage.getTotalElements())
                 .build();
@@ -47,8 +53,10 @@ public class MuseumGrpcService extends MuseumServiceGrpc.MuseumServiceImplBase {
 
     @Override
     public void searchMuseumsByTitle(@Nonnull SearchMuseumsRequest request, @Nonnull StreamObserver<SearchMuseumsResponse> responseObserver) {
-        List<MuseumResponse> museums = museumService.searchByTitle(request.getTitle()).stream()
-                .map(this::toGrpcResponse)
+
+        List<MuseumResponse> museums = museumDatabaseService.searchByTitle(request.getTitle()).stream()
+                .map(this::entityToJson)
+                .map(this::jsonToGrpcResponse)
                 .toList();
 
         SearchMuseumsResponse response = SearchMuseumsResponse.newBuilder()
@@ -77,8 +85,9 @@ public class MuseumGrpcService extends MuseumServiceGrpc.MuseumServiceImplBase {
                     )
             );
 
-            MuseumJson created = museumService.create(museum);
-            responseObserver.onNext(toGrpcResponse(created));
+            MuseumJson created = entityToJson(museumDatabaseService.create(museum));
+
+            responseObserver.onNext(jsonToGrpcResponse(created));
             responseObserver.onCompleted();
         } catch (Exception e) {
             responseObserver.onError(Status.INTERNAL
@@ -103,13 +112,14 @@ public class MuseumGrpcService extends MuseumServiceGrpc.MuseumServiceImplBase {
                 )
         );
 
-        MuseumJson updated = museumService.update(museum);
-        responseObserver.onNext(toGrpcResponse(updated));
+        MuseumJson updated = entityToJson(museumDatabaseService.update(museum));
+
+        responseObserver.onNext(jsonToGrpcResponse(updated));
         responseObserver.onCompleted();
     }
 
     @Nonnull
-    private MuseumResponse toGrpcResponse(@Nonnull MuseumJson museum) {
+    private MuseumResponse jsonToGrpcResponse(@Nonnull MuseumJson museum) {
         Country.Builder countryBuilder = Country.newBuilder()
                 .setId(museum.geo().country().id().toString());
 
@@ -127,5 +137,23 @@ public class MuseumGrpcService extends MuseumServiceGrpc.MuseumServiceImplBase {
                         .setCountry(countryBuilder)
                         .build())
                 .build();
+    }
+
+
+    @Nonnull
+    private MuseumJson entityToJson(@Nonnull MuseumEntity entity) {
+        return new MuseumJson(
+                entity.getId() != null ? entity.getId() : null,
+                entity.getTitle(),
+                entity.getDescription(),
+                entity.getPhoto() != null ? new String(entity.getPhoto()) : null,
+                new GeoJson(
+                        entity.getCity(),
+                        new CountryJson(
+                                entity.getCountry().getId(),
+                                entity.getCountry().getName() != null ? entity.getCountry().getName() : null
+                        )
+                )
+        );
     }
 }
