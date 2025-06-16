@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-public class PaintingClient {
+public class PaintingDatabaseService {
 
     private final PaintingRepository paintingRepository;
 
-    public PaintingClient(PaintingRepository paintingRepository) {
+    public PaintingDatabaseService(PaintingRepository paintingRepository) {
         this.paintingRepository = paintingRepository;
     }
 
