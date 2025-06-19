@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 @GrpcAdvice
 @Slf4j
-public class GlobalGrpcExceptionHandler {
+public class ArtistGrpcExceptionHandler {
 
     private static final String SERVICE_UNAVAILABLE = "Сервис художников временно недоступен";
     private static final String NOT_FOUND_TEMPLATE = "Художник с ID %s не найден";

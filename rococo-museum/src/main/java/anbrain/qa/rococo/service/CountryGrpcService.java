@@ -8,25 +8,37 @@ import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @GrpcService
 @RequiredArgsConstructor
+@Slf4j
 public class CountryGrpcService extends CountryServiceGrpc.CountryServiceImplBase {
 
     private final CountryDatabaseService countryDatabaseService;
 
     @Override
     public void getAllCountries(@Nonnull AllCountriesRequest request, @Nonnull StreamObserver<AllCountriesResponse> responseObserver) {
+        log.debug("Получен запрос на получение списка стран. Страница: {}, Размер: {}",
+                request.getPage(), request.getSize());
+
         PageRequest pageable = PageRequest.of(request.getPage(), request.getSize());
         Page<CountryEntity> page = countryDatabaseService.getAllCountries(pageable);
 
-        responseObserver.onNext(AllCountriesResponse.newBuilder()
+        log.info("Возвращено {} стран из {}", page.getContent().size(), page.getTotalElements());
+        responseObserver.onNext(buildAllCountriesResponse(page));
+        responseObserver.onCompleted();
+        log.debug("Запрос getAllCountries успешно завершен");
+    }
+
+    @Nonnull
+    private AllCountriesResponse buildAllCountriesResponse(@Nonnull Page<CountryEntity> page) {
+        return AllCountriesResponse.newBuilder()
                 .addAllCountries(page.getContent().stream()
                         .map(this::toGrpcResponse)
                         .toList())
                 .setTotalCount((int) page.getTotalElements())
-                .build());
-        responseObserver.onCompleted();
+                .build();
     }
 
     @Nonnull
