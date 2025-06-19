@@ -22,9 +22,8 @@ public class ArtistGrpcService extends ArtistServiceGrpc.ArtistServiceImplBase {
 
     @Override
     public void getArtist(@Nonnull ArtistRequest request, @Nonnull StreamObserver<ArtistResponse> responseObserver) {
-
-        ArtistEntity artist = artistDatabaseService.getArtist(UUID.fromString(request.getId()));
-
+        UUID artistId = UUID.fromString(request.getId());
+        ArtistEntity artist = artistDatabaseService.getArtist(artistId);
         responseObserver.onNext(grpcArtistConverter.entityToGrpcResponse(artist));
         responseObserver.onCompleted();
     }
@@ -32,31 +31,36 @@ public class ArtistGrpcService extends ArtistServiceGrpc.ArtistServiceImplBase {
     @Override
     public void getAllArtists(@Nonnull AllArtistsRequest request, @Nonnull StreamObserver<AllArtistsResponse> responseObserver) {
         PageRequest pageable = PageRequest.of(request.getPage(), request.getSize());
-
         Page<ArtistEntity> artistPage = artistDatabaseService.getAllArtists(pageable);
-
-        AllArtistsResponse response = grpcArtistConverter.pageToGrpcResponse(artistPage);
-
-        responseObserver.onNext(response);
+        responseObserver.onNext(grpcArtistConverter.pageToGrpcResponse(artistPage));
         responseObserver.onCompleted();
     }
 
     @Override
     public void searchArtistsByName(@Nonnull SearchArtistsRequest request, @Nonnull StreamObserver<AllArtistsResponse> responseObserver) {
+        if (request.getName().isBlank()) {
+            throw new IllegalArgumentException("Поисковый запрос не может быть пустым");
+        }
+
         PageRequest pageable = PageRequest.of(request.getPage(), request.getSize());
-
         Page<ArtistEntity> artistPage = artistDatabaseService.searchArtistsByName(request.getName(), pageable);
-
-        AllArtistsResponse response = grpcArtistConverter.pageToGrpcResponse(artistPage);
-
-        responseObserver.onNext(response);
+        responseObserver.onNext(grpcArtistConverter.pageToGrpcResponse(artistPage));
         responseObserver.onCompleted();
     }
 
     @Override
     public void createArtist(@Nonnull CreateArtistRequest request, @Nonnull StreamObserver<ArtistResponse> responseObserver) {
+        if (request.getName().isBlank()) {
+            throw new IllegalArgumentException("Имя художника обязательно для заполнения");
+        }
+        if (request.getBiography().isBlank()) {
+            throw new IllegalArgumentException("Биография художника обязательна для заполнения");
+        }
+        if (request.getPhoto().isEmpty()) {
+            throw new IllegalArgumentException("Фото художника обязательно");
+        }
 
-       final ArtistEntity savedArtist = artistDatabaseService.createArtist(
+        ArtistEntity savedArtist = artistDatabaseService.createArtist(
                 request.getName(),
                 request.getBiography(),
                 request.getPhoto().getBytes(StandardCharsets.UTF_8)
@@ -68,8 +72,14 @@ public class ArtistGrpcService extends ArtistServiceGrpc.ArtistServiceImplBase {
 
     @Override
     public void updateArtist(@Nonnull UpdateArtistRequest request, StreamObserver<ArtistResponse> responseObserver) {
+        if (request.getName().isBlank()) {
+            throw new IllegalArgumentException("Имя художника обязательно для заполнения");
+        }
+        if (request.getBiography().isBlank()) {
+            throw new IllegalArgumentException("Биография художника обязательна для заполнения");
+        }
 
-        final ArtistEntity updatedArtist = artistDatabaseService.updateArtist(
+        ArtistEntity updatedArtist = artistDatabaseService.updateArtist(
                 UUID.fromString(request.getId()),
                 request.getName(),
                 request.getBiography(),

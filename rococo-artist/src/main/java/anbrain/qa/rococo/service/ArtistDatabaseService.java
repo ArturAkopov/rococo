@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -18,19 +19,23 @@ public class ArtistDatabaseService {
 
     private final ArtistRepository artistRepository;
 
+    @Transactional(readOnly = true)
     public ArtistEntity getArtist(@Nonnull UUID id) {
         return artistRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
     }
 
+    @Transactional(readOnly = true)
     public Page<ArtistEntity> getAllArtists(@Nonnull PageRequest pageable) {
         return artistRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<ArtistEntity> searchArtistsByName(@Nonnull String name, @Nonnull PageRequest pageable) {
-        return artistRepository.findByName(name, pageable);
+        return artistRepository.findByNameContainsIgnoreCase(name, pageable);
     }
 
+    @Transactional
     public ArtistEntity createArtist(@Nonnull String name, @Nonnull String biography, @Nonnull byte[] photo) {
         ArtistEntity newArtist = new ArtistEntity();
         newArtist.setName(name);
@@ -40,7 +45,9 @@ public class ArtistDatabaseService {
         return artistRepository.save(newArtist);
     }
 
-    public ArtistEntity updateArtist(UUID id, String name, String biography, @Nullable byte[] photo) {
+    @Transactional
+    public ArtistEntity updateArtist(@Nonnull UUID id, @Nonnull String name,
+                                     @Nonnull String biography, @Nullable byte[] photo) {
         ArtistEntity artist = artistRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
 
