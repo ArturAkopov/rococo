@@ -1,10 +1,7 @@
 package anbrain.qa.rococo.service;
 
 import anbrain.qa.rococo.data.CountryEntity;
-import anbrain.qa.rococo.grpc.AllCountriesRequest;
-import anbrain.qa.rococo.grpc.AllCountriesResponse;
-import anbrain.qa.rococo.grpc.Country;
-import anbrain.qa.rococo.grpc.CountryServiceGrpc;
+import anbrain.qa.rococo.grpc.*;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
@@ -21,20 +18,22 @@ public class CountryGrpcService extends CountryServiceGrpc.CountryServiceImplBas
     @Override
     public void getAllCountries(@Nonnull AllCountriesRequest request, @Nonnull StreamObserver<AllCountriesResponse> responseObserver) {
         PageRequest pageable = PageRequest.of(request.getPage(), request.getSize());
+        Page<CountryEntity> page = countryDatabaseService.getAllCountries(pageable);
 
-        Page<CountryEntity> countryPage = countryDatabaseService.getAllCountries(pageable);
-
-        AllCountriesResponse response = AllCountriesResponse.newBuilder()
-                .addAllCountries(countryPage.getContent().stream()
-                        .map(country -> Country.newBuilder()
-                                .setId(country.getId().toString())
-                                .setName(country.getName())
-                                .build())
+        responseObserver.onNext(AllCountriesResponse.newBuilder()
+                .addAllCountries(page.getContent().stream()
+                        .map(this::toGrpcResponse)
                         .toList())
-                .setTotalCount((int) countryPage.getTotalElements())
-                .build();
-
-        responseObserver.onNext(response);
+                .setTotalCount((int) page.getTotalElements())
+                .build());
         responseObserver.onCompleted();
+    }
+
+    @Nonnull
+    private Country toGrpcResponse(@Nonnull CountryEntity entity) {
+        return Country.newBuilder()
+                .setId(entity.getId().toString())
+                .setName(entity.getName())
+                .build();
     }
 }

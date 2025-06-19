@@ -5,14 +5,13 @@ import anbrain.qa.rococo.grpc.*;
 import anbrain.qa.rococo.model.CountryJson;
 import anbrain.qa.rococo.model.GeoJson;
 import anbrain.qa.rococo.model.MuseumJson;
-import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.Nonnull;
 import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,79 +24,71 @@ public class MuseumGrpcService extends MuseumServiceGrpc.MuseumServiceImplBase {
 
     @Override
     public void getMuseum(@Nonnull MuseumRequest request, @Nonnull StreamObserver<MuseumResponse> responseObserver) {
-
-        MuseumJson museum = entityToJson(museumDatabaseService.findById(UUID.fromString(request.getId())));
-
-        responseObserver.onNext(jsonToGrpcResponse(museum));
+        MuseumEntity entity = museumDatabaseService.findById(UUID.fromString(request.getId()));
+        responseObserver.onNext(toGrpcResponse(entity));
         responseObserver.onCompleted();
     }
 
     @Override
     public void getAllMuseums(@Nonnull AllMuseumsRequest request, @Nonnull StreamObserver<AllMuseumsResponse> responseObserver) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        Page<MuseumEntity> page = museumDatabaseService.getAll(pageable);
 
-        Page<MuseumJson> museumPage = museumDatabaseService.getAll(pageable).map(
-                this::entityToJson
-        );
-
-        AllMuseumsResponse response = AllMuseumsResponse.newBuilder()
-                .addAllMuseums(museumPage.getContent().stream()
-                        .map(this::jsonToGrpcResponse)
+        responseObserver.onNext(AllMuseumsResponse.newBuilder()
+                .addAllMuseums(page.getContent().stream()
+                        .map(this::toGrpcResponse)
                         .toList())
-                .setTotalCount((int) museumPage.getTotalElements())
-                .build();
-
-        responseObserver.onNext(response);
+                .setTotalCount((int) page.getTotalElements())
+                .build());
         responseObserver.onCompleted();
     }
 
     @Override
     public void searchMuseumsByTitle(@Nonnull SearchMuseumsRequest request, @Nonnull StreamObserver<SearchMuseumsResponse> responseObserver) {
+        if (request.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Поисковый запрос не может быть пустым");
+        }
 
-        List<MuseumResponse> museums = museumDatabaseService.searchByTitle(request.getTitle()).stream()
-                .map(this::entityToJson)
-                .map(this::jsonToGrpcResponse)
-                .toList();
-
-        SearchMuseumsResponse response = SearchMuseumsResponse.newBuilder()
-                .addAllMuseums(museums)
-                .build();
-
-        responseObserver.onNext(response);
+        List<MuseumEntity> museums = museumDatabaseService.searchByTitle(request.getTitle());
+        responseObserver.onNext(SearchMuseumsResponse.newBuilder()
+                .addAllMuseums(museums.stream()
+                        .map(this::toGrpcResponse)
+                        .toList())
+                .build());
         responseObserver.onCompleted();
     }
 
     @Override
     public void createMuseum(@Nonnull CreateMuseumRequest request, @Nonnull StreamObserver<MuseumResponse> responseObserver) {
-        try {
-
-            MuseumJson museum = new MuseumJson(
-                    null,
-                    request.getTitle(),
-                    request.getDescription(),
-                    request.getPhoto(),
-                    new GeoJson(
-                            request.getGeo().getCity(),
-                            new CountryJson(
-                                    UUID.fromString(request.getGeo().getCountry().getId()),
-                                    null
-                            )
-                    )
-            );
-
-            MuseumJson created = entityToJson(museumDatabaseService.create(museum));
-
-            responseObserver.onNext(jsonToGrpcResponse(created));
-            responseObserver.onCompleted();
-        } catch (Exception e) {
-            responseObserver.onError(Status.INTERNAL
-                    .withDescription("Error creating museum: " + e.getMessage())
-                    .asRuntimeException());
+        if (request.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Название музея обязательно для заполнения");
         }
+
+        MuseumJson museum = new MuseumJson(
+                null,
+                request.getTitle(),
+                request.getDescription(),
+                request.getPhoto(),
+                new GeoJson(
+                        request.getGeo().getCity(),
+                        new CountryJson(
+                                UUID.fromString(request.getGeo().getCountry().getId()),
+                                null
+                        )
+                )
+        );
+
+        MuseumEntity created = museumDatabaseService.create(museum);
+        responseObserver.onNext(toGrpcResponse(created));
+        responseObserver.onCompleted();
     }
 
     @Override
     public void updateMuseum(@Nonnull UpdateMuseumRequest request, @Nonnull StreamObserver<MuseumResponse> responseObserver) {
+        if (request.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Название музея обязательно для заполнения");
+        }
+
         MuseumJson museum = new MuseumJson(
                 UUID.fromString(request.getId()),
                 request.getTitle(),
@@ -112,48 +103,25 @@ public class MuseumGrpcService extends MuseumServiceGrpc.MuseumServiceImplBase {
                 )
         );
 
-        MuseumJson updated = entityToJson(museumDatabaseService.update(museum));
-
-        responseObserver.onNext(jsonToGrpcResponse(updated));
+        MuseumEntity updated = museumDatabaseService.update(museum);
+        responseObserver.onNext(toGrpcResponse(updated));
         responseObserver.onCompleted();
     }
 
     @Nonnull
-    private MuseumResponse jsonToGrpcResponse(@Nonnull MuseumJson museum) {
-        Country.Builder countryBuilder = Country.newBuilder()
-                .setId(museum.geo().country().id().toString());
-
-        if (museum.geo().country().name() != null) {
-            countryBuilder.setName(museum.geo().country().name());
-        }
-
+    private MuseumResponse toGrpcResponse(@Nonnull MuseumEntity entity) {
         return MuseumResponse.newBuilder()
-                .setId(museum.id().toString())
-                .setTitle(museum.title())
-                .setDescription(museum.description())
-                .setPhoto(museum.photo())
+                .setId(entity.getId().toString())
+                .setTitle(entity.getTitle())
+                .setDescription(entity.getDescription())
+                .setPhoto(entity.getPhoto() != null ? new String(entity.getPhoto()) : "")
                 .setGeo(Geo.newBuilder()
-                        .setCity(museum.geo().city())
-                        .setCountry(countryBuilder)
+                        .setCity(entity.getCity())
+                        .setCountry(Country.newBuilder()
+                                .setId(entity.getCountry().getId().toString())
+                                .setName(entity.getCountry().getName())
+                                .build())
                         .build())
                 .build();
-    }
-
-
-    @Nonnull
-    private MuseumJson entityToJson(@Nonnull MuseumEntity entity) {
-        return new MuseumJson(
-                entity.getId() != null ? entity.getId() : null,
-                entity.getTitle(),
-                entity.getDescription(),
-                entity.getPhoto() != null ? new String(entity.getPhoto()) : null,
-                new GeoJson(
-                        entity.getCity(),
-                        new CountryJson(
-                                entity.getCountry().getId(),
-                                entity.getCountry().getName() != null ? entity.getCountry().getName() : null
-                        )
-                )
-        );
     }
 }
