@@ -19,11 +19,11 @@ public class GrpcExceptionHandler {
         return switch (e.getStatus().getCode()) {
             case NOT_FOUND -> new RococoNotFoundException(
                     String.format(NOT_FOUND_TEMPLATE, entityType, entityId));
-            case INVALID_ARGUMENT -> new ValidationException(
+            case INVALID_ARGUMENT -> new RococoValidationException(
                     String.format("%s: %s - %s", VALIDATION_ERROR, entityType, entityId));
-            case UNAVAILABLE -> new ServiceUnavailableException(SERVICE_UNAVAILABLE);
-            case DEADLINE_EXCEEDED -> new ServiceUnavailableException(TIMEOUT_MESSAGE);
-            case PERMISSION_DENIED -> new AccessDeniedException(ACCESS_DENIED);
+            case UNAVAILABLE -> new RococoServiceUnavailableException(SERVICE_UNAVAILABLE);
+            case DEADLINE_EXCEEDED -> new RococoServiceUnavailableException(TIMEOUT_MESSAGE);
+            case PERMISSION_DENIED -> new RococoAccessDeniedException(ACCESS_DENIED);
             case ALREADY_EXISTS -> new RococoConflictException(
                     String.format("%s с такими параметрами уже существует: %s", entityType, entityId));
             default -> new RuntimeException(

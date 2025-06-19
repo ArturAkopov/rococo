@@ -69,7 +69,7 @@ public class GlobalExceptionHandler {
                         HttpStatus.INTERNAL_SERVER_ERROR.toString(),
                         servletRequest.getRequestURI(),
                         "Internal server error",
-                        "Произошла внутренняя ошибка сервера"
+                        "Произошла внутренняя ошибка сервера " + ex.getMessage()
                 ),
                 HttpStatus.INTERNAL_SERVER_ERROR
         );

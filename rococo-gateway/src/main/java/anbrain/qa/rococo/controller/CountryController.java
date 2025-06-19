@@ -9,13 +9,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @Tag(name = "Country API", description = "Операции со странами")
 @RestController
 @RequestMapping("api/country")
@@ -31,11 +34,13 @@ public class CountryController {
             responses = {
                     @ApiResponse(responseCode = "200", description = "Страница со странами",
                             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                    schema = @Schema(implementation = RestPage.class)))
+                                    schema = @Schema(implementation = RestPage.class))),
+                    @ApiResponse(responseCode = "400", description = "Неверные параметры пагинации"),
+                    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
             })
     @GetMapping
     public ResponseEntity<RestPage<CountryJson>> getAllCountries(
-            @Parameter(description = "Параметры пагинации") Pageable pageable) {
+            @NotNull @Parameter(description = "Параметры пагинации") Pageable pageable) {
         return ResponseEntity.ok(countryGrpcClient.getAllCountries(pageable));
     }
 }

@@ -1,5 +1,6 @@
 package anbrain.qa.rococo.controller;
 
+import anbrain.qa.rococo.exception.RococoBadRequestException;
 import anbrain.qa.rococo.model.ArtistJson;
 import anbrain.qa.rococo.model.page.RestPage;
 import anbrain.qa.rococo.service.grpc.ArtistGrpcClient;
@@ -64,9 +65,13 @@ public class ArtistController {
     public ResponseEntity<ArtistJson> getArtistById(
             @Parameter(description = "ID художника", required = true)
             @PathVariable String id) {
-        UUID uuid = UUID.fromString(id);
-        ArtistJson artist = artistGrpcClient.getArtist(uuid);
-        return ResponseEntity.ok(artist);
+        try {
+            UUID uuid = UUID.fromString(id);
+            ArtistJson artist = artistGrpcClient.getArtist(uuid);
+            return ResponseEntity.ok(artist);
+        } catch (IllegalArgumentException e) {
+            throw new RococoBadRequestException("Неверный формат ID музея: " + id);
+        }
     }
 
     @Operation(summary = "Поиск художников по имени",
