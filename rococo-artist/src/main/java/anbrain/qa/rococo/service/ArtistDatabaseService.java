@@ -22,7 +22,7 @@ public class ArtistDatabaseService {
     @Transactional(readOnly = true)
     public ArtistEntity getArtist(@Nonnull UUID id) {
         return artistRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Не найден Артист с id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +49,7 @@ public class ArtistDatabaseService {
     public ArtistEntity updateArtist(@Nonnull UUID id, @Nonnull String name,
                                      @Nonnull String biography, @Nullable byte[] photo) {
         ArtistEntity artist = artistRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Artist not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Не найден Артист с id: " + id));
 
         artist.setName(name);
         artist.setBiography(biography);

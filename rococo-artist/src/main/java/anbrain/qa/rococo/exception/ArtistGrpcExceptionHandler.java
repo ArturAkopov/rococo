@@ -23,7 +23,7 @@ public class ArtistGrpcExceptionHandler {
     private static final String INVALID_UUID_FORMAT = "Некорректный формат UUID: %s";
 
     @GrpcExceptionHandler(EntityNotFoundException.class)
-    public StatusRuntimeException handleEntityNotFound(EntityNotFoundException e) {
+    public StatusRuntimeException handleEntityNotFound(@Nonnull EntityNotFoundException e) {
         String entityId = extractIdFromException(e.getMessage());
         log.warn("Художник не найден: {}", entityId);
         return Status.NOT_FOUND
@@ -32,7 +32,7 @@ public class ArtistGrpcExceptionHandler {
     }
 
     @GrpcExceptionHandler(IllegalArgumentException.class)
-    public StatusRuntimeException handleIllegalArgument(IllegalArgumentException e) {
+    public StatusRuntimeException handleIllegalArgument(@Nonnull IllegalArgumentException e) {
         if (e.getMessage().contains("Invalid UUID string")) {
             String invalidUuid = extractInvalidUuid(e.getMessage());
             log.warn("Некорректный формат UUID: {}", invalidUuid);
@@ -47,7 +47,7 @@ public class ArtistGrpcExceptionHandler {
     }
 
     @GrpcExceptionHandler(DataIntegrityViolationException.class)
-    public StatusRuntimeException handleDataIntegrityViolation(DataIntegrityViolationException e) {
+    public StatusRuntimeException handleDataIntegrityViolation(@Nonnull DataIntegrityViolationException e) {
         log.warn("Конфликт данных: {}", e.getMessage());
         return Status.ALREADY_EXISTS
                 .withDescription(ALREADY_EXISTS)
