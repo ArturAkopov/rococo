@@ -4,15 +4,15 @@ import anbrain.qa.rococo.data.CountryEntity;
 import anbrain.qa.rococo.data.MuseumEntity;
 import anbrain.qa.rococo.data.repository.CountryRepository;
 import anbrain.qa.rococo.data.repository.MuseumRepository;
-import anbrain.qa.rococo.exception.NotFoundException;
 import anbrain.qa.rococo.model.MuseumJson;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -20,49 +20,71 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@Transactional
 public class MuseumDatabaseService {
+
     private final MuseumRepository museumRepository;
     private final CountryRepository countryRepository;
 
     public MuseumEntity findById(UUID id) {
+        log.debug("Поиск музея по ID: {}", id);
         return museumRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Музей не найден с id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Музей не найден с id: " + id));
     }
 
     public Page<MuseumEntity> getAll(Pageable pageable) {
+        log.debug("Получение всех музеев. Страница: {}, Размер: {}",
+                pageable.getPageNumber(), pageable.getPageSize());
         return museumRepository.findAll(pageable);
     }
 
     public List<MuseumEntity> searchByTitle(String title) {
+        log.debug("Поиск музеев по названию: '{}'", title);
         return museumRepository.findByTitleContainsIgnoreCase(title);
     }
 
     @Transactional
     public MuseumEntity create(@Nonnull MuseumJson museumJson) {
-        CountryEntity country = countryRepository.findById(museumJson.geo().country().id())
-                .orElseThrow(() -> new NotFoundException("Страна не найдена с id: " + museumJson.geo().country().id()));
+        log.debug("Создание нового музея: '{}'", museumJson.title());
 
-        MuseumEntity entity = mapMuseumEntity(null, country, museumJson);
+        CountryEntity country = getCountryEntity(museumJson.geo().country().id());
 
-        return museumRepository.save(entity);
+        MuseumEntity entity = new MuseumEntity();
+        mapToEntity(entity, country, museumJson);
+
+        MuseumEntity saved = museumRepository.save(entity);
+        log.info("Музей '{}' успешно создан с ID: {}", saved.getTitle(), saved.getId());
+        return saved;
     }
 
     @Transactional
-    public MuseumEntity update(@Nonnull MuseumJson museum) {
-        MuseumEntity entity = museumRepository.findById(museum.id())
-                .orElseThrow(() -> new NotFoundException("Музей не найден с id: " + museum.id()));
+    public MuseumEntity update(@Nonnull MuseumJson museumJson) {
+        log.debug("Обновление музея с ID: {}", museumJson.id());
 
-        CountryEntity country = countryRepository.findById(museum.geo().country().id())
-                .orElseThrow(() -> new NotFoundException("Страна не найдена с id: " + museum.geo().country().id()));
+        MuseumEntity entity = getMuseumEntity(museumJson.id());
+        CountryEntity country = getCountryEntity(museumJson.geo().country().id());
 
-        MuseumEntity updatedEntity = mapMuseumEntity(entity, country, museum);
+        mapToEntity(entity, country, museumJson);
 
-        return museumRepository.save(updatedEntity);
+        MuseumEntity updated = museumRepository.save(entity);
+        log.info("Музей с ID {} успешно обновлен", updated.getId());
+        return updated;
     }
 
-    @Nonnull
-    private MuseumEntity mapMuseumEntity(@Nullable MuseumEntity existingEntity, @Nonnull CountryEntity country, @Nonnull MuseumJson museum) {
-        MuseumEntity entity = existingEntity != null ? existingEntity : new MuseumEntity();
+    private CountryEntity getCountryEntity(UUID countryId) {
+        log.debug("Получение страны с ID: {}", countryId);
+        return countryRepository.findById(countryId)
+                .orElseThrow(() -> new EntityNotFoundException("Страна не найдена с id: " + countryId));
+    }
+
+    private MuseumEntity getMuseumEntity(UUID museumId) {
+        log.debug("Получение музея с ID: {}", museumId);
+        return museumRepository.findById(museumId)
+                .orElseThrow(() -> new EntityNotFoundException("Музей не найден с id: " + museumId));
+    }
+
+    private void mapToEntity(@Nonnull MuseumEntity entity, CountryEntity country, @Nonnull MuseumJson museum) {
         entity.setTitle(museum.title());
         entity.setDescription(museum.description());
         entity.setCity(museum.geo().city());
@@ -70,7 +92,5 @@ public class MuseumDatabaseService {
             entity.setPhoto(museum.photo().getBytes(StandardCharsets.UTF_8));
         }
         entity.setCountry(country);
-        return entity;
     }
-
 }

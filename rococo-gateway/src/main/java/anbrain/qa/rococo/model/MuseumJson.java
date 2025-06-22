@@ -2,6 +2,8 @@ package anbrain.qa.rococo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -12,15 +14,22 @@ public record MuseumJson(
         UUID id,
         @Schema(description = "Название музея", example = "Музей Ван Гога")
         @JsonProperty("title")
+        @Size(max = 255, message = "Название музея не может превышать 255 символов")
         String title,
         @Schema(description = "Описание музея", example = "Художественный музей в Амстердаме, хранящий крупнейшую коллекцию картин Винсента Ван Гога")
         @JsonProperty("description")
+        @Size(max = 1000, message = "Описание музея не может превышать 1000 символов")
         String description,
         @Schema(description = "Фотография музея", example = "data:image/jpeg;base64,/9j/2wBDAAQDAwQDAwQEAw...")
         @JsonProperty("photo")
         String photo,
         @Schema(description = "Географическое расположение музея", implementation = GeoJson.class)
         @JsonProperty("geo")
+        @Valid
         GeoJson geo
 ) {
+    public MuseumJson {
+        if (title != null) title = title.trim();
+        if (description != null) description = description.trim();
+    }
 }

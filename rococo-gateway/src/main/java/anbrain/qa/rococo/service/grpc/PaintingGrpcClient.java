@@ -5,6 +5,7 @@ import anbrain.qa.rococo.model.*;
 import anbrain.qa.rococo.model.page.RestPage;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Nonnull;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 import static anbrain.qa.rococo.exception.GrpcExceptionHandler.handleGrpcException;
 
+@Slf4j
 @Service
 public class PaintingGrpcClient {
 
@@ -34,6 +36,7 @@ public class PaintingGrpcClient {
 
     public PaintingJson getPainting(@Nonnull UUID id) {
         try {
+            log.info("Запрос картины с ID: {}", id);
             PaintingResponse response = paintingStub.getPainting(
                     PaintingRequest.newBuilder()
                             .setId(id.toString())
@@ -41,14 +44,17 @@ public class PaintingGrpcClient {
             final ArtistJson artistJson = artistGrpcClient.getArtist(UUID.fromString(response.getArtistId()));
             final MuseumJson museumJson = museumGrpcClient.getMuseum(UUID.fromString(response.getMuseumId()));
 
+            log.info("Картина с ID {} успешно получена", id);
             return toPaintingJson(response, museumJson, artistJson);
         } catch (StatusRuntimeException e) {
-            throw handleGrpcException(e, "Painting", id.toString());
+            log.error("Ошибка при получении картины с ID {}: {}", id, e.getStatus().getDescription());
+            throw handleGrpcException(e, "Картина", id.toString());
         }
     }
 
     public RestPage<PaintingJson> getAllPaintings(@Nonnull Pageable pageable) {
         try {
+            log.info("Запрос всех картин, страница {}, размер {}", pageable.getPageNumber(), pageable.getPageSize());
             AllPaintingsResponse response = paintingStub.getAllPaintings(
                     AllPaintingsRequest.newBuilder()
                             .setPage(pageable.getPageNumber())
@@ -60,15 +66,11 @@ public class PaintingGrpcClient {
                         try {
                             ArtistJson artistJson = artistGrpcClient.getArtist(UUID.fromString(p.getArtistId()));
                             MuseumJson museumJson = museumGrpcClient.getMuseum(UUID.fromString(p.getMuseumId()));
-
-                            return toPaintingJson(
-                                    p,
-                                    museumJson,
-                                    artistJson
-                            );
+                            return toPaintingJson(p, museumJson, artistJson);
                         } catch (Exception e) {
+                            log.error("Ошибка при загрузке зависимостей для картины {}: {}", p.getId(), e.getMessage());
                             throw new RuntimeException(String.format(
-                                    "Failed to load dependencies for painting %s: %s",
+                                    "Не удалось загрузить зависимости для картины %s: %s",
                                     p.getId(),
                                     e.getMessage()
                             ), e);
@@ -76,18 +78,20 @@ public class PaintingGrpcClient {
                     })
                     .collect(Collectors.toList());
 
+            log.info("Получено {} картин из {}", paintings.size(), response.getTotalCount());
             return new RestPage<>(
                     paintings,
                     PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
                     response.getTotalCount());
-
         } catch (StatusRuntimeException e) {
-            throw handleGrpcException(e, "Painting", "getAllPaintings");
+            log.error("Ошибка при получении списка картин: {}", e.getStatus().getDescription());
+            throw handleGrpcException(e, "Картины", "страница " + pageable.getPageNumber());
         }
     }
 
     public RestPage<PaintingJson> getPaintingsByArtist(@Nonnull UUID artistId, @Nonnull Pageable pageable) {
         try {
+            log.info("Запрос картин художника {}, страница {}", artistId, pageable.getPageNumber());
             AllPaintingsResponse response = paintingStub.getPaintingsByArtist(
                     PaintingsByArtistRequest.newBuilder()
                             .setArtistId(artistId.toString())
@@ -100,15 +104,11 @@ public class PaintingGrpcClient {
                         try {
                             ArtistJson artistJson = artistGrpcClient.getArtist(UUID.fromString(p.getArtistId()));
                             MuseumJson museumJson = museumGrpcClient.getMuseum(UUID.fromString(p.getMuseumId()));
-
-                            return toPaintingJson(
-                                    p,
-                                    museumJson,
-                                    artistJson
-                            );
+                            return toPaintingJson(p, museumJson, artistJson);
                         } catch (Exception e) {
+                            log.error("Ошибка при загрузке зависимостей для картины {}: {}", p.getId(), e.getMessage());
                             throw new RuntimeException(String.format(
-                                    "Failed to load dependencies for painting %s: %s",
+                                    "Не удалось загрузить зависимости для картины %s: %s",
                                     p.getId(),
                                     e.getMessage()
                             ), e);
@@ -116,18 +116,20 @@ public class PaintingGrpcClient {
                     })
                     .collect(Collectors.toList());
 
+            log.info("Получено {} картин художника {}", paintings.size(), artistId);
             return new RestPage<>(
                     paintings,
                     PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
                     response.getTotalCount());
-
         } catch (StatusRuntimeException e) {
-            throw handleGrpcException(e, "Painting", "getPaintingsByArtist");
+            log.error("Ошибка при получении картин художника {}: {}", artistId, e.getStatus().getDescription());
+            throw handleGrpcException(e, "Картины художника", artistId.toString());
         }
     }
 
     public PaintingJson createPainting(@Nonnull PaintingJson painting) {
         try {
+            log.info("Создание новой картины с названием '{}'", painting.title());
             PaintingResponse response = paintingStub.createPainting(
                     CreatePaintingRequest.newBuilder()
                             .setTitle(painting.title())
@@ -138,14 +140,18 @@ public class PaintingGrpcClient {
                             .build());
             ArtistJson artistJson = artistGrpcClient.getArtist(UUID.fromString(response.getArtistId()));
             MuseumJson museumJson = museumGrpcClient.getMuseum(UUID.fromString(response.getMuseumId()));
+
+            log.info("Картина '{}' успешно создана с ID {}", painting.title(), response.getId());
             return toPaintingJson(response, museumJson, artistJson);
         } catch (StatusRuntimeException e) {
-            throw handleGrpcException(e, "Painting", "creation request");
+            log.error("Ошибка при создании картины '{}': {}", painting.title(), e.getStatus().getDescription());
+            throw handleGrpcException(e, "Создание картины", painting.title());
         }
     }
 
     public PaintingJson updatePainting(@Nonnull PaintingJson painting) {
         try {
+            log.info("Обновление картины с ID {}", painting.id());
             PaintingResponse response = paintingStub.updatePainting(
                     UpdatePaintingRequest.newBuilder()
                             .setId(painting.id().toString())
@@ -157,9 +163,12 @@ public class PaintingGrpcClient {
                             .build());
             ArtistJson artistJson = artistGrpcClient.getArtist(UUID.fromString(response.getArtistId()));
             MuseumJson museumJson = museumGrpcClient.getMuseum(UUID.fromString(response.getMuseumId()));
+
+            log.info("Картина с ID {} успешно обновлена", painting.id());
             return toPaintingJson(response, museumJson, artistJson);
         } catch (StatusRuntimeException e) {
-            throw handleGrpcException(e, "Painting", painting.id().toString());
+            log.error("Ошибка при обновлении картины с ID {}: {}", painting.id(), e.getStatus().getDescription());
+            throw handleGrpcException(e, "Обновление картины", painting.id().toString());
         }
     }
 
@@ -168,7 +177,6 @@ public class PaintingGrpcClient {
             @Nonnull PaintingResponse response,
             @Nonnull MuseumJson museumJson,
             @Nonnull ArtistJson artistJson) {
-
         return new PaintingJson(
                 UUID.fromString(response.getId()),
                 response.getTitle(),

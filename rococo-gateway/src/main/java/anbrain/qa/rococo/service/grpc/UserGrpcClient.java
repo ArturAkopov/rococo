@@ -1,21 +1,18 @@
 package anbrain.qa.rococo.service.grpc;
 
-import anbrain.qa.rococo.grpc.UpdateUserRequest;
-import anbrain.qa.rococo.grpc.UserRequest;
-import anbrain.qa.rococo.grpc.UserResponse;
-import anbrain.qa.rococo.grpc.UserdataGrpc;
+import anbrain.qa.rococo.grpc.*;
 import anbrain.qa.rococo.model.UserJson;
-import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Nonnull;
+import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static anbrain.qa.rococo.exception.GrpcExceptionHandler.handleGrpcException;
 
+@Slf4j
 @Service
 public class UserGrpcClient {
 
@@ -24,24 +21,34 @@ public class UserGrpcClient {
 
     public UserJson getUser(String username) {
         try {
+            log.info("Запрос пользователя с username: {}", username);
+
             UserResponse response = userServiceStub
-                    .withDeadlineAfter(5, TimeUnit.SECONDS)
                     .getUser(UserRequest.newBuilder()
                             .setUsername(username)
                             .build());
 
             if (response.getId().isEmpty()) {
-                throw handleGrpcException(new StatusRuntimeException(Status.NOT_FOUND),"User",username);
+                log.error("Пользователь с username {} не найден", username);
+                throw handleGrpcException(
+                        new StatusRuntimeException(io.grpc.Status.NOT_FOUND),
+                        "Пользователь",
+                        username
+                );
             }
 
+            log.info("Пользователь {} успешно получен", username);
             return convertToUserJson(response);
         } catch (StatusRuntimeException e) {
-            throw handleGrpcException(e, "User", username);
+            log.error("Ошибка при получении пользователя {}: {}", username, e.getStatus().getDescription());
+            throw handleGrpcException(e, "Пользователь", username);
         }
     }
 
     public UserJson updateUser(String username, @Nonnull UserJson updateRequest) {
         try {
+            log.info("Обновление пользователя {}, данные: {}", username, updateRequest);
+
             UpdateUserRequest request = UpdateUserRequest.newBuilder()
                     .setUsername(username)
                     .setFirstname(updateRequest.firstname())
@@ -50,12 +57,13 @@ public class UserGrpcClient {
                     .build();
 
             UserResponse response = userServiceStub
-                    .withDeadlineAfter(5, TimeUnit.SECONDS)
                     .updateUser(request);
 
+            log.info("Пользователь {} успешно обновлен", username);
             return convertToUserJson(response);
         } catch (StatusRuntimeException e) {
-            throw handleGrpcException(e, "User", username);
+            log.error("Ошибка при обновлении пользователя {}: {}", username, e.getStatus().getDescription());
+            throw handleGrpcException(e, "Обновление пользователя", username);
         }
     }
 
