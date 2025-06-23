@@ -68,7 +68,7 @@ public class UserGrpcClient {
     }
 
     @Nonnull
-    private UserJson convertToUserJson(@Nonnull UserResponse response) {
+    public UserJson convertToUserJson(@Nonnull UserResponse response) {
         return new UserJson(
                 UUID.fromString(response.getId()),
                 response.getUsername(),

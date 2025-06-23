@@ -51,7 +51,7 @@ public class CountryGrpcClient {
     }
 
     @Nonnull
-    private CountryJson toCountryJson(@Nonnull Country country) {
+    public CountryJson toCountryJson(@Nonnull Country country) {
         return new CountryJson(
                 UUID.fromString(country.getId()),
                 country.getName()

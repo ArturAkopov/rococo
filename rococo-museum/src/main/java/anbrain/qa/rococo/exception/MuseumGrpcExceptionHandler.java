@@ -22,7 +22,7 @@ public class MuseumGrpcExceptionHandler {
     private static final String INVALID_UUID_FORMAT = "Некорректный формат UUID: %s";
 
     @GrpcExceptionHandler(EntityNotFoundException.class)
-    public StatusRuntimeException handleEntityNotFound(EntityNotFoundException e) {
+    public StatusRuntimeException handleEntityNotFound(@Nonnull EntityNotFoundException e) {
         String message = e.getMessage();
         String entityType = message.contains("Музей") ? "Музей" : "Страна";
         String entityId = extractIdFromException(message);
@@ -34,7 +34,7 @@ public class MuseumGrpcExceptionHandler {
     }
 
     @GrpcExceptionHandler(IllegalArgumentException.class)
-    public StatusRuntimeException handleIllegalArgument(IllegalArgumentException e) {
+    public StatusRuntimeException handleIllegalArgument(@Nonnull IllegalArgumentException e) {
         if (e.getMessage().contains("Invalid UUID string")) {
             String invalidUuid = extractInvalidUuid(e.getMessage());
             log.warn("Некорректный формат UUID: {}", invalidUuid);
@@ -49,7 +49,7 @@ public class MuseumGrpcExceptionHandler {
     }
 
     @GrpcExceptionHandler(DataIntegrityViolationException.class)
-    public StatusRuntimeException handleDataIntegrityViolation(DataIntegrityViolationException e) {
+    public StatusRuntimeException handleDataIntegrityViolation(@Nonnull DataIntegrityViolationException e) {
         log.warn("Конфликт данных музея: {}", e.getMessage());
         return Status.ALREADY_EXISTS
                 .withDescription(ALREADY_EXISTS)

@@ -125,7 +125,7 @@ public class ArtistGrpcClient {
     }
 
     @Nonnull
-    private ArtistJson toArtistJson(@Nonnull ArtistResponse response) {
+    public ArtistJson toArtistJson(@Nonnull ArtistResponse response) {
         return new ArtistJson(
                 UUID.fromString(response.getId()),
                 response.getName(),

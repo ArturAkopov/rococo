@@ -27,7 +27,7 @@ public class GrpcExceptionHandler {
             case ALREADY_EXISTS -> new RococoConflictException(
                     String.format("%s с такими параметрами уже существует: %s", entityType, entityId));
             default -> new RuntimeException(
-                    String.format("Ошибка при обработке %s: %s - %s", entityType, entityId, e.getStatus().getDescription()));
+                    String.format("Ошибка при обработке %s: %s - %s", entityType, entityId, e.getStatus().getCode()));
         };
     }
 }
