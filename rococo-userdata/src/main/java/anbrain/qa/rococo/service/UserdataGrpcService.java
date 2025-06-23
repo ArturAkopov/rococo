@@ -54,7 +54,7 @@ public class UserdataGrpcService extends UserdataGrpc.UserdataImplBase {
     }
 
     @Nonnull
-    private UserResponse convertEntityToGrpcResponse(@Nonnull UserProfileEntity entity) {
+    public UserResponse convertEntityToGrpcResponse(@Nonnull UserProfileEntity entity) {
         return UserResponse.newBuilder()
                 .setId(entity.getId().toString())
                 .setUsername(entity.getUsername())
