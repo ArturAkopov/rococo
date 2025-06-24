@@ -1,0 +1,21 @@
+grpc:
+  client:
+    rococo-userdata:
+      address: static://localhost:5001
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-artist:
+      address: static://localhost:5002
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-museum:
+      address: static://localhost:5003
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-painting:
+      address: static://localhost:5004
+      enable-keep-alive: true
+      negotiation-type: plaintext
+
+rococo-front:
+  base-uri: 'http://127.0.0.1:3000'

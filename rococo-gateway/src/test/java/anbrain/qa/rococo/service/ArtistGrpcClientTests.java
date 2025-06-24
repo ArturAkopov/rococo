@@ -1,4 +1,4 @@
-package service;
+package anbrain.qa.rococo.service;
 
 import anbrain.qa.rococo.exception.*;
 import anbrain.qa.rococo.grpc.*;
