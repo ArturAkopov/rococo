@@ -1,19 +1,19 @@
 grpc:
   client:
     rococo-userdata:
-      address: static://localhost:5001
+      address: static://localhost:9090
       enable-keep-alive: true
       negotiation-type: plaintext
     rococo-artist:
-      address: static://localhost:5002
+      address: static://localhost:9091
       enable-keep-alive: true
       negotiation-type: plaintext
     rococo-museum:
-      address: static://localhost:5003
+      address: static://localhost:9093
       enable-keep-alive: true
       negotiation-type: plaintext
     rococo-painting:
-      address: static://localhost:5004
+      address: static://localhost:9094
       enable-keep-alive: true
       negotiation-type: plaintext
 

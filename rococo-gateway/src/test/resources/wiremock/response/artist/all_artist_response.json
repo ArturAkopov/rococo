@@ -1,0 +1,22 @@
+{
+  "artists": [
+    {
+      "id": "104f76ce-0508-49d4-8967-fdf1ebb8cf45",
+      "name": "Шишкин",
+      "biography": "Русский живописец, рисовальщик и гравёр-офортист, один из главных мастеров реалистического пейзажа второй половины XIX века",
+      "photo": "data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYG"
+    },
+    {
+      "id": "19bbbbb8-b687-4eec-8ba0-c8917c0a58a3",
+      "name": "Ренуар",
+      "biography": "Французский живописец, график и скульптор, один из основных представителей импрессионизма.",
+      "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAICAgICAQICAgIDAgIDAwYEAwMDAwcFBQQGCAcJCAgHCAgJCg0LCQoMCggICw8LDA0ODg8OCQsQERAOEQ0ODg7/2wBDAQIDAwMDAwcEBAcOCQgJDg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4ODg4"
+    },
+    {
+      "id": "5a486b2f-c361-459e-bd3f-60692a635ea9",
+      "name": "Левитан",
+      "biography": "Исаа́к Ильи́ч Левита́н — русский живописец и рисовальщик еврейского происхождения, один из крупнейших и наиболее плодовитых мастеров реалистического пейзажа второй половины XIX века. Академик Императорской Академии художеств.",
+      "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBYVFRgWFhYZGBgaHBwfHBocHB8cHhwaGhwZHBweHB4cIS4lHh4rJBocJjgnKy8xNTU"
+    }
+  ]
+}

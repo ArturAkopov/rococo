@@ -65,7 +65,7 @@ dependencies {
     testImplementation 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.4'
     testImplementation 'org.wiremock:wiremock-grpc-extension-jetty12:0.10.0'
 
-
+    testImplementation 'com.google.protobuf:protobuf-java-util:3.25.1'
     protobuf files("../src/main/proto")
     protobuf files("../src/test/proto")
 }
