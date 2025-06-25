@@ -92,6 +92,23 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiError> handleBadRequestException(RuntimeException ex, @Nonnull HttpServletRequest servletRequest) {
+        log.error(servletRequest.getRequestURI(), ex);
+        if (ex.getMessage().contains("UNIMPLEMENTED")){
+        return new ResponseEntity<>(
+                new ApiError(
+                        HttpStatus.BAD_REQUEST.toString(),
+                        servletRequest.getRequestURI(),
+                        "Bad request",
+                        ex.getMessage()
+                ),
+                HttpStatus.BAD_REQUEST
+        );}
+        return handleInternalError(ex, servletRequest);
+    }
+
     @ExceptionHandler(RococoConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ApiError> handleConflictException(RococoConflictException ex, @Nonnull HttpServletRequest servletRequest) {

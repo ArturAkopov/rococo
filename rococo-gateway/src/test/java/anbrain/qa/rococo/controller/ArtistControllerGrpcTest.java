@@ -66,7 +66,7 @@ class ArtistControllerGrpcTest {
         );
 
         mockArtistService.resetAll();
-        System.out.println("server start in "+wm.port());
+        System.out.println("Artist server started on port "+wm.port());
     }
 
     @AfterEach
