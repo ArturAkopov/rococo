@@ -126,14 +126,48 @@ class PaintingDatabaseServiceTests {
     }
 
     @Test
-    void shouldThrowIllegalArgumentExceptionWhenTitleIsBlank() {
+    void shouldThrowExceptionWhenTitleIsBlank() {
         Pageable pageable = PageRequest.of(0, 10);
 
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> paintingDatabaseService.getPaintingsByTitle(" ", pageable));
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> paintingDatabaseService.getPaintingsByTitle("", pageable)
+        );
 
         assertEquals("Название для поиска не может быть пустым", exception.getMessage());
+        verify(paintingRepository, never()).findAll((Pageable) any());
         verify(paintingRepository, never()).findByTitleContainingIgnoreCase(any(), any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTitleIsNull() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> paintingDatabaseService.getPaintingsByTitle(null, pageable)
+        );
+
+        assertEquals("Название для поиска не может быть пустым", exception.getMessage());
+        verify(paintingRepository, never()).findAll((Pageable) any());
+        verify(paintingRepository, never()).findByTitleContainingIgnoreCase(any(), any());
+    }
+
+    @Test
+    void shouldSearchByTitleWhenTitleIsNotEmpty() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<PaintingEntity> expectedPage = new PageImpl<>(Collections.singletonList(testPainting));
+        String searchTitle = "test title";
+
+        when(paintingRepository.findByTitleContainingIgnoreCase(searchTitle, pageable))
+                .thenReturn(expectedPage);
+
+        Page<PaintingEntity> result = paintingDatabaseService.getPaintingsByTitle(searchTitle, pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        verify(paintingRepository, never()).findAll((Pageable) any());
+        verify(paintingRepository, times(1)).findByTitleContainingIgnoreCase(searchTitle, pageable);
     }
 
     @Test

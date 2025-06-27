@@ -49,6 +49,8 @@ public class PaintingGrpcClientTests {
     private ArgumentCaptor<CreatePaintingRequest> createPaintingRequestCaptor;
     @Captor
     private ArgumentCaptor<UpdatePaintingRequest> updatePaintingRequestCaptor;
+    @Captor
+    private ArgumentCaptor<PaintingsByTitleRequest> paintingsByTitleRequestCaptor;
 
     private final UUID testId = UUID.randomUUID();
     private final String testTitle = "Test Painting";
@@ -328,6 +330,137 @@ public class PaintingGrpcClientTests {
         assertEquals(testArtistId, result.artist().id());
     }
 
+    @Test
+    void getPaintingsByTitle_shouldReturnFilteredPaintings() {
+        String searchTitle = "Test";
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        AllPaintingsResponse response = AllPaintingsResponse.newBuilder()
+                .addPaintings(createTestPaintingResponse())
+                .setTotalCount(1)
+                .build();
+
+        when(paintingStub.getPaintingsByTitle(any(PaintingsByTitleRequest.class))).thenReturn(response);
+        when(artistGrpcClient.getArtist(testArtistId)).thenReturn(testArtist);
+        when(museumGrpcClient.getMuseum(testMuseumId)).thenReturn(testMuseum);
+
+        RestPage<PaintingJson> result = paintingGrpcClient.getPaintingsByTitle(searchTitle, pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1, result.getContent().size());
+
+        PaintingJson paintingJson = result.getContent().getFirst();
+        assertEquals(testId, paintingJson.id());
+        assertEquals(testTitle, paintingJson.title());
+
+        verify(paintingStub).getPaintingsByTitle(paintingsByTitleRequestCaptor.capture());
+        assertEquals(searchTitle, paintingsByTitleRequestCaptor.getValue().getTitle());
+        assertEquals(page, paintingsByTitleRequestCaptor.getValue().getPage());
+        assertEquals(size, paintingsByTitleRequestCaptor.getValue().getSize());
+    }
+
+    @Test
+    void getPaintingsByTitle_shouldReturnEmptyPageWhenNoMatches() {
+        String searchTitle = "NonExistent";
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        AllPaintingsResponse response = AllPaintingsResponse.newBuilder()
+                .setTotalCount(0)
+                .build();
+
+        when(paintingStub.getPaintingsByTitle(any(PaintingsByTitleRequest.class))).thenReturn(response);
+
+        RestPage<PaintingJson> result = paintingGrpcClient.getPaintingsByTitle(searchTitle, pageable);
+
+        assertNotNull(result);
+        assertEquals(0, result.getTotalElements());
+        assertTrue(result.getContent().isEmpty());
+    }
+
+    @Test
+    void getPaintingsByTitle_shouldThrowValidationExceptionWhenInvalidArgument() {
+        String searchTitle = "Test";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(paintingStub.getPaintingsByTitle(any(PaintingsByTitleRequest.class)))
+                .thenThrow(new StatusRuntimeException(Status.INVALID_ARGUMENT));
+
+        RococoValidationException ex = assertThrows(RococoValidationException.class,
+                () -> paintingGrpcClient.getPaintingsByTitle(searchTitle, pageable));
+        assertEquals("Ошибка валидации данных: Поиск картин - по названию 'Test'", ex.getMessage());
+    }
+
+    @Test
+    void getPaintingsByTitle_shouldHandleDependencyLoadingErrors() {
+        String searchTitle = "Test";
+        int page = 0;
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+
+        AllPaintingsResponse response = AllPaintingsResponse.newBuilder()
+                .addPaintings(createTestPaintingResponse())
+                .setTotalCount(1)
+                .build();
+
+        when(paintingStub.getPaintingsByTitle(any(PaintingsByTitleRequest.class))).thenReturn(response);
+        when(artistGrpcClient.getArtist(testArtistId))
+                .thenThrow(new RuntimeException("Artist service unavailable"));
+
+        Exception ex = assertThrows(RuntimeException.class,
+                () -> paintingGrpcClient.getPaintingsByTitle(searchTitle, pageable));
+        assertTrue(ex.getMessage().contains("Ошибка при поиске картин"));
+    }
+
+    @Test
+    void getPaintingsByTitle_shouldThrowServiceUnavailableExceptionWhenServiceUnavailable() {
+        String searchTitle = "Test";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(paintingStub.getPaintingsByTitle(any(PaintingsByTitleRequest.class)))
+                .thenThrow(new StatusRuntimeException(Status.UNAVAILABLE));
+
+        RococoServiceUnavailableException ex = assertThrows(RococoServiceUnavailableException.class,
+                () -> paintingGrpcClient.getPaintingsByTitle(searchTitle, pageable));
+        assertEquals("Сервис временно недоступен", ex.getMessage());
+    }
+
+    @Test
+    void getPaintingsByTitle_shouldThrowExceptionWhenTitleIsBlank() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> paintingGrpcClient.getPaintingsByTitle("", pageable));
+        assertEquals("Название картины не может быть пустым", ex.getMessage());
+
+        verify(paintingStub, never()).getPaintingsByTitle(any());
+    }
+
+    @Test
+    void getPaintingsByTitle_shouldThrowExceptionWhenTitleIsNull() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> paintingGrpcClient.getPaintingsByTitle(null, pageable));
+        assertEquals("Название картины не может быть пустым", ex.getMessage());
+
+        verify(paintingStub, never()).getPaintingsByTitle(any());
+    }
+
+    @Test
+    void getPaintingsByTitle_shouldThrowExceptionWhenTitleIsOnlySpaces() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> paintingGrpcClient.getPaintingsByTitle("   ", pageable));
+        assertEquals("Название картины не может быть пустым", ex.getMessage());
+
+        verify(paintingStub, never()).getPaintingsByTitle(any());
+    }
     @Nonnull
     private PaintingResponse createTestPaintingResponse() {
         return PaintingResponse.newBuilder()

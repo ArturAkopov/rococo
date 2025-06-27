@@ -135,6 +135,55 @@ public class PaintingGrpcClient {
         }
     }
 
+    public RestPage<PaintingJson> getPaintingsByTitle(@Nonnull String title, @Nonnull Pageable pageable) {
+        if (title == null || title.isBlank()) {
+            log.error("Попытка поиска с пустым названием картины");
+            throw new IllegalArgumentException("Название картины не может быть пустым");
+        }
+
+        try {
+            log.info("Поиск картин по названию '{}', страница {}", title, pageable.getPageNumber());
+
+            AllPaintingsResponse response = paintingStub.getPaintingsByTitle(
+                    PaintingsByTitleRequest.newBuilder()
+                            .setTitle(title)
+                            .setPage(pageable.getPageNumber())
+                            .setSize(pageable.getPageSize())
+                            .build());
+
+            List<PaintingJson> paintings = response.getPaintingsList().parallelStream()
+                    .map(p -> {
+                        try {
+                            ArtistJson artistJson = artistGrpcClient.getArtist(UUID.fromString(p.getArtistId()));
+                            MuseumJson museumJson = museumGrpcClient.getMuseum(UUID.fromString(p.getMuseumId()));
+                            return toPaintingJson(p, museumJson, artistJson);
+                        } catch (Exception e) {
+                            log.error("Ошибка при загрузке зависимостей для картины {}: {}", p.getId(), e.getMessage());
+                            throw new RuntimeException(String.format(
+                                    "Не удалось загрузить зависимости для картины %s: %s",
+                                    p.getId(),
+                                    e.getMessage()
+                            ), e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+
+            log.info("Найдено {} картин по запросу '{}'", paintings.size(), title);
+
+            return new RestPage<>(
+                    paintings,
+                    PageRequest.of(pageable.getPageNumber(), pageable.getPageSize()),
+                    response.getTotalCount());
+
+        } catch (StatusRuntimeException e) {
+            log.error("Ошибка при поиске картин по названию '{}': {}", title, e.getStatus().getDescription());
+            throw handleGrpcException(e, "Поиск картин", "по названию '" + title + "'");
+        } catch (Exception e) {
+            log.error("Неожиданная ошибка при поиске картин по названию '{}': {}", title, e.getMessage());
+            throw new RuntimeException("Ошибка при поиске картин", e);
+        }
+    }
+
     public PaintingJson createPainting(@Nonnull PaintingJson painting) {
         try {
             log.info("Создание новой картины с названием '{}'", painting.title());

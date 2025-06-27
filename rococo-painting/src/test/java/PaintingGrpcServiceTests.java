@@ -290,4 +290,29 @@ class PaintingGrpcServiceTests {
         verify(paintingResponseObserver, never()).onCompleted();
     }
 
+    @Test
+    void shouldSuccessfullyGetPaintingsByTitle() {
+        PaintingsByTitleRequest request = PaintingsByTitleRequest.newBuilder()
+                .setTitle("Test")
+                .setPage(0)
+                .setSize(10)
+                .build();
+
+        Page<PaintingEntity> page = new PageImpl<>(Collections.singletonList(testPainting));
+        when(paintingDatabaseService.getPaintingsByTitle(eq("Test"), any())).thenReturn(page);
+
+        paintingGrpcService.getPaintingsByTitle(request, allPaintingsResponseObserver);
+
+        ArgumentCaptor<AllPaintingsResponse> captor = ArgumentCaptor.forClass(AllPaintingsResponse.class);
+        verify(allPaintingsResponseObserver).onNext(captor.capture());
+        verify(allPaintingsResponseObserver).onCompleted();
+
+        AllPaintingsResponse response = captor.getValue();
+        assertEquals(1, response.getTotalCount());
+        assertEquals(1, response.getPaintingsCount());
+        assertEquals(testId.toString(), response.getPaintings(0).getId());
+
+        verify(paintingDatabaseService, times(1)).getPaintingsByTitle(eq("Test"), any());
+        verify(paintingDatabaseService, never()).getAllPaintings(any());
+    }
 }

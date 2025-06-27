@@ -92,6 +92,22 @@ public class PaintingController {
         }
     }
 
+    @Operation(summary = "Поиск картин по названию",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Страница с найденными картинами",
+                            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                                    schema = @Schema(implementation = RestPage.class))),
+                    @ApiResponse(responseCode = "400", description = "Неверные параметры пагинации"),
+                    @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
+            })
+    @GetMapping(params = "title")
+    public ResponseEntity<RestPage<PaintingJson>> getPaintingsByTitle(
+            @Parameter(description = "Название картины для поиска", required = true)
+            @RequestParam String title,
+            @NotNull @Parameter(description = "Параметры пагинации") Pageable pageable) {
+        return ResponseEntity.ok(paintingGrpcClient.getPaintingsByTitle(title, pageable));
+    }
+
     @Operation(summary = "Добавить новую картину",
             responses = {
                     @ApiResponse(responseCode = "201", description = "Созданная картина",

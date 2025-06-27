@@ -17,140 +17,81 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler({
+            RococoBadRequestException.class,
+            ConstraintViolationException.class,
+            MethodArgumentNotValidException.class,
+            IllegalArgumentException.class,
+            RuntimeException.class
+    })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiError> handleBadRequestExceptions(Exception ex, @Nonnull HttpServletRequest servletRequest) {
+        log.error(servletRequest.getRequestURI(), ex);
+
+        if (ex instanceof RuntimeException runtimeEx &&
+            runtimeEx.getMessage().contains("UNIMPLEMENTED")) {
+            return buildErrorResponse(servletRequest, HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+        else if (ex instanceof RuntimeException && !(ex instanceof IllegalArgumentException)) {
+            return handleInternalError(ex, servletRequest);
+        }
+
+        return buildErrorResponse(servletRequest, HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(RococoNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ApiError> handleNotFoundException(RococoNotFoundException ex, @Nonnull HttpServletRequest servletRequest) {
         log.error(servletRequest.getRequestURI(), ex);
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.NOT_FOUND.toString(),
-                        servletRequest.getRequestURI(),
-                        "Not found",
-                        ex.getMessage()
-                ),
-                HttpStatus.NOT_FOUND
-        );
-    }
-
-    @ExceptionHandler(RococoBadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiError> handleBadRequestException(RococoBadRequestException ex, @Nonnull HttpServletRequest servletRequest) {
-        log.error(servletRequest.getRequestURI(), ex);
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.BAD_REQUEST.toString(),
-                        servletRequest.getRequestURI(),
-                        "Bad request",
-                        ex.getMessage()
-                ),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
-    @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiError> handleBadRequestException(ConstraintViolationException ex, @Nonnull HttpServletRequest servletRequest) {
-        log.error(servletRequest.getRequestURI(), ex);
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.BAD_REQUEST.toString(),
-                        servletRequest.getRequestURI(),
-                        "Bad request",
-                        ex.getMessage()
-                ),
-                HttpStatus.BAD_REQUEST
-        );
+        return buildErrorResponse(servletRequest, HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(RococoAccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ApiError> handleAccessDeniedException(RococoAccessDeniedException ex, @Nonnull HttpServletRequest servletRequest) {
         log.error(servletRequest.getRequestURI(), ex);
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.FORBIDDEN.toString(),
-                        servletRequest.getRequestURI(),
-                        "Forbidden",
-                        ex.getMessage()
-                ),
-                HttpStatus.FORBIDDEN
-        );
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiError> handleBadRequestException(MethodArgumentNotValidException ex, @Nonnull HttpServletRequest servletRequest) {
-        log.error(servletRequest.getRequestURI(), ex);
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.BAD_REQUEST.toString(),
-                        servletRequest.getRequestURI(),
-                        "Bad request",
-                        ex.getMessage()
-                ),
-                HttpStatus.BAD_REQUEST
-        );
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ApiError> handleBadRequestException(RuntimeException ex, @Nonnull HttpServletRequest servletRequest) {
-        log.error(servletRequest.getRequestURI(), ex);
-        if (ex.getMessage().contains("UNIMPLEMENTED")){
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.BAD_REQUEST.toString(),
-                        servletRequest.getRequestURI(),
-                        "Bad request",
-                        ex.getMessage()
-                ),
-                HttpStatus.BAD_REQUEST
-        );}
-        return handleInternalError(ex, servletRequest);
+        return buildErrorResponse(servletRequest, HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(RococoConflictException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ApiError> handleConflictException(RococoConflictException ex, @Nonnull HttpServletRequest servletRequest) {
         log.error(servletRequest.getRequestURI(), ex);
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.CONFLICT.toString(),
-                        servletRequest.getRequestURI(),
-                        "Conflict",
-                        ex.getMessage()
-                ),
-                HttpStatus.CONFLICT
-        );
+        return buildErrorResponse(servletRequest, HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(RococoServiceUnavailableException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ResponseEntity<ApiError> handleUnavailableException(RococoServiceUnavailableException ex, @Nonnull HttpServletRequest servletRequest) {
         log.error(servletRequest.getRequestURI(), ex);
-        return new ResponseEntity<>(
-                new ApiError(
-                        HttpStatus.SERVICE_UNAVAILABLE.toString(),
-                        servletRequest.getRequestURI(),
-                        "Service Unavailable",
-                        ex.getMessage()
-                ),
-                HttpStatus.SERVICE_UNAVAILABLE
-        );
+        return buildErrorResponse(servletRequest, HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ApiError> handleInternalError(Exception ex, @Nonnull HttpServletRequest servletRequest) {
         log.error(servletRequest.getRequestURI(), ex);
+        return buildErrorResponse(
+                servletRequest,
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Произошла внутренняя ошибка сервера " + ex.getMessage()
+        );
+    }
+
+    @Nonnull
+    private ResponseEntity<ApiError> buildErrorResponse(
+            HttpServletRequest servletRequest,
+            HttpStatus status,
+            String message
+    ) {
         return new ResponseEntity<>(
                 new ApiError(
-                        HttpStatus.INTERNAL_SERVER_ERROR.toString(),
+                        status.toString(),
                         servletRequest.getRequestURI(),
-                        "Internal server error",
-                        "Произошла внутренняя ошибка сервера " + ex.getMessage()
+                        status.getReasonPhrase(),
+                        message
                 ),
-                HttpStatus.INTERNAL_SERVER_ERROR
+                status
         );
     }
 }

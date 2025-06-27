@@ -44,9 +44,12 @@ public class PaintingDatabaseService {
 
     public Page<PaintingEntity> getPaintingsByTitle(String title, Pageable pageable) {
         log.debug("Поиск картин по названию: '{}'", title);
+
         if (title == null || title.isBlank()) {
+            log.warn("Попытка поиска с пустым названием");
             throw new IllegalArgumentException("Название для поиска не может быть пустым");
         }
+
         return paintingRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
 

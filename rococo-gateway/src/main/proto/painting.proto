@@ -13,6 +13,8 @@ service PaintingService {
   rpc GetAllPaintings(AllPaintingsRequest) returns (AllPaintingsResponse);
   // Получить картины по ID художника
   rpc GetPaintingsByArtist(PaintingsByArtistRequest) returns (AllPaintingsResponse);
+  // Получить картины по названию
+  rpc GetPaintingsByTitle (PaintingsByTitleRequest) returns (AllPaintingsResponse);
   // Добавить новую картину
   rpc CreatePainting(CreatePaintingRequest) returns (PaintingResponse);
   // Обновить данные существующей картины
@@ -31,6 +33,12 @@ message AllPaintingsRequest {
 // Запрос на получение картин по ID художника + пагинация
 message PaintingsByArtistRequest {
   string artist_id = 1;
+  int32 page = 2;
+  int32 size = 3;
+}
+// Запрос на получение картин по названию
+message PaintingsByTitleRequest {
+  string title = 1;
   int32 page = 2;
   int32 size = 3;
 }

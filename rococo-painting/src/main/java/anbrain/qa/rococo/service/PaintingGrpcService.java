@@ -61,6 +61,32 @@ public class PaintingGrpcService extends PaintingServiceGrpc.PaintingServiceImpl
             log.debug("Запрос getPaintingsByArtist успешно завершен");
     }
 
+    public void getPaintingsByTitle(@Nonnull PaintingsByTitleRequest request,
+                                    @Nonnull StreamObserver<AllPaintingsResponse> responseObserver) {
+        log.debug("Начало обработки запроса getPaintingsByTitle. Запрос: '{}', Страница: {}, Размер: {}",
+                request.getTitle(), request.getPage(), request.getSize());
+
+        try {
+            if (request.getTitle().isBlank()) {
+                log.warn("Попытка поиска картины с пустым названием");
+                throw new IllegalArgumentException("Название для поиска не может быть пустым");
+            }
+
+            Page<PaintingEntity> paintings = paintingDatabaseService.getPaintingsByTitle(
+                    request.getTitle(),
+                    PageRequest.of(request.getPage(), request.getSize()));
+
+            log.info("Найдено {} картин по запросу '{}'", paintings.getContent().size(), request.getTitle());
+
+            responseObserver.onNext(buildAllPaintingsResponse(paintings));
+            responseObserver.onCompleted();
+            log.debug("Запрос getPaintingsByTitle успешно завершен");
+        } catch (Exception e) {
+            log.error("Ошибка при обработке запроса getPaintingsByTitle: {}", e.getMessage());
+            responseObserver.onError(e);
+        }
+    }
+
     @Override
     public void createPainting(@Nonnull CreatePaintingRequest request, StreamObserver<PaintingResponse> responseObserver) {
         log.debug("Начало создания картины с названием: '{}'", request.getTitle());

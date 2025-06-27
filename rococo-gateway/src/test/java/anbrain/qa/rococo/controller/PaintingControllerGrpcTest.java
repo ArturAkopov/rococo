@@ -476,4 +476,95 @@ class PaintingControllerGrpcTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error.errors[0].message", Matchers.is("Доступ запрещен")));
     }
+    @Test
+    void getPaintingsByTitle_ShouldReturnPaintingsFromGrpc() throws Exception {
+        final AllPaintingsResponse paintingsResponse = loadProtoResponse(
+                WIREMOCK_ROOT + PAINTING_RESPONSE_PATH + "paintings_by_title_response.json",
+                AllPaintingsResponse::newBuilder
+        );
+
+        final ArtistResponse artistResponse = loadProtoResponse(
+                WIREMOCK_ROOT + ARTIST_RESPONSE_PATH + "artist_response.json",
+                ArtistResponse::newBuilder
+        );
+
+        final MuseumResponse museumResponse = loadProtoResponse(
+                WIREMOCK_ROOT + MUSEUM_RESPONSE_PATH + "museum_response.json",
+                MuseumResponse::newBuilder
+        );
+
+        mockPaintingService.stubFor(
+                WireMockGrpc.method("GetPaintingsByTitle")
+                        .willReturn(WireMockGrpc.message(paintingsResponse)));
+
+        mockArtistService.stubFor(
+                WireMockGrpc.method("GetArtist")
+                        .willReturn(WireMockGrpc.message(artistResponse)));
+
+        mockMuseumService.stubFor(
+                WireMockGrpc.method("GetMuseum")
+                        .willReturn(WireMockGrpc.message(museumResponse)));
+
+        mockMvc.perform(get("/api/painting")
+                        .with(jwt().jwt(c -> c.claim("sub", "Artur")))
+                        .param("title", "Звездная")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].id", Matchers.is(paintingId)))
+                .andExpect(jsonPath("$.content[0].title", Matchers.is("Звездная ночь")))
+                .andExpect(jsonPath("$.content[0].artist.id", Matchers.is(artistId)))
+                .andExpect(jsonPath("$.content[0].museum.id", Matchers.is(museumId)));
+    }
+
+    @Test
+    void getPaintingsByTitle_ShouldReturn400WhenTitleIsEmpty() throws Exception {
+        mockMvc.perform(get("/api/painting")
+                        .with(jwt().jwt(c -> c.claim("sub", "Artur")))
+                        .param("title", "")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.errors[0].message",
+                        Matchers.containsString("Название картины не может быть пустым")));
+    }
+
+    @Test
+    void getPaintingsByTitle_ShouldReturn400WhenTitleIsBlank() throws Exception {
+        mockMvc.perform(get("/api/painting")
+                        .with(jwt().jwt(c -> c.claim("sub", "Artur")))
+                        .param("title", "   ")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.errors[0].message",
+                        Matchers.containsString("Название картины не может быть пустым")));
+    }
+
+    @Test
+    void getPaintingsByTitle_ShouldReturn400WhenInvalidPageParams() throws Exception {
+        mockMvc.perform(get("/api/painting")
+                        .with(jwt().jwt(c -> c.claim("sub", "Artur")))
+                        .param("title", "Звездная")
+                        .param("page", "-1")
+                        .param("size", "0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code", Matchers.is("400 BAD_REQUEST")));
+    }
+
+    @Test
+    void getPaintingsByTitle_ShouldReturn503WhenGrpcServiceUnavailable() throws Exception {
+        mockPaintingService.stubFor(
+                WireMockGrpc.method("GetPaintingsByTitle")
+                        .willReturn(UNAVAILABLE, "Сервис недоступен"));
+
+        mockMvc.perform(get("/api/painting")
+                        .with(jwt().jwt(c -> c.claim("sub", "Artur")))
+                        .param("title", "Звездная")
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.error.errors[0].message",
+                        Matchers.is("Сервис временно недоступен")));
+    }
 }
