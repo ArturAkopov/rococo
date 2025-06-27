@@ -1,4 +1,4 @@
-package anbrain.qa.rococo.exception;
+package anbrain.qa.rococo.service.exception;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;

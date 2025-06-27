@@ -1,4 +1,4 @@
-package anbrain.qa.rococo.exception;
+package anbrain.qa.rococo.service.exception;
 
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
@@ -10,26 +10,25 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.CannotCreateTransactionException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Arrays;
 
 @GrpcAdvice
 @Slf4j
-public class PaintingGrpcExceptionHandler {
+public class ArtistGrpcExceptionHandler {
 
-    private static final String SERVICE_UNAVAILABLE = "Сервис картин временно недоступен";
-    private static final String NOT_FOUND_TEMPLATE = "Картина с ID %s не найдена";
-    private static final String INTERNAL_ERROR = "Внутренняя ошибка сервиса картин";
-    private static final String ALREADY_EXISTS = "Картина с такими параметрами уже существует";
+    private static final String SERVICE_UNAVAILABLE = "Сервис художников временно недоступен";
+    private static final String NOT_FOUND_TEMPLATE = "Художник с ID %s не найден";
+    private static final String INTERNAL_ERROR = "Внутренняя ошибка сервиса художников";
+    private static final String ALREADY_EXISTS = "Художник с такими параметрами уже существует";
     private static final String INVALID_UUID_FORMAT = "Некорректный формат UUID: %s";
 
     @GrpcExceptionHandler(EntityNotFoundException.class)
     public StatusRuntimeException handleEntityNotFound(@Nonnull EntityNotFoundException e) {
-        String message = e.getMessage();
-        String paintingId = extractIdFromException(message);
-        log.warn("Картина не найдена: {}", paintingId);
+        String entityId = extractIdFromException(e.getMessage());
+        log.warn("Художник не найден: {}", entityId);
         return Status.NOT_FOUND
-                .withDescription(String.format(NOT_FOUND_TEMPLATE, paintingId))
+                .withDescription(String.format(NOT_FOUND_TEMPLATE, entityId))
                 .asRuntimeException();
-
     }
 
     @GrpcExceptionHandler(IllegalArgumentException.class)
@@ -41,7 +40,7 @@ public class PaintingGrpcExceptionHandler {
                     .withDescription(String.format(INVALID_UUID_FORMAT, invalidUuid))
                     .asRuntimeException();
         }
-        log.warn("Ошибка валидации входных данных: {}", e.getMessage());
+        log.warn("Ошибка валидации: {}", e.getMessage());
         return Status.INVALID_ARGUMENT
                 .withDescription(e.getMessage())
                 .asRuntimeException();
@@ -49,7 +48,7 @@ public class PaintingGrpcExceptionHandler {
 
     @GrpcExceptionHandler(DataIntegrityViolationException.class)
     public StatusRuntimeException handleDataIntegrityViolation(@Nonnull DataIntegrityViolationException e) {
-        log.warn("Конфликт данных при сохранении картины: {}", e.getMostSpecificCause().getMessage());
+        log.warn("Конфликт данных: {}", e.getMessage());
         return Status.ALREADY_EXISTS
                 .withDescription(ALREADY_EXISTS)
                 .asRuntimeException();
@@ -57,7 +56,7 @@ public class PaintingGrpcExceptionHandler {
 
     @GrpcExceptionHandler(CannotCreateTransactionException.class)
     public StatusRuntimeException handleServiceUnavailable() {
-        log.error("Сервис картин недоступен - ошибка подключения к БД");
+        log.error("Сервис художников недоступен");
         return Status.UNAVAILABLE
                 .withDescription(SERVICE_UNAVAILABLE)
                 .asRuntimeException();
@@ -65,18 +64,19 @@ public class PaintingGrpcExceptionHandler {
 
     @GrpcExceptionHandler
     public StatusRuntimeException handleGeneric(Exception e) {
-        log.error("Необработанная ошибка в сервисе картин: {}", e.getMessage(), e);
+        log.error("Внутренняя ошибка сервиса: {}", e.getMessage(), e);
         return Status.INTERNAL
                 .withDescription(INTERNAL_ERROR)
                 .asRuntimeException();
     }
 
-    @Nonnull
     private String extractIdFromException(@Nonnull String message) {
-        return message.replaceAll(".*id:\\s?([^\\s]+).*", "$1");
+        return Arrays.stream(message.split(" "))
+                .filter(part -> part.matches(".*[a-fA-F0-9]{8}-.*"))
+                .findFirst()
+                .orElse("unknown");
     }
 
-    @Nonnull
     private String extractInvalidUuid(@Nonnull String message) {
         return message.replaceAll(".*'(.*)'.*", "$1");
     }
