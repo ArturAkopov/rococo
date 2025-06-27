@@ -1,14 +1,10 @@
 package anbrain.qa.rococo.controller;
 
 import anbrain.qa.rococo.grpc.AllCountriesResponse;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.wiremock.grpc.dsl.WireMockGrpc;
-import org.wiremock.grpc.dsl.WireMockGrpcService;
 
 import static anbrain.qa.rococo.utils.ContractTestGrpcUtils.loadProtoResponse;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -17,25 +13,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.wiremock.grpc.dsl.WireMockGrpc.Status.*;
 
+
 @Tag("ContractTest")
 class CountryControllerGrpcTest extends BaseControllerTest {
-
-
-    private WireMockGrpcService mockCountryService;
-
-    @BeforeEach
-    void beforeEach() {
-        mockCountryService = new WireMockGrpcService(
-                WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
-                COUNTRY_GRPC_SERVICE_NAME
-        );
-    }
-
-    @AfterEach
-    void afterEach() {
-        mockCountryService.resetAll();
-    }
-
 
     @Test
     void getAllCountries_ShouldReturnCountriesFromGrpc() throws Exception {

@@ -1,20 +1,26 @@
 package anbrain.qa.rococo.controller;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.wiremock.grpc.Jetty12GrpcExtensionFactory;
+import org.wiremock.grpc.dsl.WireMockGrpcService;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@DirtiesContext
 public class BaseControllerTest {
 
     public static final String WIREMOCK_ROOT = "src/test/resources/wiremock";
@@ -28,6 +34,7 @@ public class BaseControllerTest {
     public static final String MUSEUM_GRPC_SERVICE_NAME = "anbrain.qa.rococo.grpc.MuseumService";
     public static final String MUSEUM_REQUEST_PATH = "/request/museum/";
     public static final String MUSEUM_RESPONSE_PATH = "/response/museum/";
+
     public static final String COUNTRY_GRPC_SERVICE_NAME = "anbrain.qa.rococo.grpc.CountryService";
     public static final String COUNTRY_RESPONSE_PATH = "/response/country/";
 
@@ -39,6 +46,11 @@ public class BaseControllerTest {
     public static WireMockServer artistWm;
     public static WireMockServer museumWm;
     public static WireMockServer paintingWm;
+
+    public static WireMockGrpcService mockPaintingService;
+    public static WireMockGrpcService mockArtistService;
+    public static WireMockGrpcService mockMuseumService;
+    public static WireMockGrpcService mockCountryService;
 
     @Autowired
     public MockMvc mockMvc;
@@ -62,7 +74,6 @@ public class BaseControllerTest {
         );
         museumWm.start();
         System.out.println("Museum server started on port " + museumWm.port());
-        System.out.println("Country server started on port " + museumWm.port());
 
         paintingWm = new WireMockServer(
                 WireMockConfiguration.wireMockConfig()
@@ -72,6 +83,37 @@ public class BaseControllerTest {
         );
         paintingWm.start();
         System.out.println("Painting server started on port " + paintingWm.port());
+    }
+
+    @BeforeEach
+    void beforeEach(){
+        mockPaintingService = new WireMockGrpcService(
+                WireMock.create().port(PAINTING_WIREMOCK_PORT).build(),
+                PAINTING_GRPC_SERVICE_NAME
+        );
+
+        mockArtistService = new WireMockGrpcService(
+                WireMock.create().port(ARTIST_WIREMOCK_PORT).build(),
+                ARTIST_GRPC_SERVICE_NAME
+        );
+
+        mockMuseumService = new WireMockGrpcService(
+                WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
+                MUSEUM_GRPC_SERVICE_NAME
+        );
+
+        mockCountryService = new WireMockGrpcService(
+                WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
+                COUNTRY_GRPC_SERVICE_NAME
+        );
+    }
+
+    @AfterEach
+    void afterEach() {
+        mockArtistService.resetAll();
+        mockMuseumService.resetAll();
+        mockCountryService.resetAll();
+        mockPaintingService.resetAll();
     }
 
     @AfterAll

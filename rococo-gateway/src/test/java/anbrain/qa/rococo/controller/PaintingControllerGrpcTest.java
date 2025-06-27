@@ -4,15 +4,11 @@ import anbrain.qa.rococo.grpc.AllPaintingsResponse;
 import anbrain.qa.rococo.grpc.ArtistResponse;
 import anbrain.qa.rococo.grpc.MuseumResponse;
 import anbrain.qa.rococo.grpc.PaintingResponse;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.wiremock.grpc.dsl.WireMockGrpc;
-import org.wiremock.grpc.dsl.WireMockGrpcService;
 
 import static anbrain.qa.rococo.utils.ContractTestGrpcUtils.loadProtoResponse;
 import static anbrain.qa.rococo.utils.ContractTestGrpcUtils.loadRequestJson;
@@ -22,41 +18,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.wiremock.grpc.dsl.WireMockGrpc.Status.*;
 
+
 @Tag("ContractTest")
 class PaintingControllerGrpcTest extends BaseControllerTest {
 
     private final String paintingId = "104f76ce-0508-49d4-8967-fdf1ebb8cf65";
     private final String artistId = "104f76ce-0508-49d4-8967-fdf1ebb8cf45";
     private final String museumId = "3b785453-0d5b-4328-8380-5f226cb4dd5a";
-
-    private WireMockGrpcService mockPaintingService;
-    private WireMockGrpcService mockArtistService;
-    private WireMockGrpcService mockMuseumService;
-
-    @BeforeEach
-    void beforeEach() {
-        mockPaintingService = new WireMockGrpcService(
-                WireMock.create().port(PAINTING_WIREMOCK_PORT).build(),
-                PAINTING_GRPC_SERVICE_NAME
-        );
-
-        mockArtistService = new WireMockGrpcService(
-                WireMock.create().port(ARTIST_WIREMOCK_PORT).build(),
-                ARTIST_GRPC_SERVICE_NAME
-        );
-
-        mockMuseumService = new WireMockGrpcService(
-                WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
-                MUSEUM_GRPC_SERVICE_NAME
-        );
-    }
-
-    @AfterEach
-    void afterEach() {
-        mockPaintingService.resetAll();
-        mockArtistService.resetAll();
-        mockMuseumService.resetAll();
-    }
 
     @Test
     void getPainting_ShouldReturnPaintingFromGrpc() throws Exception {

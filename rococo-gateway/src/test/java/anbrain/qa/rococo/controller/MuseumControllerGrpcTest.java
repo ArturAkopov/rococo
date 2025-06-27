@@ -2,15 +2,11 @@ package anbrain.qa.rococo.controller;
 
 import anbrain.qa.rococo.grpc.AllMuseumsResponse;
 import anbrain.qa.rococo.grpc.MuseumResponse;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.wiremock.grpc.dsl.WireMockGrpc;
-import org.wiremock.grpc.dsl.WireMockGrpcService;
 
 import static anbrain.qa.rococo.utils.ContractTestGrpcUtils.loadProtoResponse;
 import static anbrain.qa.rococo.utils.ContractTestGrpcUtils.loadRequestJson;
@@ -20,25 +16,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.wiremock.grpc.dsl.WireMockGrpc.Status.*;
 
+
 @Tag("ContractTest")
 class MuseumControllerGrpcTest extends BaseControllerTest {
 
     private final String museumId = "3b785453-0d5b-4328-8380-5f226cb4dd5a";
-
-    private WireMockGrpcService mockMuseumService;
-
-    @BeforeEach
-    void beforeEach() {
-        mockMuseumService = new WireMockGrpcService(
-                WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
-                MUSEUM_GRPC_SERVICE_NAME
-        );
-    }
-
-    @AfterEach
-    void afterEach() {
-        mockMuseumService.resetAll();
-    }
 
     @Test
     void getMuseumById_ShouldReturnMuseumFromGrpc() throws Exception {

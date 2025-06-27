@@ -2,15 +2,11 @@ package anbrain.qa.rococo.controller;
 
 import anbrain.qa.rococo.grpc.AllArtistsResponse;
 import anbrain.qa.rococo.grpc.ArtistResponse;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.wiremock.grpc.dsl.WireMockGrpc;
-import org.wiremock.grpc.dsl.WireMockGrpcService;
 
 
 import static anbrain.qa.rococo.utils.ContractTestGrpcUtils.loadProtoResponse;
@@ -26,21 +22,6 @@ import static org.wiremock.grpc.dsl.WireMockGrpc.Status.*;
 class ArtistControllerGrpcTest extends BaseControllerTest {
 
     private final String artistID = "104f76ce-0508-49d4-8967-fdf1ebb8cf45";
-
-    private WireMockGrpcService mockArtistService;
-
-    @BeforeEach
-    void beforeEach() {
-        mockArtistService = new WireMockGrpcService(
-                WireMock.create().port(ARTIST_WIREMOCK_PORT).build(),
-                ARTIST_GRPC_SERVICE_NAME
-        );
-    }
-
-    @AfterEach
-    void afterEach() {
-        mockArtistService.resetAll();
-    }
 
     @Test
     void getAllArtists_ShouldReturnArtistsFromGrpc() throws Exception {
