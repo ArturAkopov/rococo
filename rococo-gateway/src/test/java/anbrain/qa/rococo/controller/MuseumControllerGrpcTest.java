@@ -2,21 +2,13 @@ package anbrain.qa.rococo.controller;
 
 import anbrain.qa.rococo.grpc.AllMuseumsResponse;
 import anbrain.qa.rococo.grpc.MuseumResponse;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.wiremock.grpc.Jetty12GrpcExtensionFactory;
 import org.wiremock.grpc.dsl.WireMockGrpc;
 import org.wiremock.grpc.dsl.WireMockGrpcService;
 
@@ -28,62 +20,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.wiremock.grpc.dsl.WireMockGrpc.Status.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
 @Tag("ContractTest")
-class MuseumControllerGrpcTest {
+class MuseumControllerGrpcTest extends BaseControllerTest {
 
-    private static final int WIREMOCK_PORT = 9093;
-    private static final String GRPC_SERVICE_NAME = "anbrain.qa.rococo.grpc.MuseumService";
-    private static final String WIREMOCK_ROOT = "src/test/resources/wiremock";
-    private static final String REQUEST_PATH = "/request/museum/";
-    private static final String RESPONSE_PATH = "/response/museum/";
     private final String museumId = "3b785453-0d5b-4328-8380-5f226cb4dd5a";
 
-    private WireMockServer wm;
     private WireMockGrpcService mockMuseumService;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @BeforeEach
     void beforeEach() {
-        wm = new WireMockServer(
-                WireMockConfiguration.wireMockConfig()
-                        .port(WIREMOCK_PORT)
-                        .withRootDirectory(WIREMOCK_ROOT)
-                        .extensions(new Jetty12GrpcExtensionFactory())
-        );
-        wm.start();
-        wm.resetAll();
-
         mockMuseumService = new WireMockGrpcService(
-                WireMock.create().port(WIREMOCK_PORT).build(),
-                GRPC_SERVICE_NAME
+                WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
+                MUSEUM_GRPC_SERVICE_NAME
         );
-
-        mockMuseumService.resetAll();
-        System.out.println("Museum server started on port " + wm.port());
     }
 
     @AfterEach
     void afterEach() {
-        System.out.println("Stopping WireMock server...");
-        if (wm != null) {
-            if (wm.isRunning()) {
-                wm.stop();
-                System.out.println("WireMock server stopped.");
-            } else {
-                System.out.println("WireMock server was already stopped.");
-            }
-        }
+        mockMuseumService.resetAll();
     }
 
     @Test
     void getMuseumById_ShouldReturnMuseumFromGrpc() throws Exception {
         final MuseumResponse response = loadProtoResponse(
-                WIREMOCK_ROOT + RESPONSE_PATH + "museum_response.json",
+                WIREMOCK_ROOT + MUSEUM_RESPONSE_PATH + "museum_response.json",
                 MuseumResponse::newBuilder
         );
 
@@ -105,7 +65,7 @@ class MuseumControllerGrpcTest {
     @Test
     void getAllMuseums_ShouldReturnMuseumsFromGrpc() throws Exception {
         final AllMuseumsResponse response = loadProtoResponse(
-                WIREMOCK_ROOT + RESPONSE_PATH + "all_museums_response.json",
+                WIREMOCK_ROOT + MUSEUM_RESPONSE_PATH + "all_museums_response.json",
                 AllMuseumsResponse::newBuilder
         );
 
@@ -127,7 +87,7 @@ class MuseumControllerGrpcTest {
     @Test
     void searchMuseumsByTitle_ShouldReturnMuseumsFromGrpc() throws Exception {
         final AllMuseumsResponse response = loadProtoResponse(
-                WIREMOCK_ROOT + RESPONSE_PATH + "search_museums_response.json",
+                WIREMOCK_ROOT + MUSEUM_RESPONSE_PATH + "search_museums_response.json",
                 AllMuseumsResponse::newBuilder
         );
 
@@ -147,11 +107,11 @@ class MuseumControllerGrpcTest {
     @Test
     void createMuseum_ShouldReturnCreatedMuseum() throws Exception {
         final MuseumResponse response = loadProtoResponse(
-                WIREMOCK_ROOT + RESPONSE_PATH + "create_museum_response.json",
+                WIREMOCK_ROOT + MUSEUM_RESPONSE_PATH + "create_museum_response.json",
                 MuseumResponse::newBuilder
         );
 
-        final String requestJson = loadRequestJson(WIREMOCK_ROOT + REQUEST_PATH + "create_museum_request.json");
+        final String requestJson = loadRequestJson(WIREMOCK_ROOT + MUSEUM_REQUEST_PATH + "create_museum_request.json");
 
         mockMuseumService.stubFor(
                 WireMockGrpc.method("CreateMuseum")
@@ -170,11 +130,11 @@ class MuseumControllerGrpcTest {
     @Test
     void updateMuseum_ShouldReturnUpdatedMuseum() throws Exception {
         final MuseumResponse response = loadProtoResponse(
-                WIREMOCK_ROOT + RESPONSE_PATH + "update_museum_response.json",
+                WIREMOCK_ROOT + MUSEUM_RESPONSE_PATH + "update_museum_response.json",
                 MuseumResponse::newBuilder
         );
 
-        final String requestJson = loadRequestJson(WIREMOCK_ROOT + REQUEST_PATH + "update_museum_request.json");
+        final String requestJson = loadRequestJson(WIREMOCK_ROOT + MUSEUM_REQUEST_PATH + "update_museum_request.json");
 
         mockMuseumService.stubFor(
                 WireMockGrpc.method("UpdateMuseum")
@@ -220,7 +180,7 @@ class MuseumControllerGrpcTest {
 
     @Test
     void createMuseum_ShouldReturn409WhenMuseumExists() throws Exception {
-        final String requestJson = loadRequestJson(WIREMOCK_ROOT + REQUEST_PATH + "create_museum_request.json");
+        final String requestJson = loadRequestJson(WIREMOCK_ROOT + MUSEUM_REQUEST_PATH + "create_museum_request.json");
 
         mockMuseumService.stubFor(
                 WireMockGrpc.method("CreateMuseum")
@@ -238,7 +198,7 @@ class MuseumControllerGrpcTest {
 
     @Test
     void updateMuseum_ShouldReturn404WhenMuseumNotFound() throws Exception {
-        final String requestJson = loadRequestJson(WIREMOCK_ROOT + REQUEST_PATH + "update_museum_request.json");
+        final String requestJson = loadRequestJson(WIREMOCK_ROOT + MUSEUM_REQUEST_PATH + "update_museum_request.json");
 
         mockMuseumService.stubFor(
                 WireMockGrpc.method("UpdateMuseum")

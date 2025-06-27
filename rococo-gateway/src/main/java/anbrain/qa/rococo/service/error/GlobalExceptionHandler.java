@@ -33,7 +33,10 @@ public class GlobalExceptionHandler {
             runtimeEx.getMessage().contains("UNIMPLEMENTED")) {
             return buildErrorResponse(servletRequest, HttpStatus.BAD_REQUEST, ex.getMessage());
         }
-        else if (ex instanceof RuntimeException && !(ex instanceof IllegalArgumentException)) {
+        else if (ex instanceof RuntimeException
+                 && !(ex instanceof IllegalArgumentException)
+                 && !(ex instanceof RococoBadRequestException)
+                 && !(ex instanceof ConstraintViolationException)) {
             return handleInternalError(ex, servletRequest);
         }
 

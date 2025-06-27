@@ -4,21 +4,13 @@ import anbrain.qa.rococo.grpc.AllPaintingsResponse;
 import anbrain.qa.rococo.grpc.ArtistResponse;
 import anbrain.qa.rococo.grpc.MuseumResponse;
 import anbrain.qa.rococo.grpc.PaintingResponse;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.wiremock.grpc.Jetty12GrpcExtensionFactory;
 import org.wiremock.grpc.dsl.WireMockGrpc;
 import org.wiremock.grpc.dsl.WireMockGrpcService;
 
@@ -30,115 +22,40 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.wiremock.grpc.dsl.WireMockGrpc.Status.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
 @Tag("ContractTest")
-class PaintingControllerGrpcTest {
-
-    //Painting service
-    private static final int PAINTING_WIREMOCK_PORT = 9094;
-    private static final String PAINTING_GRPC_SERVICE_NAME = "anbrain.qa.rococo.grpc.PaintingService";
-    private static final String WIREMOCK_ROOT = "src/test/resources/wiremock";
-    private static final String PAINTING_REQUEST_PATH = "/request/painting/";
-    private static final String PAINTING_RESPONSE_PATH = "/response/painting/";
-
-    //Artist service
-    private static final int ARTIST_WIREMOCK_PORT = 9091;
-    private static final String ARTIST_GRPC_SERVICE_NAME = "anbrain.qa.rococo.grpc.ArtistService";
-    private static final String ARTIST_RESPONSE_PATH = "/response/artist/";
-
-    //Museum service
-    private static final int MUSEUM_WIREMOCK_PORT = 9093;
-    private static final String MUSEUM_GRPC_SERVICE_NAME = "anbrain.qa.rococo.grpc.MuseumService";
-    private static final String MUSEUM_RESPONSE_PATH = "/response/museum/";
+class PaintingControllerGrpcTest extends BaseControllerTest {
 
     private final String paintingId = "104f76ce-0508-49d4-8967-fdf1ebb8cf65";
     private final String artistId = "104f76ce-0508-49d4-8967-fdf1ebb8cf45";
     private final String museumId = "3b785453-0d5b-4328-8380-5f226cb4dd5a";
 
-    private WireMockServer paintingWm;
-    private WireMockServer artistWm;
-    private WireMockServer museumWm;
-
     private WireMockGrpcService mockPaintingService;
     private WireMockGrpcService mockArtistService;
     private WireMockGrpcService mockMuseumService;
 
-    @Autowired
-    private MockMvc mockMvc;
-
     @BeforeEach
     void beforeEach() {
-        //Painting service
-        paintingWm = new WireMockServer(
-                WireMockConfiguration.wireMockConfig()
-                        .port(PAINTING_WIREMOCK_PORT)
-                        .withRootDirectory(WIREMOCK_ROOT)
-                        .extensions(new Jetty12GrpcExtensionFactory())
-        );
-        paintingWm.start();
-        paintingWm.resetAll();
-
         mockPaintingService = new WireMockGrpcService(
                 WireMock.create().port(PAINTING_WIREMOCK_PORT).build(),
                 PAINTING_GRPC_SERVICE_NAME
         );
-        mockPaintingService.resetAll();
-        System.out.println("Painting server started on port " + paintingWm.port());
-
-        //Artist service
-        artistWm = new WireMockServer(
-                WireMockConfiguration.wireMockConfig()
-                        .port(ARTIST_WIREMOCK_PORT)
-                        .withRootDirectory(WIREMOCK_ROOT)
-                        .extensions(new Jetty12GrpcExtensionFactory())
-        );
-        artistWm.start();
-        artistWm.resetAll();
 
         mockArtistService = new WireMockGrpcService(
                 WireMock.create().port(ARTIST_WIREMOCK_PORT).build(),
                 ARTIST_GRPC_SERVICE_NAME
         );
-        mockArtistService.resetAll();
-        System.out.println("Artist server started on port " + artistWm.port());
-
-        //Museum service
-        museumWm = new WireMockServer(
-                WireMockConfiguration.wireMockConfig()
-                        .port(MUSEUM_WIREMOCK_PORT)
-                        .withRootDirectory(WIREMOCK_ROOT)
-                        .extensions(new Jetty12GrpcExtensionFactory())
-        );
-        museumWm.start();
-        museumWm.resetAll();
 
         mockMuseumService = new WireMockGrpcService(
                 WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
                 MUSEUM_GRPC_SERVICE_NAME
         );
-        mockMuseumService.resetAll();
-        System.out.println("Museum server started on port " + museumWm.port());
     }
 
     @AfterEach
     void afterEach() {
-        stopWireMockServer(paintingWm, "Painting");
-        stopWireMockServer(artistWm, "Artist");
-        stopWireMockServer(museumWm, "Museum");
-    }
-
-    private void stopWireMockServer(WireMockServer server, String serviceName) {
-        System.out.println("Stopping " + serviceName + " WireMock server...");
-        if (server != null) {
-            if (server.isRunning()) {
-                server.stop();
-                System.out.println(serviceName + " WireMock server stopped.");
-            } else {
-                System.out.println(serviceName + " WireMock server was already stopped.");
-            }
-        }
+        mockPaintingService.resetAll();
+        mockArtistService.resetAll();
+        mockMuseumService.resetAll();
     }
 
     @Test
@@ -389,7 +306,7 @@ class PaintingControllerGrpcTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error.code", Matchers.is("409 CONFLICT")))
                 .andExpect(jsonPath("$.error.errors[0].message",
-                        Matchers.is("Картина с таким названием уже существует")));
+                        Matchers.is("Создание картины с такими параметрами уже существует: Новая картина")));
     }
 
     @Test
@@ -476,6 +393,7 @@ class PaintingControllerGrpcTest {
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.error.errors[0].message", Matchers.is("Доступ запрещен")));
     }
+
     @Test
     void getPaintingsByTitle_ShouldReturnPaintingsFromGrpc() throws Exception {
         final AllPaintingsResponse paintingsResponse = loadProtoResponse(

@@ -1,20 +1,12 @@
 package anbrain.qa.rococo.controller;
 
 import anbrain.qa.rococo.grpc.AllCountriesResponse;
-import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.wiremock.grpc.Jetty12GrpcExtensionFactory;
 import org.wiremock.grpc.dsl.WireMockGrpc;
 import org.wiremock.grpc.dsl.WireMockGrpcService;
 
@@ -25,60 +17,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.wiremock.grpc.dsl.WireMockGrpc.Status.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
 @Tag("ContractTest")
-class CountryControllerGrpcTest {
+class CountryControllerGrpcTest extends BaseControllerTest {
 
-    private static final int WIREMOCK_PORT = 9093;
-    private static final String GRPC_SERVICE_NAME = "anbrain.qa.rococo.grpc.CountryService";
-    private static final String WIREMOCK_ROOT = "src/test/resources/wiremock";
-    private static final String RESPONSE_PATH = "/response/country/";
 
-    private WireMockServer wm;
     private WireMockGrpcService mockCountryService;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @BeforeEach
     void beforeEach() {
-        wm = new WireMockServer(
-                WireMockConfiguration.wireMockConfig()
-                        .port(WIREMOCK_PORT)
-                        .withRootDirectory(WIREMOCK_ROOT)
-                        .extensions(new Jetty12GrpcExtensionFactory())
-        );
-        wm.start();
-        wm.resetAll();
-
         mockCountryService = new WireMockGrpcService(
-                WireMock.create().port(WIREMOCK_PORT).build(),
-                GRPC_SERVICE_NAME
+                WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
+                COUNTRY_GRPC_SERVICE_NAME
         );
-
-        mockCountryService.resetAll();
-        System.out.println("Country server started on port " + wm.port());
     }
 
     @AfterEach
     void afterEach() {
-        System.out.println("Stopping WireMock server...");
-        if (wm != null) {
-            if (wm.isRunning()) {
-                wm.stop();
-                System.out.println("WireMock server stopped.");
-            } else {
-                System.out.println("WireMock server was already stopped.");
-            }
-        }
+        mockCountryService.resetAll();
     }
+
 
     @Test
     void getAllCountries_ShouldReturnCountriesFromGrpc() throws Exception {
         final AllCountriesResponse response = loadProtoResponse(
-                WIREMOCK_ROOT + RESPONSE_PATH + "all_countries_response.json",
+                WIREMOCK_ROOT + COUNTRY_RESPONSE_PATH + "all_countries_response.json",
                 AllCountriesResponse::newBuilder
         );
 
@@ -110,7 +72,7 @@ class CountryControllerGrpcTest {
                 .andExpect(jsonPath("$.error.errors[0].domain",
                         Matchers.is("/api/country")))
                 .andExpect(jsonPath("$.error.errors[0].reason",
-                        Matchers.is("Bad request")))
+                        Matchers.is("Bad Request")))
                 .andExpect(jsonPath("$.error.errors[0].message",
                         Matchers.containsString("Ошибка при обработке Страны")));
     }
