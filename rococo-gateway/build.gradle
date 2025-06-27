@@ -23,7 +23,6 @@ repositories {
 dependencyManagement {
     imports {
         mavenBom 'org.springframework.grpc:spring-grpc-dependencies:0.4.0'
-        mavenBom 'com.google.protobuf:protobuf-bom:3.25.1'
     }
 }
 
@@ -33,7 +32,7 @@ dependencies {
     implementation 'io.grpc:grpc-netty'
     implementation 'io.grpc:grpc-protobuf'
     implementation 'io.grpc:grpc-stub'
-    implementation "io.grpc:grpc-core:1.70.0"
+    implementation 'io.grpc:grpc-core'
     // Spring Boot gRPC интеграция
     implementation "net.devh:grpc-client-spring-boot-starter:${project.ext.springGrpcVersion}"
     //security
@@ -55,7 +54,20 @@ dependencies {
     compileOnly "org.projectlombok:lombok:${project.ext.lombokVersion}"
     //UnitTests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testImplementation "com.h2database:h2:${project.ext.h2Version}"
+    //WireMock
+    testImplementation("org.wiremock:wiremock-jetty12:${project.ext.wiremockVersion}") {
+        exclude group: 'org.apache.httpcomponents.client5', module: 'httpclient5'
+    }
+    testImplementation 'org.apache.httpcomponents.client5:httpclient5:5.5'
+    testImplementation 'org.apache.httpcomponents.core5:httpcore5:5.3.4'
+    testImplementation 'org.apache.httpcomponents.core5:httpcore5-h2:5.3.4'
+    testImplementation 'org.wiremock:wiremock-grpc-extension-jetty12:0.10.0'
+
+    testImplementation 'com.google.protobuf:protobuf-java-util:3.25.1'
+    protobuf files("../src/main/proto")
+    protobuf files("../src/test/proto")
 }
 
 protobuf {
@@ -68,13 +80,22 @@ protobuf {
         }
     }
     generateProtoTasks {
-        all()*.plugins {
-            grpc {
-                option 'jakarta_omit'
-                option '@generated=omit'
+        all().each { task ->
+            task.generateDescriptorSet = true
+            task.descriptorSetOptions.path = "${projectDir}/src/test/resources/wiremock/grpc/rococo-gateway.dsc"
+            task.descriptorSetOptions.includeSourceInfo = true
+            task.descriptorSetOptions.includeImports = true
+            task.dependsOn 'prepareWiremockDirs'
+
+            task.plugins {
+                grpc {
+                    option 'jakarta_omit'
+                    option '@generated=omit'
+                }
             }
         }
     }
+
 }
 
 // Указываем, где искать сгенерированные классы
@@ -84,6 +105,18 @@ sourceSets {
             srcDirs 'build/generated/source/proto/main/grpc'
             srcDirs 'build/generated/source/proto/main/java'
         }
+    }
+    test {
+        resources {
+            srcDirs = ["$projectDir/src/test/resources"]
+            exclude '**/*.dsc'
+        }
+    }
+}
+
+tasks.register('prepareWiremockDirs') {
+    doLast {
+        mkdir "${projectDir}/src/test/resources/wiremock/grpc"
     }
 }
 

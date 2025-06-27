@@ -1,0 +1,13 @@
+{
+  "id": "3b785453-0d5b-4328-8380-5f226cb4dd5a",
+  "title": "Новый музей",
+  "description": "Описание нового музея",
+  "photo": "data:image/webp;base64,UklGRtCcAgBXRUJQVlA4IMScAgCQVwedASoABKsCPm0skUakIqGhLNbMsIANiU21Gs0wLwYYN3cl/Uqlvrd72QgfNdyz4gfVPxn+k/6v+R+bv/B3b/Hf9nzU/Zf6P/uf6L8wPmf/4P/n/v/et/V/+J/7fz/+hX+i/3L/r/4D/P/DH/5fuB8Ef8l/7PzA+E/9f/237he67/5P3V+AP9f/6P7hfAh/U/9",
+  "geo": {
+    "city": "Город нового музея",
+    "country": {
+      "id": "11ee622c-cef6-ab30-8e63-0242ac110002",
+      "name": "Страна нового музея"
+    }
+  }
+}

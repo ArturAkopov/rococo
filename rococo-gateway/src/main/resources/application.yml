@@ -18,12 +18,14 @@ spring:
 logging:
   level:
     root: INFO
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.security.oauth2: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: INFO
     anbrain.qa.rococo.config.SecurityConfigLocal: TRACE
-    anbrain.qa.rococo.controller: DEBUG
-    anbrain.qa.rococo.service.api: DEBUG
+    anbrain.qa.rococo.controller: INFO
+    anbrain.qa.rococo.service.api: INFO
+    net.devh.boot.grpc: INFO
+    org.springframework.boot.autoconfigure: INFO
 
 ---
 spring:
@@ -56,3 +58,34 @@ grpc:
 
 rococo-front:
   base-uri: 'http://127.0.0.1:3000'
+---
+spring:
+  config:
+    activate:
+      on-profile: 'docker'
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: 'http://auth.rococo.dc:9000'
+grpc:
+  client:
+    rococo-userdata:
+      address: static://userdata.rococo.dc:9090
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-artist:
+      address: static://artist.rococo.dc:9091
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-museum:
+      address: static://museum.rococo.dc:9093
+      enable-keep-alive: true
+      negotiation-type: plaintext
+    rococo-painting:
+      address: static://painting.rococo.dc:9094
+      enable-keep-alive: true
+      negotiation-type: plaintext
+
+rococo-front:
+  base-uri: 'http://front.rococo.dc:3000'

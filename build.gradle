@@ -32,6 +32,7 @@ subprojects {
         h2Version = '2.3.232'
         openapiVersion = '2.5.0'
         springGrpcVersion = '3.1.0.RELEASE'
+        wiremockVersion = '3.13.1'
 
         dockerImage = System.getProperty("os.arch") == "aarch64" || System.getProperty("os.arch") == "arm64"
                 ? "arm64v8/eclipse-temurin:21-jdk"

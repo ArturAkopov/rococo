@@ -124,7 +124,7 @@ public class MuseumGrpcClient {
     }
 
     @Nonnull
-    private Geo toGrpcGeo(@Nonnull GeoJson geo) {
+    public Geo toGrpcGeo(@Nonnull GeoJson geo) {
         Country.Builder countryBuilder = Country.newBuilder()
                 .setId(String.valueOf(geo.country().id()));
 
@@ -137,7 +137,7 @@ public class MuseumGrpcClient {
     }
 
     @Nonnull
-    private MuseumJson toMuseumJson(@Nonnull MuseumResponse response) {
+    public MuseumJson toMuseumJson(@Nonnull MuseumResponse response) {
         return new MuseumJson(
                 UUID.fromString(response.getId()),
                 response.getTitle(),

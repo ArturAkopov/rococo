@@ -25,14 +25,22 @@ public class PaintingGrpcClient {
     private final ArtistGrpcClient artistGrpcClient;
     private final MuseumGrpcClient museumGrpcClient;
 
+    @GrpcClient("rococo-painting")
+    private PaintingServiceGrpc.PaintingServiceBlockingStub paintingStub;
+
     @Autowired
     public PaintingGrpcClient(ArtistGrpcClient artistGrpcClient, MuseumGrpcClient museumGrpcClient) {
         this.artistGrpcClient = artistGrpcClient;
         this.museumGrpcClient = museumGrpcClient;
     }
 
-    @GrpcClient("rococo-painting")
-    private PaintingServiceGrpc.PaintingServiceBlockingStub paintingStub;
+    public PaintingGrpcClient(ArtistGrpcClient artistGrpcClient, MuseumGrpcClient museumGrpcClient,
+                              PaintingServiceGrpc.PaintingServiceBlockingStub paintingStub) {
+        this.artistGrpcClient = artistGrpcClient;
+        this.museumGrpcClient = museumGrpcClient;
+        this.paintingStub = paintingStub;
+    }
+
 
     public PaintingJson getPainting(@Nonnull UUID id) {
         try {
@@ -173,7 +181,7 @@ public class PaintingGrpcClient {
     }
 
     @Nonnull
-    private PaintingJson toPaintingJson(
+    public PaintingJson toPaintingJson(
             @Nonnull PaintingResponse response,
             @Nonnull MuseumJson museumJson,
             @Nonnull ArtistJson artistJson) {

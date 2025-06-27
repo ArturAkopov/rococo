@@ -1,0 +1,26 @@
+{
+  "id": "104f76ce-0508-49d4-8967-fdf1ebb8cf65",
+  "title": "Обновленная звездная ночь",
+  "description": "Новое описание",
+  "content": "data:image/jpeg;base64,/9j/2wBDAAQDAwQDAwQEAwQFBAQFB",
+  "museum": {
+    "id": "3b785453-0d5b-4328-8380-5f226cb4dd5a",
+    "title": "Новая картина",
+    "description": "Описание новой картины",
+    "photo": "data:image/jpeg;base64,/9j/2wBDAAQDAwQDAwQEAwQFBAQFB",
+    "geo": {
+      "city": "Город нового музея",
+      "country": {
+        "id": "11ee622c-cef6-ab30-8e63-0242ac110002",
+        "name": "Страна нового музея"
+      }
+    }
+  },
+  "artist": {
+    "id": "104f76ce-0508-49d4-8967-fdf1ebb8cf45",
+    "name": "Новый художник",
+    "biography": "Биография нового художника",
+    "photo": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD"
+  }
+}
+
