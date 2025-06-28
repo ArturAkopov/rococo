@@ -43,14 +43,21 @@ public class BaseControllerTest {
     public static final String PAINTING_REQUEST_PATH = "/request/painting/";
     public static final String PAINTING_RESPONSE_PATH = "/response/painting/";
 
+    public static final int USERDATA_WIREMOCK_PORT = 9090;
+    public static final String USERDATA_GRPC_SERVICE_NAME = "Userdata";
+    public static final String USERDATA__REQUEST_PATH = "/request/userdata/";
+    public static final String USERDATA__RESPONSE_PATH = "/response/userdata/";
+
     public static WireMockServer artistWm;
     public static WireMockServer museumWm;
     public static WireMockServer paintingWm;
+    public static WireMockServer userdataWm;
 
     public static WireMockGrpcService mockPaintingService;
     public static WireMockGrpcService mockArtistService;
     public static WireMockGrpcService mockMuseumService;
     public static WireMockGrpcService mockCountryService;
+    public static WireMockGrpcService mockUserdataService;
 
     @Autowired
     public MockMvc mockMvc;
@@ -83,6 +90,15 @@ public class BaseControllerTest {
         );
         paintingWm.start();
         System.out.println("Painting server started on port " + paintingWm.port());
+
+        userdataWm = new WireMockServer(
+                WireMockConfiguration.wireMockConfig()
+                        .port(USERDATA_WIREMOCK_PORT)
+                        .withRootDirectory(WIREMOCK_ROOT)
+                        .extensions(new Jetty12GrpcExtensionFactory())
+        );
+        userdataWm.start();
+        System.out.println("Userdata server started on port " + userdataWm.port());
     }
 
     @BeforeEach
@@ -106,6 +122,11 @@ public class BaseControllerTest {
                 WireMock.create().port(MUSEUM_WIREMOCK_PORT).build(),
                 COUNTRY_GRPC_SERVICE_NAME
         );
+
+        mockUserdataService = new WireMockGrpcService(
+                WireMock.create().port(USERDATA_WIREMOCK_PORT).build(),
+                USERDATA_GRPC_SERVICE_NAME
+        );
     }
 
     @AfterEach
@@ -114,6 +135,7 @@ public class BaseControllerTest {
         mockMuseumService.resetAll();
         mockCountryService.resetAll();
         mockPaintingService.resetAll();
+        mockUserdataService.resetAll();
     }
 
     @AfterAll
@@ -121,6 +143,7 @@ public class BaseControllerTest {
         artistWm.stop();
         museumWm.stop();
         paintingWm.stop();
+        userdataWm.stop();
     }
 
 }
