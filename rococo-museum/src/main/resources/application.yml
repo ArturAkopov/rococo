@@ -44,6 +44,7 @@ logging:
     org.springframework.kafka: INFO
     org.springframework.web: INFO
     org.springframework.boot.autoconfigure: INFO
+    net.devh.boot.grpc: INFO
 ---
 spring:
   config:
@@ -51,6 +52,16 @@ spring:
       on-profile: 'local'
   datasource:
     url: "jdbc:mysql://localhost:3307/rococo-art?useSSL=false&allowPublicKeyRetrieval=true"
+    username: root
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+---
+spring:
+  config:
+    activate:
+      on-profile: 'docker'
+  datasource:
+    url: "jdbc:mysql://rococo-all-db:3307/rococo-art?useSSL=false&allowPublicKeyRetrieval=true"
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver

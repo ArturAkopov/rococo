@@ -1,0 +1,184 @@
+services:
+  rococo-all-db:
+    container_name: rococo-all-db
+    image: mysql:8.3
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-u", "root", "-psecret" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    networks:
+      - rococo-network
+
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:7.3.2
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    restart: unless-stopped
+    networks:
+      - rococo-network
+
+  kafka:
+    container_name: kafka
+    image: confluentinc/cp-kafka:7.3.2
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    depends_on:
+      zookeeper:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - rococo-network
+
+  auth.rococo.dc:
+    container_name: auth.rococo.dc
+    image: ${PREFIX}/rococo-auth-${PROFILE}:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 9000:9000
+    healthcheck:
+      test: "wget --spider http://localhost:9000/actuator/health || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - rococo-network
+
+  artist.rococo.dc:
+    container_name: artist.rococo.dc
+    image: ${PREFIX}/rococo-artist-${PROFILE}:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 9091:9091
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+
+    networks:
+      - rococo-network
+
+  museum.rococo.dc:
+    container_name: museum.rococo.dc
+    image: ${PREFIX}/rococo-museum-${PROFILE}:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 9093:9093
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - rococo-network
+
+  painting.rococo.dc:
+    container_name: painting.rococo.dc
+    image: ${PREFIX}/rococo-painting-${PROFILE}:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 9094:9094
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - rococo-network
+
+  userdata.rococo.dc:
+    container_name: userdata.rococo.dc
+    image: ${PREFIX}/rococo-userdata-${PROFILE}:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 9090:9090
+    restart: always
+    depends_on:
+      rococo-all-db:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    networks:
+      - rococo-network
+
+  gateway.rococo.dc:
+    container_name: gateway.rococo.dc
+    image: ${PREFIX}/rococo-gateway-${PROFILE}:latest
+    pull_policy: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: "wget --spider http://localhost:8080/actuator/health || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+    depends_on:
+      auth.rococo.dc:
+        condition: service_healthy
+    networks:
+      - rococo-network
+
+  frontend.rococo.dc:
+    container_name: frontend.rococo.dc
+    image: ${PREFIX}/rococo-client-${PROFILE}:${FRONT_VERSION}
+    build:
+      context: ./rococo-client
+      dockerfile: ./Dockerfile
+      args:
+        NPM_COMMAND: build
+        VERSION: ${FRONT_VERSION}
+    pull_policy: always
+    ports:
+      - 3000:80
+    restart: always
+    networks:
+      - rococo-network
+
+volumes:
+  mysql_data:
+    name: mysql_data
+
+networks:
+  rococo-network:
+    driver: bridge

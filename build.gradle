@@ -4,6 +4,7 @@ plugins {
 }
 
 group = 'anbrain.qa'
+version = '1.0.0'
 
 allprojects {
     apply plugin: 'java'

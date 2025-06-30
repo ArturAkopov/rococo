@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.3.2'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'com.google.protobuf' version '0.9.4'
+    id 'com.google.cloud.tools.jib' version '3.4.1'
 }
 
 group = 'anbrain.qa.rococo'
@@ -79,7 +80,39 @@ protobuf {
     }
 }
 
-// Указываем, где искать сгенерированные классы
+jib {
+    container {
+        ports = ['9091']
+        jvmFlags = [
+                "-Dspring.profiles.active=${System.env.PROFILE}",
+        ]
+        environment = [
+                'TZ': 'Europe/Moscow'
+        ]
+        creationTime = 'USE_CURRENT_TIMESTAMP'
+        labels = [
+                'maintainer': 'Artur Akopov @AnBrain',
+                'version': "${project.version}".toString()
+        ]
+    }
+    from {
+        image = "${project.ext.dockerImage}"
+        platforms {
+            platform {
+                architecture = "${project.ext.dockerArch}"
+                os = 'linux'
+            }
+        }
+    }
+    to {
+        image = "${project.ext.dockerHubName}/rococo-artist-${System.env.PROFILE}"
+        tags = ["${project.version}"]
+    }
+}
+
+tasks.jib.dependsOn test
+tasks.jibDockerBuild.dependsOn test
+
 sourceSets {
     main {
         java {

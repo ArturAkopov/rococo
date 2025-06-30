@@ -3,7 +3,7 @@ services:
     container_name: rococo-all-db
     image: mysql:8.3
     ports:
-      - "3307:3306"  # Хост:3307 -> Контейнер:3306
+      - "3307:3306"
     environment:
       MYSQL_ROOT_PASSWORD: secret
     volumes:

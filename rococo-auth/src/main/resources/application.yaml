@@ -75,9 +75,9 @@ spring:
     activate:
       on-profile: 'docker'
   kafka:
-    bootstrap-servers: 'localhost:9092'
+    bootstrap-servers: 'kafka:9092'
   datasource:
-    url: 'jdbc:mysql://rococo-all-db:3307/rococo-auth'
+    url: 'jdbc:mysql://rococo-all-db:3307/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -32,8 +32,6 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
-import org.springframework.security.web.PortMapperImpl;
-import org.springframework.security.web.PortResolverImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.session.DisableEncodeUrlFilter;
@@ -41,7 +39,6 @@ import org.springframework.security.web.session.DisableEncodeUrlFilter;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 import java.util.UUID;
 
 @Configuration
@@ -78,7 +75,7 @@ public class RococoAuthServiceConfig {
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http,
                                                                       LoginUrlAuthenticationEntryPoint entryPoint) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-        if (environment.acceptsProfiles(Profiles.of("local", "staging"))) {
+        if (environment.acceptsProfiles(Profiles.of("local"))) {
             http.addFilterBefore(new SpecificRequestDumperFilter(
                     new RequestDumperFilter(),
                     "/login", "/oauth2/.*"
@@ -93,24 +90,6 @@ public class RococoAuthServiceConfig {
 
         corsCustomizer.corsCustomizer(http);
         return http.build();
-    }
-
-    @Bean
-    @Profile({"staging", "prod"})
-    public LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPointHttps() {
-        LoginUrlAuthenticationEntryPoint entryPoint = new LoginUrlAuthenticationEntryPoint("/login");
-        PortMapperImpl portMapper = new PortMapperImpl();
-        portMapper.setPortMappings(Map.of(
-                serverPort, defaultHttpsPort,
-                "80", defaultHttpsPort,
-                "8080", "8443"
-        ));
-        PortResolverImpl portResolver = new PortResolverImpl();
-        portResolver.setPortMapper(portMapper);
-        entryPoint.setForceHttps(true);
-        entryPoint.setPortMapper(portMapper);
-        entryPoint.setPortResolver(portResolver);
-        return entryPoint;
     }
 
     @Bean
