@@ -51,7 +51,7 @@ spring:
     activate:
       on-profile: 'local'
   datasource:
-    url: "jdbc:mysql://localhost:3307/rococo-art?useSSL=false&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://localhost:3307/rococo-art?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true"
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -61,7 +61,7 @@ spring:
     activate:
       on-profile: 'docker'
   datasource:
-    url: "jdbc:mysql://rococo-all-db:3307/rococo-art?useSSL=false&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://rococo-all-db:3306/rococo-art?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true"
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver

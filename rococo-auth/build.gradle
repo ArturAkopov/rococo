@@ -39,7 +39,7 @@ jib {
         ports = ['9000']
         jvmFlags = ["-Dspring.profiles.active=${System.env.PROFILE}"]
         environment = [
-                'TZ'         : 'Europe/Moscow'
+                'TZ': 'Europe/Moscow'
         ]
         creationTime = 'USE_CURRENT_TIMESTAMP'
         labels = [
@@ -58,7 +58,7 @@ jib {
     }
     to {
         image = "${project.ext.dockerHubName}/${project.name}-${System.env.PROFILE}"
-        tags = ["${project.version}"]
+        tags = ['latest', "${project.version}"]
     }
 }
 

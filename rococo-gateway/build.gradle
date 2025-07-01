@@ -109,7 +109,7 @@ jib {
         creationTime = 'USE_CURRENT_TIMESTAMP'
         labels = [
                 'maintainer': 'Artur Akopov @AnBrain',
-                'version': "${project.version}".toString()
+                'version'   : "${project.version}".toString()
         ]
     }
     from {
@@ -123,7 +123,7 @@ jib {
     }
     to {
         image = "${project.ext.dockerHubName}/rococo-gateway-${System.env.PROFILE}"
-        tags = ["${project.version}"]
+        tags = ['latest', "${project.version}"]
     }
 }
 

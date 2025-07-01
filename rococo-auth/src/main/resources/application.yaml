@@ -58,7 +58,7 @@ spring:
   kafka:
     bootstrap-servers: 'localhost:9092'
   datasource:
-    url: 'jdbc:mysql://127.0.0.1:3307/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    url: 'jdbc:mysql://127.0.0.1:3307/rococo-auth?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -77,7 +77,7 @@ spring:
   kafka:
     bootstrap-servers: 'kafka:9092'
   datasource:
-    url: 'jdbc:mysql://rococo-all-db:3307/rococo-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    url: 'jdbc:mysql://rococo-all-db:3306/rococo-auth?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true'
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver

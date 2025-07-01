@@ -51,15 +51,14 @@ services:
   auth.rococo.dc:
     container_name: auth.rococo.dc
     image: ${PREFIX}/rococo-auth-${PROFILE}:latest
+    build: 'false'
     pull_policy: always
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 9000:9000
     healthcheck:
       test: "wget --spider http://localhost:9000/actuator/health || exit 1"
-      interval: 5s
-      timeout: 5s
+      interval: 10s
+      timeout: 10s
       retries: 10
     restart: always
     depends_on:
@@ -73,9 +72,8 @@ services:
   artist.rococo.dc:
     container_name: artist.rococo.dc
     image: ${PREFIX}/rococo-artist-${PROFILE}:latest
+    build: 'false'
     pull_policy: always
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 9091:9091
     restart: always
@@ -91,9 +89,8 @@ services:
   museum.rococo.dc:
     container_name: museum.rococo.dc
     image: ${PREFIX}/rococo-museum-${PROFILE}:latest
+    build: 'false'
     pull_policy: always
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 9093:9093
     restart: always
@@ -108,9 +105,8 @@ services:
   painting.rococo.dc:
     container_name: painting.rococo.dc
     image: ${PREFIX}/rococo-painting-${PROFILE}:latest
+    build: 'false'
     pull_policy: always
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 9094:9094
     restart: always
@@ -125,9 +121,8 @@ services:
   userdata.rococo.dc:
     container_name: userdata.rococo.dc
     image: ${PREFIX}/rococo-userdata-${PROFILE}:latest
+    build: 'false'
     pull_policy: always
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 9090:9090
     restart: always
@@ -142,9 +137,8 @@ services:
   gateway.rococo.dc:
     container_name: gateway.rococo.dc
     image: ${PREFIX}/rococo-gateway-${PROFILE}:latest
+    build: 'false'
     pull_policy: always
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 8080:8080
     healthcheck:
@@ -161,13 +155,13 @@ services:
 
   frontend.rococo.dc:
     container_name: frontend.rococo.dc
-    image: ${PREFIX}/rococo-client-${PROFILE}:${FRONT_VERSION}
+    image: arturakopov/rococo-client-docker:0.0.1
     build:
       context: ./rococo-client
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
       args:
-        NPM_COMMAND: build
-        VERSION: ${FRONT_VERSION}
+        NPM_COMMAND: build:docker
+        VERSION: 0.0.1
     pull_policy: always
     ports:
       - 3000:80

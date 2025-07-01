@@ -18,7 +18,7 @@ COPY . ./
 # Запускаем сборку с указанной командой
 RUN npm run ${NPM_COMMAND}
 
-FROM nginx:1.27.1-alpine
+FROM nginx:1.27.1-alpine AS release
 
 # Аргументы (можно переопределить при сборке)
 ARG VERSION
