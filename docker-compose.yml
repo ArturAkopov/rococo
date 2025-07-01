@@ -155,7 +155,7 @@ services:
 
   frontend.rococo.dc:
     container_name: frontend.rococo.dc
-    image: arturakopov/rococo-client-docker:0.0.1
+    image: ${PREFIX}/rococo-client-${PROFILE}:latest
     build:
       context: ./rococo-client
       dockerfile: Dockerfile

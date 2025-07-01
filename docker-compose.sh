@@ -38,13 +38,8 @@ fi
 echo "### Запуск инфраструктуры (БД, Kafka) ###"
 docker-compose up -d rococo-all-db zookeeper kafka
 
-echo "### Ожидание готовности БД (30 секунд) ###"
+echo "### Ожидание готовности БД (10 секунд) ###"
 sleep 10
-
-echo "### Подготовка образов ###"
-for service in auth artist museum painting userdata gateway; do
-  docker tag ${PREFIX}/rococo-${service}-${PROFILE}:0.0.1 ${PREFIX}/rococo-${service}-${PROFILE}:latest
-done
 
 echo "### Проверка образов ###"
 for service in auth artist museum painting userdata gateway; do
