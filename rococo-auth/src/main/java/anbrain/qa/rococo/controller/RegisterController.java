@@ -43,7 +43,7 @@ public class RegisterController {
     @GetMapping("/register")
     public String getRegisterPage(@Nonnull Model model) {
         model.addAttribute(MODEL_REG_FORM_ATTR, new RegistrationModel(null, null, null));
-        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/main");
+        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri);
         return REGISTRATION_VIEW_NAME;
     }
 
@@ -73,7 +73,7 @@ public class RegisterController {
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
-        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri + "/main");
+        model.addAttribute(MODEL_FRONT_URI_ATTR, rococoFrontUri);
         return REGISTRATION_VIEW_NAME;
     }
 

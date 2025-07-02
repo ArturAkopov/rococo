@@ -1,5 +1,6 @@
 import anbrain.qa.rococo.data.UserProfileEntity;
 import anbrain.qa.rococo.data.repository.UserProfileRepository;
+import anbrain.qa.rococo.model.UserJson;
 import anbrain.qa.rococo.service.UserdataDatabaseService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,7 +101,15 @@ class UserdataDatabaseServiceTests {
         when(userProfileRepository.findByUsername(testUsername)).thenReturn(Optional.empty());
         when(userProfileRepository.save(any())).thenReturn(testUser);
 
-        userdataDatabaseService.createUser(testUsername);
+        final UserJson userJson = new UserJson(
+                null,
+                testUsername,
+                null,
+                null
+                ,null
+        );
+
+        userdataDatabaseService.createUser(userJson);
 
         ArgumentCaptor<UserProfileEntity> captor = ArgumentCaptor.forClass(UserProfileEntity.class);
         verify(userProfileRepository).save(captor.capture());
@@ -113,7 +122,14 @@ class UserdataDatabaseServiceTests {
     void shouldNotCreateUserFromKafkaWhenAlreadyExists() {
         when(userProfileRepository.findByUsername(testUsername)).thenReturn(Optional.of(testUser));
 
-        userdataDatabaseService.createUser(testUsername);
+        final UserJson userJson = new UserJson(
+                null,
+                testUsername,
+                null,
+                null
+                ,null
+        );
+        userdataDatabaseService.createUser(userJson);
 
         verify(userProfileRepository, never()).save(any());
     }

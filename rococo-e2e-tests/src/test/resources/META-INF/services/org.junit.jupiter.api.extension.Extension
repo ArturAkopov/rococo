@@ -1,0 +1,3 @@
+anbrain.qa.rococo.jupiter.extension.CookiesExtension
+anbrain.qa.rococo.jupiter.extension.KafkaExtension
+anbrain.qa.rococo.jupiter.extension.TestMethodContextExtension
