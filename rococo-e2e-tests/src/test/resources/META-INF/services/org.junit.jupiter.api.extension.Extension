@@ -1,3 +1,5 @@
 anbrain.qa.rococo.jupiter.extension.CookiesExtension
 anbrain.qa.rococo.jupiter.extension.KafkaExtension
 anbrain.qa.rococo.jupiter.extension.TestMethodContextExtension
+anbrain.qa.rococo.jupiter.extension.AllureBackendLogsExtension
+anbrain.qa.rococo.jupiter.extension.AllureFilterExtension

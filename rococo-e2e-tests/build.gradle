@@ -8,15 +8,26 @@ buildscript {
         lombokVersion = '1.18.30'
         fakerVersion = '1.0.2'
         kafkaClientsVersion = '3.8.0'
+        allureVersion = '2.29.0'
     }
 }
 
 plugins {
     id 'java'
+    id 'io.qameta.allure' version '2.12.0'
+    id 'io.qameta.allure-adapter' version '2.12.0'
 }
 
 group = 'anbrain.qa.rococo'
 version = '1.0.0'
+
+allure {
+    version.set("${allureVersion}")
+    adapter {
+        aspectjVersion.set("1.9.22")
+        aspectjWeaver.set(true)
+    }
+}
 
 repositories {
     mavenCentral()
@@ -43,6 +54,14 @@ dependencies {
     testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
     // Kafka
     testImplementation "org.apache.kafka:kafka-clients:${kafkaClientsVersion}"
+    // Allure
+    testImplementation "io.qameta.allure:allure-rest-assured:${allureVersion}"
+    testImplementation("io.qameta.allure:allure-junit5:${allureVersion}") {
+        exclude group: "org.junit.jupiter"
+    }
+    testImplementation("io.qameta.allure:allure-selenide:${allureVersion}") {
+        exclude group: 'com.codeborne'
+    }
     // gRPC
     testImplementation "io.grpc:grpc-protobuf:${project.ext.grpcVersion}"
     testImplementation "io.grpc:grpc-stub:${project.ext.grpcVersion}"

@@ -4,6 +4,7 @@ import anbrain.qa.rococo.api.core.ThreadSafeCookieStore;
 import anbrain.qa.rococo.config.Config;
 import anbrain.qa.rococo.jupiter.extension.ApiLoginExtension;
 import anbrain.qa.rococo.utils.OAuthUtils;
+import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -25,6 +26,7 @@ public class AuthRestClient {
                 .log().all();
     }
 
+    @Step("Авторизация пользователя по API - username: {username}, password: {password}")
     @SneakyThrows
     public String login(String username, String password) {
 
@@ -69,10 +71,7 @@ public class AuthRestClient {
         return tokenResponse.jsonPath().getString("id_token");
     }
 
-    public void requestRegisterForm() {
-        requestSpec.get("/register");
-    }
-
+    @Step("Регистрация пользователя по API - username: {username}, password: {password}")
     public void register(String username, String password, String passwordSubmit) {
         Response registerPage = requestSpec.get("/register");
         String xsrfToken = getXsrfTokenFromResponse(registerPage);
