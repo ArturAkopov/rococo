@@ -9,7 +9,7 @@ enum DockerConfig implements Config {
     @NonNull
     @Override
     public String frontUrl() {
-        return "http://frontend.rococo.dc:3000/";
+        return "http://frontend.rococo.dc/";
     }
 
     @NonNull

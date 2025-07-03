@@ -164,7 +164,7 @@ services:
         VERSION: 0.0.1
     pull_policy: always
     ports:
-      - 3000:80
+      - 80:80
     restart: always
     networks:
       - rococo-network
