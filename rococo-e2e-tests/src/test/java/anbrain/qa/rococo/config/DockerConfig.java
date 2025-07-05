@@ -26,6 +26,18 @@ enum DockerConfig implements Config {
 
     @NonNull
     @Override
+    public String artistGrpcAddress() {
+        return "artist.rococo.dc";
+    }
+
+    @NonNull
+    @Override
+    public String museumGrpcAddress() {
+        return "museum.rococo.dc";
+    }
+
+    @NonNull
+    @Override
     public String kafkaAddress() {
         return "kafka:9092";
     }

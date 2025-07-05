@@ -18,6 +18,10 @@ public interface Config {
 
     String userdataGrpcAddress();
 
+    String artistGrpcAddress();
+
+    String museumGrpcAddress();
+
     String kafkaAddress();
 
     default List<String> kafkaTopics() {
@@ -26,6 +30,14 @@ public interface Config {
 
     default int userdataGrpcPort() {
         return 9090;
+    }
+
+    default int artistGrpcPort() {
+        return 9091;
+    }
+
+    default int museumGrpcPort() {
+        return 9093;
     }
 
 }

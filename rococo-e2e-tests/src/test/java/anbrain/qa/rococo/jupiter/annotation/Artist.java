@@ -8,12 +8,10 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface User {
+public @interface Artist {
 
-    String username() default "";
+    String name() default "";
 
-    String firstName() default "";
-
-    String lastName() default "";
+    String biography() default "";
 
 }

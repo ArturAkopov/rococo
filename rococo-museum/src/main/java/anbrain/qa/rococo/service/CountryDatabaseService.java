@@ -21,4 +21,9 @@ public class CountryDatabaseService {
         return countryRepository.findAll(pageable);
     }
 
+    public Page<CountryEntity> findByNameContainingIgnoreCase(@Nonnull String name, @Nonnull PageRequest pageable) {
+        log.debug("Поиск стран по имени. Имя: {}, Страница: {}, Размер: {}",
+                name, pageable.getPageNumber(), pageable.getPageSize());
+        return countryRepository.findByNameIgnoreCase(name, pageable);
+    }
 }

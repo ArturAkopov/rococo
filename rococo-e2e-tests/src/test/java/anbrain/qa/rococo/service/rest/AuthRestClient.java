@@ -29,8 +29,7 @@ public class AuthRestClient {
     @Step("Авторизация пользователя по API - username: {username}, password: {password}")
     @SneakyThrows
     public String login(String username, String password) {
-
-        Response loginPage = requestSpec.get("/login");
+        Response loginPage = getLoginPage();
         String xsrfToken = getXsrfTokenFromResponse(loginPage);
 
         final String codeVerifier = OAuthUtils.generateCodeVerifier();
@@ -38,17 +37,34 @@ public class AuthRestClient {
         final String redirectUri = CFG.frontUrl() + "authorized";
         final String client_id = "client";
 
+        executeOAuth2Authorization(codeChallenge, redirectUri, client_id);
+        submitLoginCredentials(username, password, xsrfToken);
+
+        return obtainAuthToken(client_id, redirectUri, codeVerifier);
+    }
+
+    @Step("Получение страницы логина")
+    private Response getLoginPage() {
+        return requestSpec.get("/login");
+    }
+
+    @Step("Выполнение OAuth2 авторизации")
+    private void executeOAuth2Authorization(String codeChallenge,
+                                            String redirectUri, String clientId) {
         requestSpec
                 .queryParams(Map.of(
                         "response_type", "code",
-                        "client_id", client_id,
+                        "client_id", clientId,
                         "scope", "openid",
                         "redirect_uri", redirectUri,
                         "code_challenge", codeChallenge,
                         "code_challenge_method", "S256"
                 ))
                 .get("/oauth2/authorize");
+    }
 
+    @Step("Отправка учетных данных для входа")
+    private void submitLoginCredentials(String username, String password, String xsrfToken) {
         requestSpec
                 .cookie("XSRF-TOKEN", xsrfToken)
                 .formParams(Map.of(
@@ -57,10 +73,13 @@ public class AuthRestClient {
                         "_csrf", xsrfToken
                 ))
                 .post("/login");
+    }
 
+    @Step("Получение токена авторизации")
+    private String obtainAuthToken(String clientId, String redirectUri, String codeVerifier) {
         Response tokenResponse = requestSpec
                 .formParams(Map.of(
-                        "client_id", client_id,
+                        "client_id", clientId,
                         "redirect_uri", redirectUri,
                         "grant_type", "authorization_code",
                         "code", ApiLoginExtension.getCode(),
@@ -73,9 +92,19 @@ public class AuthRestClient {
 
     @Step("Регистрация пользователя по API - username: {username}, password: {password}")
     public void register(String username, String password, String passwordSubmit) {
-        Response registerPage = requestSpec.get("/register");
+        Response registerPage = getRegisterPage();
         String xsrfToken = getXsrfTokenFromResponse(registerPage);
+        submitRegistrationData(username, password, passwordSubmit, xsrfToken);
+    }
 
+    @Step("Получение страницы регистрации")
+    private Response getRegisterPage() {
+        return requestSpec.get("/register");
+    }
+
+    @Step("Отправка формы регистрации")
+    private void submitRegistrationData(String username, String password,
+                                        String passwordSubmit, String xsrfToken) {
         requestSpec
                 .cookie("XSRF-TOKEN", xsrfToken)
                 .formParams(Map.of(

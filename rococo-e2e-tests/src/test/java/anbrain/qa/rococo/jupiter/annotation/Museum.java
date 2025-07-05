@@ -8,12 +8,14 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface User {
+public @interface Museum {
 
-    String username() default "";
+    String title() default "";
 
-    String firstName() default "";
+    String description() default "";
 
-    String lastName() default "";
+    String city() default "";
+
+    String country() default "";
 
 }

@@ -18,6 +18,22 @@ public class RandomDataUtils {
         return faker.name().username();
     }
 
+    public static String randomArtistName() {
+        return faker.artist().name();
+    }
+
+    public static String randomMuseumTitle() {
+        return faker.gameOfThrones().house();
+    }
+
+    public static String randomCity() {
+        return faker.gameOfThrones().city();
+    }
+
+    public static String randomString() {
+        return faker.random().hex(50);
+    }
+
     public static String randomFirstName() {
         return faker.name().firstName();
     }

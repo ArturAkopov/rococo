@@ -5,9 +5,9 @@ import anbrain.qa.rococo.service.grpc.UserdataGrpcClient;
 import anbrain.qa.rococo.service.kafka.KafkaService;
 import anbrain.qa.rococo.service.rest.AuthRestClient;
 import anbrain.qa.rococo.utils.RandomDataUtils;
-import io.qameta.allure.junit4.DisplayName;
 import io.qameta.allure.junit5.AllureJunit5;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

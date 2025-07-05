@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.NonNull;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public record UserJson(
@@ -20,14 +21,14 @@ public record UserJson(
         String avatar
 ) {
     @NonNull
-    public static UserJson fromGrpcResponse(@NonNull UserResponse response) {
+    public static UserJson fromGrpcResponse(@Nullable UserResponse response) {
 
         return new UserJson(
-                UUID.fromString(response.getId()),
-                response.getUsername(),
-                response.getFirstname(),
-                response.getLastname(),
-                response.getAvatar()
+                response != null ? UUID.fromString(response.getId()) : UUID.randomUUID(),
+                response != null ? response.getUsername() : "",
+                response != null ? response.getFirstname() : "",
+                response != null ? response.getLastname() : "",
+                response != null ? response.getAvatar() : ""
         );
     }
 }

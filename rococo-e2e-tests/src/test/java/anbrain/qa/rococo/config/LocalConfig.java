@@ -25,6 +25,18 @@ enum LocalConfig implements Config {
 
     @NonNull
     @Override
+    public String artistGrpcAddress() {
+        return "127.0.0.1";
+    }
+
+    @NonNull
+    @Override
+    public String museumGrpcAddress() {
+        return "127.0.0.1";
+    }
+
+    @NonNull
+    @Override
     public String kafkaAddress() {
         return "127.0.0.1:9092";
     }

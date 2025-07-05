@@ -33,7 +33,7 @@ public class UserExtension implements BeforeEachCallback,
                         try {
                             KafkaService.getUserJson(username);
                         } catch (InterruptedException e) {
-                            throw new RuntimeException("UserExtension - ошибка чтения пользователя из Kafka: ",e);
+                            throw new RuntimeException("UserExtension - ошибка чтения пользователя из Kafka: ", e);
                         }
 
                         UserJson user = userdataGrpcClient.getUser(username);
@@ -45,7 +45,7 @@ public class UserExtension implements BeforeEachCallback,
                                 user.username(),
                                 userAnno.firstName().isEmpty() ? RandomDataUtils.randomFirstName() : userAnno.firstName(),
                                 userAnno.lastName().isEmpty() ? RandomDataUtils.randomLastName() : userAnno.lastName(),
-                                userAnno.avatar().isEmpty() ? RandomDataUtils.avatar() : userAnno.avatar()
+                                RandomDataUtils.avatar()
                         ));
 
                         setUser(updateUser);
