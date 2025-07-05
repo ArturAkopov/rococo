@@ -4,7 +4,7 @@ import anbrain.qa.rococo.utils.AllureHttpFilter;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
-public class AllureFilterExtension implements SuiteExtension {
+public class AllureHttpFilterExtension implements SuiteExtension {
 
     @Override
     public void beforeSuite(ExtensionContext context) {
