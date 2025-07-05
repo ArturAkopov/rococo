@@ -47,7 +47,7 @@ public class ArtistGrpcClient {
             return null;
         }
 
-        return ArtistJson.fromGrpcResponse(response.getArtists(0));
+        return ArtistJson.fromGrpcResponse(response.getArtistsList().getFirst());
     }
 
 }

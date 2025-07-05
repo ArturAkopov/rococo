@@ -10,7 +10,6 @@ import io.grpc.Channel;
 import io.grpc.ManagedChannelBuilder;
 import io.qameta.allure.Step;
 import lombok.NonNull;
-import org.junit.jupiter.api.Assertions;
 
 import java.util.Random;
 import java.util.UUID;
@@ -43,7 +42,7 @@ public class MuseumGrpcClient {
         if (response.getMuseumsList().isEmpty()) {
             return null;
         }
-        return MuseumJson.fromGrpcResponse(response.getMuseums(0));
+        return MuseumJson.fromGrpcResponse(response.getMuseumsList().getFirst());
     }
 
     @Step("Создание нового музея с названием - {museumJson.title} по grpc")

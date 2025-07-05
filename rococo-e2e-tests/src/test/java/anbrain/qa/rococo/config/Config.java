@@ -22,6 +22,8 @@ public interface Config {
 
     String museumGrpcAddress();
 
+    String paintingGrpcAddress();
+
     String kafkaAddress();
 
     default List<String> kafkaTopics() {
@@ -38,6 +40,10 @@ public interface Config {
 
     default int museumGrpcPort() {
         return 9093;
+    }
+
+    default int paintingGrpcPort() {
+        return 9094;
     }
 
 }

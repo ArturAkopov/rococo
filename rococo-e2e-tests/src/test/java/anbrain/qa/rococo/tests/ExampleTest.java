@@ -1,34 +1,38 @@
 package anbrain.qa.rococo.tests;
 
-import anbrain.qa.rococo.jupiter.annotation.User;
-import anbrain.qa.rococo.jupiter.extension.TestMethodContextExtension;
-import anbrain.qa.rococo.jupiter.extension.UserExtension;
-import anbrain.qa.rococo.model.rest.UserJson;
-import anbrain.qa.rococo.service.grpc.UserdataGrpcClient;
-import anbrain.qa.rococo.utils.RandomDataUtils;
+import anbrain.qa.rococo.jupiter.annotation.Artist;
+import anbrain.qa.rococo.jupiter.annotation.Museum;
+import anbrain.qa.rococo.jupiter.annotation.Painting;
+import anbrain.qa.rococo.jupiter.extension.*;
+import anbrain.qa.rococo.model.rest.PaintingJson;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(TestMethodContextExtension.class)
 @ExtendWith(UserExtension.class)
+@ExtendWith(ArtistExtension.class)
+@ExtendWith(MuseumExtension.class)
+@ExtendWith(PaintingExtension.class)
 public class ExampleTest {
 
+    @Artist
+    @Museum
+    @Painting
     @Test
-    void getGrpcUser(){
-        UserdataGrpcClient userdataGrpcClient = new UserdataGrpcClient();
-        UserJson userJson = userdataGrpcClient.getUser("testuser");
-        System.out.println(userJson);
+    void getGrpcUser(PaintingJson museumJson) {
+        System.out.println(museumJson);
     }
 
-    @Test
-    void fakerAvatar(){
-                System.out.println(RandomDataUtils.avatar());
-    }
 
-    @User
+    @Artist
+    @Museum
+    @Painting(
+            title = "TEST PAINTING",
+            description = "TEST DESCRIPTION"
+    )
     @Test
-    void userTest(UserJson userJson){
-        System.out.println(userJson);
+    void fakerAvatar(PaintingJson museumJson) {
+        System.out.println(museumJson);
     }
 
 }

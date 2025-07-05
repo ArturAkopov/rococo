@@ -37,6 +37,12 @@ enum LocalConfig implements Config {
 
     @NonNull
     @Override
+    public String paintingGrpcAddress() {
+        return "127.0.0.1";
+    }
+
+    @NonNull
+    @Override
     public String kafkaAddress() {
         return "127.0.0.1:9092";
     }

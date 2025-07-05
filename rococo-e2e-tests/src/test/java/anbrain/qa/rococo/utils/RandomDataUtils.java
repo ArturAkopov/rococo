@@ -26,6 +26,10 @@ public class RandomDataUtils {
         return faker.gameOfThrones().house();
     }
 
+    public static String randomPaintingTitle() {
+        return faker.gameOfThrones().character();
+    }
+
     public static String randomCity() {
         return faker.gameOfThrones().city();
     }

@@ -38,7 +38,21 @@ public class UserExtension implements BeforeEachCallback,
 
                         UserJson user = userdataGrpcClient.getUser(username);
                         if (user == null) {
-                            Assertions.fail("UserExtension - Пользователь не найден сервисом Userdata");
+                            for (int i = 0; i < 2; i++) {
+                                try {
+                                    Thread.sleep(1000);
+                                    user = userdataGrpcClient.getUser(username);
+                                    if (user != null) {
+                                        break;
+                                    }
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
+                                    Assertions.fail("UserExtension - Прервано ожидание перед повторной попыткой");
+                                }
+                            }
+                        }
+                        if (user == null) {
+                            Assertions.fail("UserExtension - Пользователь не найден сервисом Userdata после 3 попыток");
                         }
                         UserJson updateUser = userdataGrpcClient.updateUser(new UserJson(
                                 user.id(),
