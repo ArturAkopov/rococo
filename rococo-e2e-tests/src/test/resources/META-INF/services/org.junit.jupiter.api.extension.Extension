@@ -3,3 +3,4 @@ anbrain.qa.rococo.jupiter.extension.KafkaExtension
 anbrain.qa.rococo.jupiter.extension.TestMethodContextExtension
 anbrain.qa.rococo.jupiter.extension.AllureBackendLogsExtension
 anbrain.qa.rococo.jupiter.extension.AllureHttpFilterExtension
+anbrain.qa.rococo.jupiter.extension.AllureResultsDockerExtension

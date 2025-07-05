@@ -2,6 +2,8 @@ package anbrain.qa.rococo.config;
 
 import lombok.NonNull;
 
+import java.util.Objects;
+
 
 enum DockerConfig implements Config {
     INSTANCE;
@@ -46,6 +48,12 @@ enum DockerConfig implements Config {
     @Override
     public String kafkaAddress() {
         return "kafka:9092";
+    }
+
+    @Override
+    public String allureDockerServiceUrl() {
+        String allureDockerApiUrl = System.getenv("ALLURE_DOCKER_API");
+        return Objects.requireNonNullElse(allureDockerApiUrl, "http://allure:5050/");
     }
 
 }
