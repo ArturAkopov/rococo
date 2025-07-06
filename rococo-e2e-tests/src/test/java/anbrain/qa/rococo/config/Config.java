@@ -16,6 +16,8 @@ public interface Config {
 
     String authUrl();
 
+    String gatewayUrl();
+
     String userdataGrpcAddress();
 
     String artistGrpcAddress();

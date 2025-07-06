@@ -8,6 +8,9 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,15 +35,23 @@ public class GlobalExceptionHandler {
         if (ex instanceof RuntimeException runtimeEx &&
             runtimeEx.getMessage().contains("UNIMPLEMENTED")) {
             return buildErrorResponse(servletRequest, HttpStatus.BAD_REQUEST, ex.getMessage());
-        }
-        else if (ex instanceof RuntimeException
-                 && !(ex instanceof IllegalArgumentException)
-                 && !(ex instanceof RococoBadRequestException)
-                 && !(ex instanceof ConstraintViolationException)) {
+        } else if (ex instanceof RuntimeException
+                   && !(ex instanceof IllegalArgumentException)
+                   && !(ex instanceof RococoBadRequestException)
+                   && !(ex instanceof ConstraintViolationException)) {
             return handleInternalError(ex, servletRequest);
         }
 
         return buildErrorResponse(servletRequest, HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler({AuthenticationException.class,
+            InsufficientAuthenticationException.class,
+            MissingCsrfTokenException.class,
+    })
+    public ResponseEntity<?> handleAuthenticationException(AuthenticationException ex, @Nonnull HttpServletRequest servletRequest) {
+        log.error(servletRequest.getRequestURI(), ex);
+        return buildErrorResponse(servletRequest, HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @ExceptionHandler(RococoNotFoundException.class)

@@ -19,7 +19,7 @@ public class RandomDataUtils {
     }
 
     public static String randomArtistName() {
-        return faker.artist().name();
+        return faker.artist().name()+faker.artist().name()+faker.artist().name();
     }
 
     public static String randomMuseumTitle() {

@@ -22,6 +22,12 @@ enum DockerConfig implements Config {
 
     @NonNull
     @Override
+    public String gatewayUrl() {
+        return "http://gateway.rococo.dc:8080/";
+    }
+
+    @NonNull
+    @Override
     public String userdataGrpcAddress() {
         return "userdata.rococo.dc";
     }

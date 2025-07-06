@@ -1,5 +1,6 @@
 package anbrain.qa.rococo.tests.rest;
 
+import anbrain.qa.rococo.jupiter.annotation.meta.RestTest;
 import anbrain.qa.rococo.service.rest.AuthRestClient;
 import anbrain.qa.rococo.utils.RandomDataUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@RestTest
 @DisplayName("Проверки авторизации и регистрации")
 public class AuthTests {
 
@@ -93,6 +95,5 @@ public class AuthTests {
         assertThrows(AssertionError.class, () -> authClient.login(username, password),
                 "При авторизации несуществующего пользователя должно быть исключение");
     }
-
 
 }

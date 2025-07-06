@@ -21,6 +21,12 @@ enum LocalConfig implements Config {
 
     @NonNull
     @Override
+    public String gatewayUrl() {
+        return "http://127.0.0.1:8080/";
+    }
+
+    @NonNull
+    @Override
     public String userdataGrpcAddress() {
         return "127.0.0.1";
     }

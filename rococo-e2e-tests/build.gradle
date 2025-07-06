@@ -9,6 +9,7 @@ buildscript {
         fakerVersion = '1.0.2'
         kafkaClientsVersion = '3.8.0'
         allureVersion = '2.29.0'
+        springVersion = '3.2.0'
     }
 }
 
@@ -62,6 +63,8 @@ dependencies {
     testImplementation("io.qameta.allure:allure-selenide:${allureVersion}") {
         exclude group: 'com.codeborne'
     }
+    //Spring
+    testImplementation "org.springframework.data:spring-data-commons:${springVersion}"
     // gRPC
     testImplementation "io.grpc:grpc-protobuf:${project.ext.grpcVersion}"
     testImplementation "io.grpc:grpc-stub:${project.ext.grpcVersion}"

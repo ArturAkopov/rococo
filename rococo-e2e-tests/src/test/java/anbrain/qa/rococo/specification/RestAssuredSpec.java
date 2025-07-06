@@ -28,12 +28,12 @@ public class RestAssuredSpec {
     public static final RequestSpecification authRequestSpec =
             forService(CFG.authUrl(), URLENC, HTML);
 
+    public static final RequestSpecification gatewayRequestSpec =
+            forService(CFG.gatewayUrl(), JSON, JSON);
 
-
-    public static RequestSpecification requestJsonSpec = with()
-            .contentType(JSON)
-            .accept(JSON)
-            .log().all();
+    public static ResponseSpecification responseSpec = new ResponseSpecBuilder()
+            .log(LogDetail.ALL)
+            .build();
 
     public static ResponseSpecification response200 = new ResponseSpecBuilder()
             .expectStatusCode(200)
