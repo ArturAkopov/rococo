@@ -2,90 +2,113 @@ package anbrain.qa.rococo.service.rest;
 
 import anbrain.qa.rococo.api.core.ThreadSafeCookieStore;
 import anbrain.qa.rococo.config.Config;
-import anbrain.qa.rococo.jupiter.extension.ApiLoginExtension;
+import anbrain.qa.rococo.specification.RestAssuredSpec;
 import anbrain.qa.rococo.utils.OAuthUtils;
 import io.qameta.allure.Step;
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 import lombok.NonNull;
 import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
+
+import static io.restassured.RestAssured.given;
 
 public class AuthRestClient {
 
     private static final Config CFG = Config.getInstance();
-    private final RequestSpecification requestSpec;
-
-    public AuthRestClient() {
-        this.requestSpec = RestAssured.given()
-                .baseUri(CFG.authUrl())
-                .contentType(ContentType.URLENC)
-                .log().all();
-    }
+    private static final String CLIENT_ID = "client";
+    private static final String OAUTH2_AUTHORIZE_PATH = "/oauth2/authorize";
+    private static final String OAUTH2_TOKEN_PATH = "/oauth2/token";
+    private static final String LOGIN_PATH = "/login";
+    private static final String REGISTER_PATH = "/register";
 
     @Step("Авторизация пользователя по API - username: {username}, password: {password}")
     @SneakyThrows
     public String login(String username, String password) {
-        Response loginPage = getLoginPage();
-        String xsrfToken = getXsrfTokenFromResponse(loginPage);
+        String codeVerifier = OAuthUtils.generateCodeVerifier();
+        String codeChallenge = OAuthUtils.generateCodeChallenge(codeVerifier);
+        String redirectUri = CFG.frontUrl() + "authorized";
 
-        final String codeVerifier = OAuthUtils.generateCodeVerifier();
-        final String codeChallenge = OAuthUtils.generateCodeChallenge(codeVerifier);
-        final String redirectUri = CFG.frontUrl() + "authorized";
-        final String client_id = "client";
+        Response authResponse = executeOAuth2Authorization(codeChallenge, redirectUri);
+        Response loginPage = getLoginPage(authResponse);
+        Response loginSubmitResponse = submitLoginForm(username, password, loginPage);
+        Response finalAuthResponse = executeOAuth2Authorization(codeChallenge, redirectUri, loginSubmitResponse.getCookies());
 
-        executeOAuth2Authorization(codeChallenge, redirectUri, client_id);
-        submitLoginCredentials(username, password, xsrfToken);
+        String location = finalAuthResponse.getHeader("Location");
+        String code = StringUtils.substringAfter(location, "code=");
 
-        return obtainAuthToken(client_id, redirectUri, codeVerifier);
+        return obtainAuthToken(redirectUri, codeVerifier, code);
     }
 
     @Step("Получение страницы логина")
-    private Response getLoginPage() {
-        return requestSpec.get("/login");
+    private Response getLoginPage(@NonNull Response authResponse) {
+        return given(RestAssuredSpec.authRequestSpec)
+                .cookies(authResponse.getCookies())
+                .get(LOGIN_PATH)
+                .then()
+                .spec(RestAssuredSpec.response200)
+                .extract()
+                .response();
     }
 
     @Step("Выполнение OAuth2 авторизации")
-    private void executeOAuth2Authorization(String codeChallenge,
-                                            String redirectUri, String clientId) {
-        requestSpec
+    private Response executeOAuth2Authorization(String codeChallenge, String redirectUri) {
+        return executeOAuth2Authorization(codeChallenge, redirectUri, null);
+    }
+
+    @Step("Выполнение OAuth2 авторизации с cookies")
+    private Response executeOAuth2Authorization(String codeChallenge, String redirectUri, Map<String, String> cookies) {
+        return given(RestAssuredSpec.authRequestSpec)
+                .cookies(cookies != null ? cookies : Map.of())
                 .queryParams(Map.of(
                         "response_type", "code",
-                        "client_id", clientId,
+                        "client_id", CLIENT_ID,
                         "scope", "openid",
                         "redirect_uri", redirectUri,
                         "code_challenge", codeChallenge,
                         "code_challenge_method", "S256"
                 ))
-                .get("/oauth2/authorize");
+                .redirects().follow(false)
+                .get(OAUTH2_AUTHORIZE_PATH)
+                .then()
+                .spec(RestAssuredSpec.response302)
+                .extract()
+                .response();
     }
 
-    @Step("Отправка учетных данных для входа")
-    private void submitLoginCredentials(String username, String password, String xsrfToken) {
-        requestSpec
-                .cookie("XSRF-TOKEN", xsrfToken)
+    @Step("Отправка формы логина")
+    private Response submitLoginForm(String username, String password, @NonNull Response loginPage) {
+        return given(RestAssuredSpec.authRequestSpec)
+                .cookies(loginPage.getCookies())
                 .formParams(Map.of(
                         "username", username,
                         "password", password,
-                        "_csrf", xsrfToken
+                        "_csrf", getXsrfToken(loginPage)
                 ))
-                .post("/login");
+                .redirects().follow(false)
+                .post(LOGIN_PATH)
+                .then()
+                .spec(RestAssuredSpec.response302)
+                .extract()
+                .response();
     }
 
     @Step("Получение токена авторизации")
-    private String obtainAuthToken(String clientId, String redirectUri, String codeVerifier) {
-        Response tokenResponse = requestSpec
-                .formParams(Map.of(
-                        "client_id", clientId,
+    private String obtainAuthToken(String redirectUri, String codeVerifier, String code) {
+        Response tokenResponse = given(RestAssuredSpec.authRequestSpec)
+                .formParams(
+                        "client_id", CLIENT_ID,
                         "redirect_uri", redirectUri,
                         "grant_type", "authorization_code",
-                        "code", ApiLoginExtension.getCode(),
+                        "code", code,
                         "code_verifier", codeVerifier
-                ))
-                .post("/oauth2/token");
+                )
+                .post(OAUTH2_TOKEN_PATH)
+                .then()
+                .spec(RestAssuredSpec.response200)
+                .extract()
+                .response();
 
         return tokenResponse.jsonPath().getString("id_token");
     }
@@ -93,37 +116,43 @@ public class AuthRestClient {
     @Step("Регистрация пользователя по API - username: {username}, password: {password}")
     public void register(String username, String password, String passwordSubmit) {
         Response registerPage = getRegisterPage();
-        String xsrfToken = getXsrfTokenFromResponse(registerPage);
-        submitRegistrationData(username, password, passwordSubmit, xsrfToken);
+        submitRegistrationData(username, password, passwordSubmit, registerPage);
     }
 
     @Step("Получение страницы регистрации")
     private Response getRegisterPage() {
-        return requestSpec.get("/register");
+        return given(RestAssuredSpec.authRequestSpec)
+                .get(REGISTER_PATH)
+                .then()
+                .spec(RestAssuredSpec.response200)
+                .extract()
+                .response();
     }
 
     @Step("Отправка формы регистрации")
     private void submitRegistrationData(String username, String password,
-                                        String passwordSubmit, String xsrfToken) {
-        requestSpec
-                .cookie("XSRF-TOKEN", xsrfToken)
+                                        String passwordSubmit, @NonNull Response registerPage) {
+        given(RestAssuredSpec.authRequestSpec)
+                .cookies(registerPage.getCookies())
                 .formParams(Map.of(
                         "username", username,
                         "password", password,
                         "passwordSubmit", passwordSubmit,
-                        "_csrf", xsrfToken
+                        "_csrf", getXsrfToken(registerPage)
                 ))
-                .post("/register");
+                .post(REGISTER_PATH)
+                .then()
+                .spec(RestAssuredSpec.response201);
     }
 
-    private String getXsrfTokenFromResponse(@NonNull Response response) {
+    private String getXsrfToken(@NonNull Response response) {
         String xsrfToken = response.getCookie("XSRF-TOKEN");
 
-        if (xsrfToken == null || xsrfToken.isEmpty()) {
+        if (StringUtils.isBlank(xsrfToken)) {
             try {
                 xsrfToken = ThreadSafeCookieStore.INSTANCE.cookieValue("XSRF-TOKEN");
             } catch (Exception e) {
-                throw new IllegalStateException("XSRF-TOKEN не найден в хранилище и в cookie");
+                throw new IllegalStateException("XSRF-TOKEN не найден в cookies или хранилище");
             }
         }
 

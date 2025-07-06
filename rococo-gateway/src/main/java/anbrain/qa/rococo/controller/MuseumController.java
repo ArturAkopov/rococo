@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,7 +103,14 @@ public class MuseumController {
     @PostMapping
     public ResponseEntity<MuseumJson> createMuseum(
             @Parameter(description = "Данные музея", required = true)
-            @Valid @RequestBody MuseumJson museum) {
+            @Valid @RequestBody MuseumJson museum,
+            @Parameter(
+                    description = "Токен аутентификации (автоматически подставляется из заголовка Authorization)",
+                    required = true,
+                    hidden = true
+            )
+            @Nonnull
+            @AuthenticationPrincipal Jwt principal) {
         MuseumJson createdMuseum = museumGrpcClient.createMuseum(museum);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdMuseum);
     }
@@ -117,7 +127,14 @@ public class MuseumController {
     @PutMapping
     public ResponseEntity<MuseumJson> updateMuseum(
             @Parameter(description = "Обновленные данные музея", required = true)
-            @Valid @RequestBody MuseumJson museum) {
+            @Valid @RequestBody MuseumJson museum,
+            @Parameter(
+                    description = "Токен аутентификации (автоматически подставляется из заголовка Authorization)",
+                    required = true,
+                    hidden = true
+            )
+            @Nonnull
+            @AuthenticationPrincipal Jwt principal) {
         MuseumJson updatedMuseum = museumGrpcClient.updateMuseum(museum);
         return ResponseEntity.ok(updatedMuseum);
     }

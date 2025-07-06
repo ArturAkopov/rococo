@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,7 +106,14 @@ public class ArtistController {
     @PostMapping
     public ResponseEntity<ArtistJson> createArtist(
             @Parameter(description = "Данные художника", required = true)
-            @Valid @RequestBody ArtistJson artist) {
+            @Valid @RequestBody ArtistJson artist,
+            @Parameter(
+                    description = "Токен аутентификации (автоматически подставляется из заголовка Authorization)",
+                    required = true,
+                    hidden = true
+            )
+            @Nonnull
+            @AuthenticationPrincipal Jwt principal) {
         ArtistJson createdArtist = artistGrpcClient.createArtist(artist);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdArtist);
     }
@@ -120,7 +130,14 @@ public class ArtistController {
     @PutMapping
     public ResponseEntity<ArtistJson> updateArtist(
             @Parameter(description = "Обновленные данные художника", required = true)
-            @Valid @RequestBody ArtistJson artist) {
+            @Valid @RequestBody ArtistJson artist,
+            @Parameter(
+                    description = "Токен аутентификации (автоматически подставляется из заголовка Authorization)",
+                    required = true,
+                    hidden = true
+            )
+            @Nonnull
+            @AuthenticationPrincipal Jwt principal) {
         ArtistJson updatedArtist = artistGrpcClient.updateArtist(artist);
         return ResponseEntity.ok(updatedArtist);
     }
