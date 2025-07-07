@@ -15,6 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -88,7 +89,8 @@ public class MuseumController {
             @NotBlank @Parameter(description = "Название музея для поиска", required = true)
             @RequestParam String title,
             @Parameter(description = "Параметры пагинации") Pageable pageable) {
-        return ResponseEntity.ok(new RestPage<>(museumGrpcClient.searchMuseumsByTitle(title)));
+        Page<MuseumJson> museums = new RestPage<>(museumGrpcClient.searchMuseumsByTitle(title));
+        return ResponseEntity.ok(new RestPage<>(museums.getContent(),pageable, museums.getTotalElements()));
     }
 
     @Operation(summary = "Добавить новый музей",

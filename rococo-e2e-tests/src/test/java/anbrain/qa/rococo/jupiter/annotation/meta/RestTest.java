@@ -1,6 +1,7 @@
 package anbrain.qa.rococo.jupiter.annotation.meta;
 
 import anbrain.qa.rococo.jupiter.extension.ArtistExtension;
+import anbrain.qa.rococo.jupiter.extension.MuseumExtension;
 import anbrain.qa.rococo.jupiter.extension.TestMethodContextExtension;
 import anbrain.qa.rococo.jupiter.extension.UserExtension;
 import io.qameta.allure.junit5.AllureJunit5;
@@ -17,7 +18,8 @@ import java.lang.annotation.Target;
         TestMethodContextExtension.class,
         AllureJunit5.class,
         UserExtension.class,
-        ArtistExtension.class
+        ArtistExtension.class,
+        MuseumExtension.class
 })
 public @interface RestTest {
 }

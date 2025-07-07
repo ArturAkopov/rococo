@@ -49,14 +49,4 @@ public class RestAssuredSpec {
             .expectStatusCode(302)
             .log(LogDetail.ALL)
             .build();
-
-    public static ResponseSpecification response400 = new ResponseSpecBuilder()
-            .expectStatusCode(400)
-            .log(LogDetail.ALL)
-            .build();
-
-    public static ResponseSpecification response401 = new ResponseSpecBuilder()
-            .expectStatusCode(401)
-            .log(LogDetail.ALL)
-            .build();
 }
