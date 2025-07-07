@@ -44,6 +44,7 @@ logging:
     org.springframework.kafka: INFO
     org.springframework.web: INFO
     org.springframework.boot.autoconfigure: INFO
+    anbrain.qa.rococo.service: INFO
     net.devh.boot.grpc: INFO
 ---
 spring:

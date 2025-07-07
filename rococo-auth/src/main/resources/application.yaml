@@ -49,6 +49,8 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
     org.springframework.boot.autoconfigure: DEBUG
+    anbrain.qa.rococo.controller: INFO
+    anbrain.qa.rococo.service: INFO
 
 ---
 spring:
