@@ -1,6 +1,6 @@
 package anbrain.qa.rococo.tests.kafka;
 
-import anbrain.qa.rococo.jupiter.annotation.meta.RestTest;
+import anbrain.qa.rococo.jupiter.annotation.meta.KafkaTest;
 import anbrain.qa.rococo.model.rest.UserJson;
 import anbrain.qa.rococo.service.grpc.UserdataGrpcClient;
 import anbrain.qa.rococo.service.kafka.KafkaService;
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@RestTest
+@KafkaTest
 @DisplayName("Проверка работы интеграции с Kafka")
 public class KafkaTests {
     private final String username = RandomDataUtils.randomUsername();

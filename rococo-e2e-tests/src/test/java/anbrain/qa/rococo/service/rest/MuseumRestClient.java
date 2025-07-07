@@ -5,6 +5,7 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 
 import static anbrain.qa.rococo.specification.RestAssuredSpec.gatewayRequestSpec;
+import static anbrain.qa.rococo.specification.RestAssuredSpec.responseSpec;
 import static io.restassured.RestAssured.given;
 
 public class MuseumRestClient {
@@ -16,13 +17,17 @@ public class MuseumRestClient {
         return given(gatewayRequestSpec)
                 .queryParam("page", page)
                 .queryParam("size", size)
-                .get(API_MUSEUM);
+                .get(API_MUSEUM)
+                .then().spec(responseSpec)
+                .extract().response();
     }
 
     @Step("Получить музей по ID {id}")
     public Response getMuseumById(String id) {
         return given(gatewayRequestSpec)
-                .get(API_MUSEUM + "/{id}", id);
+                .get(API_MUSEUM + "/{id}", id)
+                .then().spec(responseSpec)
+                .extract().response();
     }
 
     @Step("Поиск музеев по названию '{title}'")
@@ -31,7 +36,9 @@ public class MuseumRestClient {
                 .queryParam("title", title)
                 .queryParam("page", page)
                 .queryParam("size", size)
-                .get(API_MUSEUM);
+                .get(API_MUSEUM)
+                .then().spec(responseSpec)
+                .extract().response();
     }
 
     @Step("Создать новый музей '{museum.title}'")
@@ -39,7 +46,9 @@ public class MuseumRestClient {
         return given(gatewayRequestSpec)
                 .header("Authorization",token)
                 .body(museum)
-                .post(API_MUSEUM);
+                .post(API_MUSEUM)
+                .then().spec(responseSpec)
+                .extract().response();
     }
 
     @Step("Обновить данные музея '{museum.title}'")
@@ -47,6 +56,8 @@ public class MuseumRestClient {
         return given(gatewayRequestSpec)
                 .header("Authorization",token)
                 .body(museum)
-                .put(API_MUSEUM);
+                .put(API_MUSEUM)
+                .then().spec(responseSpec)
+                .extract().response();
     }
 }

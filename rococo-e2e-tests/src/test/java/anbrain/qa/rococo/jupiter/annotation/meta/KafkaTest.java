@@ -1,6 +1,6 @@
 package anbrain.qa.rococo.jupiter.annotation.meta;
 
-import anbrain.qa.rococo.jupiter.extension.*;
+import anbrain.qa.rococo.jupiter.extension.TestMethodContextExtension;
 import io.qameta.allure.junit5.AllureJunit5;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -14,10 +14,6 @@ import java.lang.annotation.Target;
 @ExtendWith({
         TestMethodContextExtension.class,
         AllureJunit5.class,
-        UserExtension.class,
-        ArtistExtension.class,
-        MuseumExtension.class,
-        PaintingExtension.class
 })
-public @interface RestTest {
+public @interface KafkaTest {
 }
