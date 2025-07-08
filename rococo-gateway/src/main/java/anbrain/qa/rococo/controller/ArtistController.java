@@ -127,7 +127,7 @@ public class ArtistController {
                     @ApiResponse(responseCode = "404", description = "Художник не найден"),
                     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
             })
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<ArtistJson> updateArtist(
             @Parameter(description = "Обновленные данные художника", required = true)
             @Valid @RequestBody ArtistJson artist,

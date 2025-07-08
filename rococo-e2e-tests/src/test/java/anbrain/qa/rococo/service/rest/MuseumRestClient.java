@@ -56,7 +56,7 @@ public class MuseumRestClient {
         return given(gatewayRequestSpec)
                 .header("Authorization",token)
                 .body(museum)
-                .put(API_MUSEUM)
+                .patch(API_MUSEUM)
                 .then().spec(responseSpec)
                 .extract().response();
     }

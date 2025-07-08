@@ -70,7 +70,7 @@ public class ArtistRestClient {
         return given(gatewayRequestSpec)
                 .header("Authorization", token)
                 .body(artist)
-                .put(API_ARTIST_PATH)
+                .patch(API_ARTIST_PATH)
                 .then()
                 .spec(responseSpec)
                 .extract().response();

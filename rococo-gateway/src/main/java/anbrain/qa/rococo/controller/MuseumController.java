@@ -126,7 +126,7 @@ public class MuseumController {
                     @ApiResponse(responseCode = "404", description = "Музей не найден"),
                     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
             })
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<MuseumJson> updateMuseum(
             @Parameter(description = "Обновленные данные музея", required = true)
             @Valid @RequestBody MuseumJson museum,
