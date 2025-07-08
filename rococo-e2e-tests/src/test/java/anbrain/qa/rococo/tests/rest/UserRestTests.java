@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
 @DisplayName("Проверка работы с сервисом User")
-public class UserTests {
+public class UserRestTests {
 
     @RegisterExtension
     private static final ApiLoginExtension apiLoginExtension = ApiLoginExtension.api();

@@ -66,7 +66,7 @@ public class PaintingRestClient {
         return given(gatewayRequestSpec)
                 .header("Authorization", token)
                 .body(painting)
-                .put(API_PAINTING)
+                .patch(API_PAINTING)
                 .then().spec(responseSpec)
                 .extract().response();
     }

@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
 @DisplayName("Проверка работы с сервисом Country")
-public class CountryTests {
+public class CountryRestTests {
 
     @RegisterExtension
     ApiLoginExtension apiLoginExtension = ApiLoginExtension.api();

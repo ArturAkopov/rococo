@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
 @DisplayName("Проверка работы с сервисом Artist")
-public class ArtistTests {
+public class ArtistRestTests {
 
     @RegisterExtension
     private static final ApiLoginExtension apiLoginExtension = ApiLoginExtension.api();

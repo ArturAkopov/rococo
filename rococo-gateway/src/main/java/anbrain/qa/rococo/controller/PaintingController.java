@@ -144,7 +144,7 @@ public class PaintingController {
                     @ApiResponse(responseCode = "404", description = "Картина не найдена"),
                     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
             })
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<PaintingJson> updatePainting(
             @Parameter(description = "Обновленные данные картины", required = true)
             @Valid @RequestBody PaintingJson painting,

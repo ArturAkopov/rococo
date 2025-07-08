@@ -1,5 +1,6 @@
 package anbrain.qa.rococo.jupiter.extension;
 
+import anbrain.qa.rococo.page.MainPage;
 import anbrain.qa.rococo.service.grpc.UserdataGrpcClient;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
@@ -71,7 +72,7 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
                         WebDriverRunner.getWebDriver().manage().addCookie(
                                 getJsessionIdCookie()
                         );
-//                        Selenide.open(MainPage.MAIN_PAGE_URL, MainPage.class).checkThatPageLoaded();
+                        Selenide.open(MainPage.MAIN_PAGE_URL, MainPage.class).checkThatPageLoaded();
                     }
                 });
     }

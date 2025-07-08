@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
 @DisplayName("Проверки авторизации и регистрации")
-public class AuthTests {
+public class AuthRestTests {
 
     private final AuthRestClient authClient = new AuthRestClient();
     private final String defaultPassword = "12345";

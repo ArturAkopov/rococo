@@ -87,6 +87,7 @@ public class MuseumGrpcClient {
     }
 
     public MuseumJson createMuseum(@Nonnull MuseumJson museum) {
+        if (museum.title()==null||museum.title().isEmpty()) throw new IllegalArgumentException("Название музея не может быть "+museum.title());
         try {
             log.info("Создание нового музея с названием '{}'", museum.title());
             MuseumResponse response = museumStub.createMuseum(
