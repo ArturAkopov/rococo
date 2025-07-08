@@ -5,4 +5,5 @@ include 'rococo-userdata'
 include 'rococo-artist'
 include 'rococo-museum'
 include 'rococo-painting'
-
+include 'rococo-e2e-tests'
+include 'rococo-grpc-common'

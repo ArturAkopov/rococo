@@ -28,5 +28,3 @@ public class ErrorController extends AbstractErrorController {
 
     }
 }
-
-

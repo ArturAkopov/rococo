@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package anbrain.qa.rococo.grpc;
+
+option java_multiple_files = true;
+option java_package = "anbrain.qa.rococo.grpc";
+option java_outer_classname = "PaintingProto";
+
+service PaintingService {
+  // Получить картину по ID
+  rpc GetPainting(PaintingRequest) returns (PaintingResponse);
+  // Получить список всех картин с пагинацией
+  rpc GetAllPaintings(AllPaintingsRequest) returns (AllPaintingsResponse);
+  // Получить картины по ID художника
+  rpc GetPaintingsByArtist(PaintingsByArtistRequest) returns (AllPaintingsResponse);
+  // Получить картины по названию
+  rpc GetPaintingsByTitle (PaintingsByTitleRequest) returns (AllPaintingsResponse);
+  // Добавить новую картину
+  rpc CreatePainting(CreatePaintingRequest) returns (PaintingResponse);
+  // Обновить данные существующей картины
+  rpc UpdatePainting(UpdatePaintingRequest) returns (PaintingResponse);
+}
+// Запрос на получение картины по ID
+message PaintingRequest {
+  string id = 1;
+}
+
+// Запрос на получение списка картин с пагинацией
+message AllPaintingsRequest {
+  int32 page = 1;
+  int32 size = 2;
+}
+// Запрос на получение картин по ID художника + пагинация
+message PaintingsByArtistRequest {
+  string artist_id = 1;
+  int32 page = 2;
+  int32 size = 3;
+}
+// Запрос на получение картин по названию
+message PaintingsByTitleRequest {
+  string title = 1;
+  int32 page = 2;
+  int32 size = 3;
+}
+// Запрос на создание картины
+message CreatePaintingRequest {
+  string title = 1;
+  string description = 2;
+  string content = 3;
+  string museum_id = 4;
+  string artist_id = 5;
+}
+// Запрос на обновление картины
+message UpdatePaintingRequest {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string content = 4;
+  string museum_id = 5;
+  string artist_id = 6;
+}
+// Ответ с данными о картине
+message PaintingResponse {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string content = 4;
+  string museum_id = 5;
+  string artist_id = 6;
+}
+// Ответ с пагинированным списком картин
+message AllPaintingsResponse {
+  repeated PaintingResponse paintings = 1;
+  int32 total_count = 2;
+}

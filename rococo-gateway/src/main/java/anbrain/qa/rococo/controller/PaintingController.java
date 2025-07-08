@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -119,6 +122,13 @@ public class PaintingController {
             })
     @PostMapping
     public ResponseEntity<PaintingJson> createPainting(
+            @Parameter(
+                    description = "Токен аутентификации (автоматически подставляется из заголовка Authorization)",
+                    required = true,
+                    hidden = true
+            )
+            @Nonnull
+            @AuthenticationPrincipal Jwt principal,
             @Parameter(description = "Данные картины", required = true)
             @Valid @RequestBody PaintingJson painting) {
         PaintingJson createdPainting = paintingGrpcClient.createPainting(painting);
@@ -134,10 +144,17 @@ public class PaintingController {
                     @ApiResponse(responseCode = "404", description = "Картина не найдена"),
                     @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера")
             })
-    @PutMapping
+    @PatchMapping
     public ResponseEntity<PaintingJson> updatePainting(
             @Parameter(description = "Обновленные данные картины", required = true)
-            @Valid @RequestBody PaintingJson painting) {
+            @Valid @RequestBody PaintingJson painting,
+            @Parameter(
+                    description = "Токен аутентификации (автоматически подставляется из заголовка Authorization)",
+                    required = true,
+                    hidden = true
+            )
+            @Nonnull
+            @AuthenticationPrincipal Jwt principal) {
         PaintingJson updatedPainting = paintingGrpcClient.updatePainting(painting);
         return ResponseEntity.ok(updatedPainting);
     }

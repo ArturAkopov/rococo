@@ -18,17 +18,27 @@ public class CountryGrpcService extends CountryServiceGrpc.CountryServiceImplBas
     private final CountryDatabaseService countryDatabaseService;
 
     @Override
-    public void getAllCountries(@Nonnull AllCountriesRequest request, @Nonnull StreamObserver<AllCountriesResponse> responseObserver) {
-        log.debug("Получен запрос на получение списка стран. Страница: {}, Размер: {}",
-                request.getPage(), request.getSize());
+    public void getAllCountries(@Nonnull AllCountriesRequest request,
+                                @Nonnull StreamObserver<AllCountriesResponse> responseObserver) {
+        log.debug("Получен запрос: page={}, size={}, name={}",
+                request.getPage(), request.getSize(), request.getName());
 
         PageRequest pageable = PageRequest.of(request.getPage(), request.getSize());
-        Page<CountryEntity> page = countryDatabaseService.getAllCountries(pageable);
+        Page<CountryEntity> page;
 
-        log.info("Возвращено {} стран из {}", page.getContent().size(), page.getTotalElements());
+        if (request.hasName()) {
+            page = countryDatabaseService.findByNameContainingIgnoreCase(
+                    request.getName(),
+                    pageable
+            );
+            log.info("Найдено {} стран по имени '{}'", page.getContent().size(), request.getName());
+        } else {
+            page = countryDatabaseService.getAllCountries(pageable);
+            log.info("Возвращено {} стран (всего {})", page.getContent().size(), page.getTotalElements());
+        }
+
         responseObserver.onNext(buildAllCountriesResponse(page));
         responseObserver.onCompleted();
-        log.debug("Запрос getAllCountries успешно завершен");
     }
 
     @Nonnull

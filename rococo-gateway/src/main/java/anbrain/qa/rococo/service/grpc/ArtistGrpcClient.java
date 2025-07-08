@@ -90,6 +90,8 @@ public class ArtistGrpcClient {
     }
 
     public ArtistJson createArtist(@Nonnull ArtistJson artist) {
+        if (artist.name()==null||artist.name().isEmpty())
+            throw new IllegalArgumentException("Название музея не может быть "+artist.name());
         try {
             log.info("Создание нового художника с именем '{}'", artist.name());
             ArtistResponse response = artistStub.createArtist(

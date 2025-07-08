@@ -3,6 +3,7 @@ package anbrain.qa.rococo.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
@@ -15,6 +16,7 @@ public record PaintingJson(
         @Schema(description = "Название картины", example = "Звёздная ночь")
         @JsonProperty("title")
         @Size(max = 255, message = "Название картины не может превышать 255 символов")
+        @NotEmpty
         String title,
         @Schema(description = "Описание картины", example = "Одна из самых известных картин Ван Гога, написанная в 1889 году")
         @JsonProperty("description")

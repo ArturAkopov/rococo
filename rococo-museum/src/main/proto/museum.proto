@@ -55,6 +55,7 @@ message UpdateMuseumRequest {
 message AllCountriesRequest {
   int32 page = 1;
   int32 size = 2;
+  optional string name = 3;
 }
 
 message MuseumResponse {

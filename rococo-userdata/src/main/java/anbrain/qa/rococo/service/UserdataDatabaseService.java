@@ -2,6 +2,7 @@ package anbrain.qa.rococo.service;
 
 import anbrain.qa.rococo.data.UserProfileEntity;
 import anbrain.qa.rococo.data.repository.UserProfileRepository;
+import anbrain.qa.rococo.model.UserJson;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -38,19 +39,19 @@ public class UserdataDatabaseService {
 
     @KafkaListener(topics = "users", groupId = "userdata")
     @Transactional
-    public void createUser(@Nonnull String username) {
-        log.debug("Получение пользователя из Kafka: {}", username);
+    public void createUser(@Nonnull UserJson userJson) {
+        log.debug("Получение пользователя из Kafka: {}", userJson.username());
 
-        if (userProfileRepository.findByUsername(username).isPresent()) {
-            log.debug("Пользователь {} уже существует", username);
+        if (userProfileRepository.findByUsername(userJson.username()).isPresent()) {
+            log.debug("Пользователь {} уже существует", userJson.username());
             return;
         }
 
         UserProfileEntity entity = new UserProfileEntity();
-        entity.setUsername(username);
+        entity.setUsername(userJson.username());
 
         userProfileRepository.save(entity);
-        log.info("Создан новый пользователь из Kafka: {}", username);
+        log.info("Создан новый пользователь из Kafka: {}", userJson.username());
     }
 
     private void updateEntity(@Nonnull UserProfileEntity entity, String firstname, String lastname, String avatar) {

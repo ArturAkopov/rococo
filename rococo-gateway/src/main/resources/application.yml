@@ -88,4 +88,4 @@ grpc:
       negotiation-type: plaintext
 
 rococo-front:
-  base-uri: 'http://front.rococo.dc:3000'
+  base-uri: 'http://frontend.rococo.dc'

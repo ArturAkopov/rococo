@@ -44,18 +44,35 @@ logging:
     org.springframework.kafka: INFO
     org.springframework.web: INFO
     org.springframework.boot.autoconfigure: INFO
+    anbrain.qa.rococo.service: INFO
+    net.devh.boot.grpc: INFO
 ---
 spring:
   config:
     activate:
       on-profile: 'local'
   datasource:
-    url: "jdbc:mysql://localhost:3307/rococo-userdata?useSSL=false&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://localhost:3307/rococo-userdata?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true"
     username: root
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
   kafka:
     bootstrap-servers: 'localhost:9092'
+    consumer:
+      group-id: 'userdata'
+      auto-offset-reset: earliest
+---
+spring:
+  config:
+    activate:
+      on-profile: 'docker'
+  datasource:
+    url: "jdbc:mysql://rococo-all-db:3306/rococo-userdata?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true"
+    username: root
+    password: secret
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  kafka:
+    bootstrap-servers: 'kafka:9092'
     consumer:
       group-id: 'userdata'
       auto-offset-reset: earliest

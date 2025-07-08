@@ -49,6 +49,10 @@ public class UserGrpcClient {
         try {
             log.info("Обновление пользователя {}, данные: {}", username, updateRequest);
 
+            if (updateRequest.firstname().isBlank() || updateRequest.lastname().isBlank()) {
+                throw new IllegalArgumentException("Имя и фамилия обязательны для заполнения");
+            }
+
             UpdateUserRequest request = UpdateUserRequest.newBuilder()
                     .setUsername(username)
                     .setFirstname(updateRequest.firstname())
