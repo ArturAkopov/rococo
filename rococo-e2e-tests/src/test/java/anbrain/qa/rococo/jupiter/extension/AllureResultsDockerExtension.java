@@ -23,13 +23,14 @@ public class AllureResultsDockerExtension implements SuiteExtension {
     private static final Logger log = LoggerFactory.getLogger(AllureResultsDockerExtension.class);
     private static final boolean isDocker = "docker".equals(System.getProperty("test.env"));
     private static final AllureApiClient allureApiClient = new AllureApiClient();
-    private static final String PROJECT_ID = "rococo";
-    private static final String ALLURE_RESULTS_DIRECTORY = "./rococo-e-2-e-tests/build/allure-results";
+    private static final String PROJECT_ID = "anbrain-rococo";
+    private static final String ALLURE_RESULTS_DIRECTORY = "./rococo-e2e-tests/build/allure-results";
 
     @Override
     public void beforeSuite(ExtensionContext context) {
         if (isDocker) {
-            allureApiClient.createProject(PROJECT_ID);
+            allureApiClient.createProjectIfNotExist(PROJECT_ID);
+            allureApiClient.cleanProject(PROJECT_ID);
         }
     }
 

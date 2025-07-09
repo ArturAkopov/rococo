@@ -39,6 +39,7 @@ public class LoginPage extends BasePage<LoginPage> {
 
     @Step("Подтверждение авторизации")
     public MainPage submitLogin() {
+        submitButton.scrollTo();
         submitButton.click();
         return new MainPage();
     }

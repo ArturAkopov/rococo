@@ -219,7 +219,7 @@ class PaintingControllerGrpcTest extends BaseControllerTest {
                 WireMockGrpc.method("GetMuseum")
                         .willReturn(WireMockGrpc.message(museumResponse)));
 
-        mockMvc.perform(put("/api/painting")
+        mockMvc.perform(patch("/api/painting")
                         .with(jwt().jwt(c -> c.claim("sub", "Artur")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
@@ -285,7 +285,7 @@ class PaintingControllerGrpcTest extends BaseControllerTest {
                 WireMockGrpc.method("UpdatePainting")
                         .willReturn(NOT_FOUND, "Картина не найдена"));
 
-        mockMvc.perform(put("/api/painting")
+        mockMvc.perform(patch("/api/painting")
                         .with(jwt().jwt(c -> c.claim("sub", "Artur")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))

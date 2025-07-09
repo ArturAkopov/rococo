@@ -17,7 +17,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
-@DisplayName("Проверка работы с сервисом User")
+@DisplayName("[REST] Проверка работы с сервисом User")
 public class UserRestTests {
 
     @RegisterExtension

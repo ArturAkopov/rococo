@@ -17,7 +17,7 @@ enum DockerConfig implements Config {
     @NonNull
     @Override
     public String authUrl() {
-        return "http://auth.niffler.dc:9000/";
+        return "http://auth.rococo.dc:9000/";
     }
 
     @NonNull

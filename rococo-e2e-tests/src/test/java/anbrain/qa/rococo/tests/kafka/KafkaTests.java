@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @KafkaTest
-@DisplayName("Проверка работы интеграции с Kafka")
+@DisplayName("[Kafka] Проверка работы интеграции с Kafka")
 public class KafkaTests {
     private final String username = RandomDataUtils.randomUsername();
     private final String defaultPassword = "12345";

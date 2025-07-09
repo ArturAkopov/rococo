@@ -25,7 +25,7 @@ import static org.mockito.Mockito.lenient;
 @ExtendWith(MockitoExtension.class)
 class RococoUserDetailsServiceTest {
 
-  private RococoUserDetailsService nifflerUserDetailsService;
+  private RococoUserDetailsService rococoUserDetailsService;
   private UserEntity testUserEntity;
   private List<AuthorityEntity> authorityEntities;
 
@@ -55,12 +55,12 @@ class RococoUserDetailsServiceTest {
     lenient().when(userRepository.findByUsername(not(eq("correct"))))
         .thenReturn(Optional.empty());
 
-    nifflerUserDetailsService = new RococoUserDetailsService(userRepository);
+    rococoUserDetailsService = new RococoUserDetailsService(userRepository);
   }
 
   @Test
   void loadUserByUsername() {
-    final UserDetails correct = nifflerUserDetailsService.loadUserByUsername("correct");
+    final UserDetails correct = rococoUserDetailsService.loadUserByUsername("correct");
 
     final List<SimpleGrantedAuthority> expectedAuthorities = authorityEntities.stream()
         .map(a -> new SimpleGrantedAuthority(a.getAuthority().name()))
@@ -89,7 +89,7 @@ class RococoUserDetailsServiceTest {
   void loadUserByUsernameNegative() {
     final UsernameNotFoundException exception = assertThrows(
         UsernameNotFoundException.class,
-        () -> nifflerUserDetailsService.loadUserByUsername("incorrect")
+        () -> rococoUserDetailsService.loadUserByUsername("incorrect")
     );
 
     assertEquals(

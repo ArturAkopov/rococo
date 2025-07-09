@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
-@DisplayName("Проверки авторизации и регистрации")
+@DisplayName("[REST] Проверки авторизации и регистрации")
 public class AuthRestTests {
 
     private final AuthRestClient authClient = new AuthRestClient();

@@ -28,11 +28,11 @@ bash ./gradlew clean
 
 if [ "$1" = "push" ] || [ "$2" = "push" ]; then
   echo "### Сборка и публикация образов ###"
-  bash ./gradlew jib -x :rococo-e-2-e-tests:build -x :selenoid:build -x :selenoid-ui:build -x :allure:build -x :allure-ui:build
+  bash ./gradlew jib -x :rococo-e2e-tests:build
   docker compose push frontend.rococo.dc
 else
   echo "### Локальная сборка образов ###"
-  bash ./gradlew jibDockerBuild -x :rococo-e-2-e-tests:build -x :selenoid:build -x :selenoid-ui:build -x :allure:build -x :allure-ui:build
+  bash ./gradlew jibDockerBuild -x :rococo-e2e-tests:build
 fi
 
 echo "### Запуск инфраструктуры (БД, Kafka) ###"
