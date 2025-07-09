@@ -110,10 +110,6 @@ jib {
     to {
         image = "${project.ext.dockerHubName}/rococo-userdata-${System.env.PROFILE}"
         tags = ['latest', "${project.version}"]
-        auth {
-            username = System.env.DOCKER_HUB_USERNAME ?: project.findProperty('dockerHubUsername')
-            password = System.env.DOCKER_HUB_PASSWORD ?: project.findProperty('dockerHubPassword')
-        }
     }
 }
 

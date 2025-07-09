@@ -18,6 +18,8 @@ jobs:
       EXECUTION_TYPE: github
       HEAD_COMMIT_MESSAGE: GitHub Docker run
       FRONT_VERSION: 0.0.1
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
