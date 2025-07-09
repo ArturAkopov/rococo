@@ -19,7 +19,7 @@ import org.springframework.data.domain.Pageable;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
-@DisplayName("Проверка работы с сервисом Country")
+@DisplayName("[REST] Проверка работы с сервисом Country")
 public class CountryRestTests {
 
     @RegisterExtension

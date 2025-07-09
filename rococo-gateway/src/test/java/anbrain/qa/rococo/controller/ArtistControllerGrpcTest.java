@@ -129,7 +129,7 @@ class ArtistControllerGrpcTest extends BaseControllerTest {
                 WireMockGrpc.method("UpdateArtist")
                         .willReturn(WireMockGrpc.message(response)));
 
-        mockMvc.perform(put("/api/artist")
+        mockMvc.perform(patch("/api/artist")
                         .with(jwt().jwt(c -> c.claim("sub", "Artur")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
@@ -201,7 +201,7 @@ class ArtistControllerGrpcTest extends BaseControllerTest {
                 WireMockGrpc.method("UpdateArtist")
                         .willReturn(NOT_FOUND, "Художник не найден"));
 
-        mockMvc.perform(put("/api/artist")
+        mockMvc.perform(patch("/api/artist")
                         .with(jwt().jwt(c -> c.claim("sub", "Artur")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))

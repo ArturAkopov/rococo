@@ -28,7 +28,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
-@DisplayName("Проверка работы с сервисом Museum")
+@DisplayName("[REST] Проверка работы с сервисом Museum")
 public class MuseumRestTests {
 
     @RegisterExtension

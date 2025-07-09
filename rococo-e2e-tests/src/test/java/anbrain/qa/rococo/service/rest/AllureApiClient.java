@@ -22,18 +22,31 @@ public class AllureApiClient {
     }
 
     @Step("Создание allure проекта {projectId}")
-    public void createProject(String projectId) {
-        Response response = given(requestSpec)
-                .body(new Project(projectId))
+    public void createProjectIfNotExist(String projectId) {
+        Response checkResponse = given(requestSpec)
                 .when()
-                .post("/allure-docker-service/projects")
+                .get("/allure-docker-service/projects/" + projectId)
                 .then()
                 .log().ifError()
                 .extract().response();
 
-        if (response.statusCode() != 201) {
-            throw new AssertionError("Failed to create project. Status: " + response.statusCode() +
-                                     ", Body: " + response.getBody().asString());
+        if (checkResponse.statusCode() == 404) {
+            Response createResponse = given(requestSpec)
+                    .body(new Project(projectId))
+                    .when()
+                    .post("/allure-docker-service/projects")
+                    .then()
+                    .log().ifError()
+                    .extract().response();
+
+            if (createResponse.statusCode() != 201) {
+                throw new AssertionError("Failed to create project. Status: " + createResponse.statusCode() +
+                                         ", Body: " + createResponse.getBody().asString());
+            }
+        }
+        else if (checkResponse.statusCode() != 200) {
+            throw new AssertionError("Unexpected status when checking project. Status: " + checkResponse.statusCode() +
+                                     ", Body: " + checkResponse.getBody().asString());
         }
     }
 
@@ -71,6 +84,16 @@ public class AllureApiClient {
             throw new AssertionError("Failed to generate report. Status: " + response.statusCode() +
                                      ", Body: " + response.getBody().asString());
         }
+    }
+
+    @Step("Очистка проекта {projectId} в Allure")
+    public void cleanProject(String projectId) {
+        Response cleanResultsResponse = given(requestSpec)
+                .when()
+                .delete("/allure-docker-service/clean-results?project_id=" + projectId)
+                .then()
+                .log().ifError()
+                .extract().response();
     }
 
 }

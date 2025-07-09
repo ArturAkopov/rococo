@@ -122,7 +122,7 @@ class MuseumControllerGrpcTest extends BaseControllerTest {
                 WireMockGrpc.method("UpdateMuseum")
                         .willReturn(WireMockGrpc.message(response)));
 
-        mockMvc.perform(put("/api/museum")
+        mockMvc.perform(patch("/api/museum")
                         .with(jwt().jwt(c -> c.claim("sub", "Artur")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
@@ -186,7 +186,7 @@ class MuseumControllerGrpcTest extends BaseControllerTest {
                 WireMockGrpc.method("UpdateMuseum")
                         .willReturn(NOT_FOUND, "Музей не найден"));
 
-        mockMvc.perform(put("/api/museum")
+        mockMvc.perform(patch("/api/museum")
                         .with(jwt().jwt(c -> c.claim("sub", "Artur")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))

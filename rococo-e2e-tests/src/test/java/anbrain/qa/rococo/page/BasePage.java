@@ -22,17 +22,17 @@ public abstract class BasePage<T extends BasePage<?>> {
         this.toast = $$("[data-testid='toast']");
     }
 
-    @Step("Проверка, что error-message содержит текст '{expectedText}'")
+    @Step("Проверка, что toast-message содержит текст '{expectedText}'")
     @Nonnull
     public T checkToastMessage(String expectedText) {
-        toast.findBy(Condition.text(expectedText)).shouldBe(Condition.visible);
+        toast.find(Condition.text(expectedText)).shouldBe(Condition.visible);
         return (T) this;
     }
 
-    @Step("Проверка, что toast-message содержит текст '{expectedText}'")
+    @Step("Проверка, что error-message содержит текст '{expectedText}'")
     @Nonnull
     public T checkErrorMessage(String expectedText) {
-        error.find(Condition.text(expectedText)).shouldBe(Condition.visible);
+        error.find(Condition.text(expectedText)).scrollTo().shouldBe(Condition.visible);
         return (T) this;
     }
 }

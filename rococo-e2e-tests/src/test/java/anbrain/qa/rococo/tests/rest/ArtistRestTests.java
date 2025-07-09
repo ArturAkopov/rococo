@@ -21,7 +21,7 @@ import org.springframework.data.domain.Pageable;
 import static org.junit.jupiter.api.Assertions.*;
 
 @RestTest
-@DisplayName("Проверка работы с сервисом Artist")
+@DisplayName("[REST] Проверка работы с сервисом Artist")
 public class ArtistRestTests {
 
     @RegisterExtension

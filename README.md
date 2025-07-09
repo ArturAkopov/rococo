@@ -6,10 +6,10 @@
 > интеграцией с Kafka.
 
 ---
-*Frontend часть проекта предоставлена платформой [QA.GURU](https://qa.guru/).*  
-***Автор реализации:***  
-:octocat: *[Дмитрий Тучс](https://github.com/dtuchs)*  
-:telephone: *[Telegram канал](https://t.me/likeaduck)*
+> *Frontend часть проекта предоставлена платформой [QA.GURU](https://qa.guru/).*  
+> ***Автор реализации:***  
+> :octocat: *[Дмитрий Тучс](https://github.com/dtuchs)*  
+> :telephone: *[Telegram канал](https://t.me/likeaduck)*
 ---
 
 ## :scroll: Содержание:
@@ -396,3 +396,6 @@ bash docker-compose-tests.sh
 - Тестирование пагинации
 - Валидация ответов между сервисами
 - Проверка обработки ошибок в распределенной системе
+
+### Web тесты
+/ToDo
