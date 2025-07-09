@@ -28,6 +28,8 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
       - name: Build backends
         run: |
           ./gradlew jibDockerBuild -x :rococo-e2e-tests:test
