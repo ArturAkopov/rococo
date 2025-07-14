@@ -150,6 +150,8 @@ services:
     depends_on:
       auth.rococo.dc:
         condition: service_healthy
+      userdata.rococo.dc:
+        condition: service_healthy
     networks:
       - rococo-network
 
@@ -186,6 +188,10 @@ services:
       - allure-results:/rococo/rococo-e2e-tests/build/allure-results
     depends_on:
       frontend.rococo.dc:
+        condition: service_started
+      selenoid:
+        condition: service_started
+      allure:
         condition: service_started
     networks:
       - rococo-network
@@ -226,8 +232,6 @@ services:
     profiles: [ test ]
     container_name: allure
     image: frankescobar/allure-docker-service:2.27.0
-    depends_on:
-      - rococo-e2e-tests
     environment:
       - CHECK_RESULTS_EVERY_SECONDS=NONE
       - KEEP_HISTORY=1
