@@ -3,8 +3,6 @@ package anbrain.qa.rococo.tests.web;
 import anbrain.qa.rococo.jupiter.annotation.ApiLogin;
 import anbrain.qa.rococo.jupiter.annotation.User;
 import anbrain.qa.rococo.jupiter.annotation.meta.WebTest;
-import anbrain.qa.rococo.model.rest.UserJson;
-import anbrain.qa.rococo.page.LoginPage;
 import anbrain.qa.rococo.page.MainPage;
 import anbrain.qa.rococo.page.utils.FormError;
 import anbrain.qa.rococo.utils.RandomDataUtils;
@@ -13,7 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
