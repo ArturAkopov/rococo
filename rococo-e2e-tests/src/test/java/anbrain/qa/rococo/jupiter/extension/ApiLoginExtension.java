@@ -3,8 +3,6 @@ package anbrain.qa.rococo.jupiter.extension;
 import anbrain.qa.rococo.page.MainPage;
 import anbrain.qa.rococo.service.grpc.UserdataGrpcClient;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.WebDriverRunner;
-import anbrain.qa.rococo.api.core.ThreadSafeCookieStore;
 import anbrain.qa.rococo.config.Config;
 import anbrain.qa.rococo.jupiter.annotation.ApiLogin;
 import anbrain.qa.rococo.jupiter.annotation.Token;
@@ -13,7 +11,6 @@ import anbrain.qa.rococo.service.rest.AuthRestClient;
 import lombok.NonNull;
 import org.junit.jupiter.api.extension.*;
 import org.junit.platform.commons.support.AnnotationSupport;
-import org.openqa.selenium.Cookie;
 
 
 public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver {
@@ -69,9 +66,6 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
                     if (setupBrowser) {
                         Selenide.open(CFG.frontUrl());
                         Selenide.localStorage().setItem("id_token", getToken());
-                        WebDriverRunner.getWebDriver().manage().addCookie(
-                                getJsessionIdCookie()
-                        );
                         Selenide.open(MainPage.MAIN_PAGE_URL, MainPage.class).checkThatPageLoaded();
                     }
                 });
@@ -102,14 +96,6 @@ public class ApiLoginExtension implements BeforeEachCallback, ParameterResolver 
 
     public static String getCode() {
         return TestMethodContextExtension.context().getStore(NAMESPACE).get("code", String.class);
-    }
-
-    @NonNull
-    public static Cookie getJsessionIdCookie() {
-        return new Cookie(
-                "JSESSIONID",
-                ThreadSafeCookieStore.INSTANCE.cookieValue("JSESSIONID")
-        );
     }
 
     @NonNull

@@ -7,6 +7,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Base64;
 import java.util.Random;
 
@@ -65,6 +66,28 @@ public class RandomDataUtils {
             byte[] imageBytes = baos.toByteArray();
 
             return "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(imageBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Ошибка при генерации аватара", e);
+        }
+    }
+
+    @Nonnull
+    public static File avatarFile() {
+        try {
+            BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+            Graphics2D graphics = image.createGraphics();
+
+            Random random = new Random();
+            Color color = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+            graphics.setColor(color);
+            graphics.fillRect(0, 0, 100, 100);
+
+            graphics.dispose();
+
+            File tempFile = File.createTempFile("avatar-", ".jpg");
+            ImageIO.write(image, "jpeg", tempFile);
+
+            return tempFile;
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при генерации аватара", e);
         }

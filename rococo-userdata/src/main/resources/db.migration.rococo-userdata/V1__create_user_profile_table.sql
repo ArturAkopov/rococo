@@ -7,8 +7,8 @@ SET GLOBAL log_bin_trust_function_creators = 1;
 CREATE TABLE IF NOT EXISTS `user_profile` (
     id          BINARY(16) PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), TRUE)),
     username    VARCHAR(50) UNIQUE NOT NULL,
-    firstname   VARCHAR(100),
-    lastname    VARCHAR(100),
+    firstname   VARCHAR(255),
+    lastname    VARCHAR(255),
     avatar      LONGBLOB COMMENT 'Бинарные данные изображения',
 
     INDEX idx_username (username),

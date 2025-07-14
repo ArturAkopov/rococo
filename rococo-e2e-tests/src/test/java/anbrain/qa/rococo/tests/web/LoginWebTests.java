@@ -11,7 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @WebTest
-@DisplayName("[WEB] Проверка авторизации Web")
+@DisplayName("[WEB] Проверка авторизации")
 public class LoginWebTests {
 
     private final String password = "12345";

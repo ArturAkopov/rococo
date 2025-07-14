@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 @WebTest
-@DisplayName("[WEB] Проверка регистрации Web")
+@DisplayName("[WEB] Проверка регистрации")
 public class RegistrationWebTests {
 
     @NonNull
