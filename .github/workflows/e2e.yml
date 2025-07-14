@@ -85,9 +85,6 @@ jobs:
         run: |
           echo "### Current container status ###"
           docker ps -a
-          echo ""
-          echo "### Problem containers logs ###"
-          docker logs userdata.rococo.dc
       - name: Run e2e tests
         id: e2e
         run: |

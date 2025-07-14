@@ -22,17 +22,14 @@ public class BrowserExtension implements BeforeEachCallback,
     static {
         Configuration.pageLoadStrategy = "eager";
         Configuration.browser = "firefox".equals(System.getProperty("browser")) ? "firefox" : "chrome";
-        if ("firefox".equals(System.getProperty("browser"))) {
-            Configuration.browserCapabilities = new FirefoxOptions().addPreference("intl.accept_languages", "ru-RU");
-        } else {
-            Configuration.browserCapabilities = new ChromeOptions().addArguments("lang=ru-RU");
-        }
         if ("docker".equals(System.getProperty("test.env"))) {
             Configuration.remote = "http://selenoid:4444/wd/hub";
             if ("firefox".equals(System.getProperty("browser"))) {
                 Configuration.browserVersion = "125.0";
+                Configuration.browserCapabilities = new FirefoxOptions().addPreference("intl.accept_languages", "ru-RU");
             } else {
-                Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox");
+                Configuration.browserCapabilities = new ChromeOptions().addArguments("--no-sandbox")
+                        .addArguments("--lang=ru", "accept-languages=ru-RU,ru");
                 Configuration.browserVersion = "127.0";
             }
         }
