@@ -33,6 +33,7 @@ jobs:
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
       - name: Build backends
+        id: build
         run: |
           ./gradlew jibDockerBuild -x :rococo-e2e-tests:test
       - name: Report test results

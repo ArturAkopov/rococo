@@ -83,11 +83,8 @@ services:
       - 9091:9091
     restart: always
     depends_on:
-      rococo-all-db:
+      auth.rococo.dc:
         condition: service_healthy
-      kafka:
-        condition: service_healthy
-
     networks:
       - rococo-network
 
@@ -100,9 +97,7 @@ services:
       - 9093:9093
     restart: always
     depends_on:
-      rococo-all-db:
-        condition: service_healthy
-      kafka:
+      auth.rococo.dc:
         condition: service_healthy
     networks:
       - rococo-network
@@ -116,9 +111,7 @@ services:
       - 9094:9094
     restart: always
     depends_on:
-      rococo-all-db:
-        condition: service_healthy
-      kafka:
+      auth.rococo.dc:
         condition: service_healthy
     networks:
       - rococo-network
@@ -137,9 +130,7 @@ services:
       timeout: 5s
       retries: 10
     depends_on:
-      rococo-all-db:
-        condition: service_healthy
-      kafka:
+      auth.rococo.dc:
         condition: service_healthy
     networks:
       - rococo-network
