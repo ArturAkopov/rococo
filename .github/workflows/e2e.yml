@@ -73,7 +73,7 @@ jobs:
           echo "### Waiting for DB to be ready ###"
           timeout 120 bash -c 'until docker exec rococo-all-db mysqladmin ping -uroot -psecret --silent; do echo "Waiting for MySQL..."; sleep 5; done'
           echo "### Waiting for Kafka to be ready ###"
-          timeout 120 bash -c 'until docker exec kafka kafka-broker-api-versions --bootstrap-server localhost:9092; do echo "Waiting for Kafka..."; sleep 5; done'
+          timeout 120 bash -c 'until docker exec kafka kafka-broker-api-versions --bootstrap-server kafka:9092; do echo "Waiting for Kafka..."; sleep 5; done'
       - name: Start services
         run: |
           docker compose up -d
@@ -86,13 +86,7 @@ jobs:
           docker ps -a
           echo ""
           echo "### Problem containers logs ###"
-          for container in $(docker ps -a --format "{{.Names}}"); do
-            if [ "$(docker inspect -f '{{.State.Status}}' $container)" != "running" ]; then
-              echo "=== Logs for $container ==="
-              docker logs $container || echo "Failed to get logs"
-              echo ""
-            fi
-          done
+          docker logs userdata.rococo.dc
       - name: Run e2e tests
         id: e2e
         run: |
