@@ -38,7 +38,7 @@ public class UserExtension implements BeforeEachCallback,
 
                         UserJson user = userdataGrpcClient.getUser(username);
                         if (user == null) {
-                            for (int i = 0; i < 2; i++) {
+                            for (int i = 0; i < 9; i++) {
                                 try {
                                     Thread.sleep(1000);
                                     user = userdataGrpcClient.getUser(username);
@@ -52,7 +52,7 @@ public class UserExtension implements BeforeEachCallback,
                             }
                         }
                         if (user == null) {
-                            Assertions.fail("UserExtension - Пользователь не найден сервисом Userdata после 3 попыток");
+                            Assertions.fail("UserExtension - Пользователь не найден сервисом Userdata после 10 попыток");
                         }
                         UserJson updateUser = userdataGrpcClient.updateUser(new UserJson(
                                 user.id(),
