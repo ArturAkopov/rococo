@@ -25,7 +25,7 @@ public class BrowserExtension implements BeforeEachCallback,
         if ("firefox".equals(System.getProperty("browser"))) {
             Configuration.browserCapabilities = new FirefoxOptions().addPreference("intl.accept_languages", "ru-RU");
         } else {
-            Configuration.browserCapabilities = new ChromeOptions().addArguments("--lang=ru-RU");
+            Configuration.browserCapabilities = new ChromeOptions().addArguments("lang=ru-RU");
         }
         if ("docker".equals(System.getProperty("test.env"))) {
             Configuration.remote = "http://selenoid:4444/wd/hub";
