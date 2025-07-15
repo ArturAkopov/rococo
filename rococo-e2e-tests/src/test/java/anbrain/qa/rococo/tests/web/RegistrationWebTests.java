@@ -2,7 +2,7 @@ package anbrain.qa.rococo.tests.web;
 
 import anbrain.qa.rococo.jupiter.annotation.meta.WebTest;
 import anbrain.qa.rococo.page.RegisterPage;
-import anbrain.qa.rococo.page.utils.FormError;
+import anbrain.qa.rococo.page.alert.FormError;
 import anbrain.qa.rococo.utils.RandomDataUtils;
 import lombok.NonNull;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
 @WebTest
-@DisplayName("[WEB] Проверка регистрации Web")
+@DisplayName("[WEB] Проверка регистрации")
 public class RegistrationWebTests {
 
     @NonNull

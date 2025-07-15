@@ -18,11 +18,11 @@ public record UserJson(
         String username,
         @Schema(description = "Имя пользователя", example = "Артур")
         @JsonProperty("firstname")
-        @Size(max = 100, message = "Имя не может превышать 100 символов")
+        @Size(max = 255, message = "Имя не может превышать 100 символов")
         String firstname,
         @Schema(description = "Фамилия пользователя", example = "Акопов")
         @JsonProperty("lastname")
-        @Size(max = 100, message = "Фамилия не может превышать 100 символов")
+        @Size(max = 255, message = "Фамилия не может превышать 100 символов")
         String lastname,
         @Schema(description = "Аватар пользователя", example = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD...")
         @JsonProperty("avatar")

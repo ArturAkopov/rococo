@@ -15,7 +15,7 @@ import static com.codeborne.selenide.Selenide.$$;
 @Getter
 public class ArtistsPage extends BasePage<ArtistsPage> {
 
-    public final static String ARTIST_PAGE_URL = CONFIG.frontUrl() + "/artist";
+    public final static String ARTIST_PAGE_URL = CONFIG.frontUrl() + "artist";
 
     private final Header header;
     private final SelenideElement

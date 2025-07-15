@@ -4,6 +4,7 @@ import anbrain.qa.rococo.jupiter.annotation.User;
 import anbrain.qa.rococo.jupiter.annotation.meta.WebTest;
 import anbrain.qa.rococo.model.rest.UserJson;
 import anbrain.qa.rococo.page.LoginPage;
+import anbrain.qa.rococo.page.alert.FormError;
 import lombok.NonNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @WebTest
-@DisplayName("[WEB] Проверка авторизации Web")
+@DisplayName("[WEB] Проверка авторизации")
 public class LoginWebTests {
 
     private final String password = "12345";
@@ -54,7 +55,7 @@ public class LoginWebTests {
                 .setUsername(userJson.username())
                 .setPassword("password")
                 .submitLogin()
-                .checkErrorMessage("Неверные учетные данные пользователя");
+                .checkErrorMessage(FormError.BAD_CREDENTIALS.getMessage());
     }
 
 }

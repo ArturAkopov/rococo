@@ -72,4 +72,11 @@ public class EditProfileModal extends BaseComponent<EditProfileModal>{
         return new MainPage();
     }
 
+    @Nonnull
+    @Step("Неуспешное сохранение изменений профиля")
+    public EditProfileModal invalidSaveChanges() {
+        updateProfileButton.click();
+        return new EditProfileModal();
+    }
+
 }

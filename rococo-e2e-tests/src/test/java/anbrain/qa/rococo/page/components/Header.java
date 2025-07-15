@@ -85,4 +85,9 @@ public class Header extends BaseComponent<Header> {
     public void checkThatUserAuthorized(){
         profileButton.shouldBe(exist).shouldBe(visible);
     }
+
+    @Step("Проверка статуса \"не авторизован\"")
+    public void checkThatUserUnauthorized(){
+        loginButton.shouldBe(exist).shouldBe(visible);
+    }
 }
