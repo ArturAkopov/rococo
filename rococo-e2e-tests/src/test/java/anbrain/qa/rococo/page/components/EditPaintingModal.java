@@ -1,15 +1,17 @@
 package anbrain.qa.rococo.page.components;
 
 import anbrain.qa.rococo.page.PaintingPage;
-import com.codeborne.selenide.SelenideElement;
+import anbrain.qa.rococo.page.PaintingsPage;
+import com.codeborne.selenide.*;
 import io.qameta.allure.Step;
+import org.openqa.selenium.Keys;
 
 import javax.annotation.Nonnull;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 public class EditPaintingModal extends BaseComponent<EditPaintingModal> {
 
@@ -53,7 +55,16 @@ public class EditPaintingModal extends BaseComponent<EditPaintingModal> {
     @Step("Выбор автора картины '{artistName}'")
     public EditPaintingModal selectArtist(String artistName) {
         selectPaintingArtist.scrollTo().click();
-        selectPaintingArtist.$$("option").find(text(artistName)).scrollTo().click();
+        int attempts = 0;
+        while (attempts < 200) {
+            if (selectPaintingArtist.$$("option").findBy(text(artistName)).isDisplayed()) {
+                selectPaintingArtist.$$("option").findBy(text(artistName)).click();
+                return this;
+            }
+            selectPaintingArtist.sendKeys(Keys.ARROW_DOWN);
+            attempts++;
+        }
+        selectPaintingArtist.$$("option").find(text(artistName)).click();
         return this;
     }
 
@@ -69,8 +80,17 @@ public class EditPaintingModal extends BaseComponent<EditPaintingModal> {
     @Nonnull
     @Step("Выбор музея картины '{museumTitle}'")
     public EditPaintingModal selectMuseum(String museumTitle) {
-        selectPaintingMuseum.scrollTo().click();
-        selectPaintingMuseum.$$("option").find(text(museumTitle)).scrollTo().click();
+        selectPaintingMuseum.scrollIntoView(true).click();
+        int attempts = 0;
+        while (attempts < 200) {
+            if (selectPaintingMuseum.$$("option").findBy(text(museumTitle)).isDisplayed()) {
+                selectPaintingMuseum.$$("option").findBy(text(museumTitle)).click();
+                return this;
+            }
+            selectPaintingMuseum.sendKeys(Keys.ARROW_DOWN);
+            attempts++;
+        }
+        selectPaintingMuseum.$$("option").find(text(museumTitle)).click();
         return this;
     }
 
@@ -86,6 +106,20 @@ public class EditPaintingModal extends BaseComponent<EditPaintingModal> {
     public PaintingPage saveChanges() {
         submitButton.scrollTo().click();
         return new PaintingPage();
+    }
+
+    @Nonnull
+    @Step("Сохранение новой картины")
+    public PaintingsPage saveAddPainting() {
+        submitButton.scrollTo().click();
+        return new PaintingsPage();
+    }
+
+    @Nonnull
+    @Step("Нажатие кнопки подтверждения")
+    public EditPaintingModal clickSubmit() {
+        submitButton.scrollTo().click();
+        return this;
     }
 
 }

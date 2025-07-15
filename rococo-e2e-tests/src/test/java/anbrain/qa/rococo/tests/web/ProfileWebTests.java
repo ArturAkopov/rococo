@@ -4,7 +4,8 @@ import anbrain.qa.rococo.jupiter.annotation.ApiLogin;
 import anbrain.qa.rococo.jupiter.annotation.User;
 import anbrain.qa.rococo.jupiter.annotation.meta.WebTest;
 import anbrain.qa.rococo.page.MainPage;
-import anbrain.qa.rococo.page.utils.FormError;
+import anbrain.qa.rococo.page.alert.TextError;
+import anbrain.qa.rococo.page.alert.ToastMessage;
 import anbrain.qa.rococo.utils.RandomDataUtils;
 import lombok.NonNull;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +30,7 @@ public class ProfileWebTests {
                 .toProfileModal()
                 .logout()
                 .checkThatPageLoaded()
-                .checkToastMessage("Сессия завершена")
+                .checkToastMessage(ToastMessage.SESSION_IS_OVER.getMessage())
                 .getHeader()
                 .checkThatUserUnauthorized();
     }
@@ -46,7 +47,7 @@ public class ProfileWebTests {
                 .setSurname((RandomDataUtils.randomLastName() + "a".repeat(255)).substring(0, 255))
                 .uploadAvatar(RandomDataUtils.avatarFile())
                 .saveChanges()
-                .checkToastMessage("Профиль обновлен");
+                .checkToastMessage(ToastMessage.PROFILE_UPDATED.getMessage());
     }
 
     @NonNull
@@ -54,10 +55,10 @@ public class ProfileWebTests {
         return Stream.of(
                 Arguments.of(RandomDataUtils.randomFirstName() + "a".repeat(255),
                         RandomDataUtils.randomLastName(),
-                        FormError.THE_NAME_CANNOT_BE_LONGER_THAN_255_CHARACTERS.getMessage()),
+                        TextError.THE_NAME_CANNOT_BE_LONGER_THAN_255_CHARACTERS.getMessage()),
                 Arguments.of(RandomDataUtils.randomFirstName(),
                         RandomDataUtils.randomLastName() + "a".repeat(255),
-                        FormError.THE_LAST_NAME_CANNOT_BE_LONGER_THAN_255_CHARACTERS.getMessage())
+                        TextError.THE_LAST_NAME_CANNOT_BE_LONGER_THAN_255_CHARACTERS.getMessage())
         );
     }
 

@@ -1,9 +1,8 @@
 package anbrain.qa.rococo.page;
 
+import anbrain.qa.rococo.page.components.EditPaintingModal;
 import anbrain.qa.rococo.page.components.Header;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.*;
 import io.qameta.allure.Step;
 import lombok.Getter;
 
@@ -15,8 +14,9 @@ import static com.codeborne.selenide.Selenide.$$;
 @Getter
 public class PaintingsPage extends BasePage<PaintingsPage> {
 
-    public final static String PAINTING_PAGE_URL = CONFIG.frontUrl() + "/painting";
+    public final static String PAINTING_PAGE_URL = CONFIG.frontUrl() + "painting";
 
+    private final EditPaintingModal editPaintingModal;
     private final Header header;
     private final SelenideElement
             addPaintingButton,
@@ -25,6 +25,7 @@ public class PaintingsPage extends BasePage<PaintingsPage> {
     private final ElementsCollection paintingsGrid;
 
     public PaintingsPage() {
+        this.editPaintingModal = new EditPaintingModal();
         this.header = new Header();
         this.addPaintingButton = $("#page-content button.btn");
         this.inputSearch = $("#page-content .input[title='Искать картины...'][type='search']");
@@ -38,10 +39,15 @@ public class PaintingsPage extends BasePage<PaintingsPage> {
         return this;
     }
 
-    @Step("Проверка загрузки страницы 'Картины'")
-    @Override
-    public PaintingsPage checkThatPageLoaded() {
-        inputSearch.shouldBe(visible);
+    @Step("Нажатие кнопки 'Добавить картину'")
+    public PaintingsPage clickAddPaintingButton() {
+        addPaintingButton.click();
+        return this;
+    }
+
+    @Step("Поиск картины по названию '{title}'")
+    public PaintingsPage searchPaintingByTitle(String title) {
+        inputSearch.setValue(title).pressEnter();
         return this;
     }
 
@@ -49,5 +55,18 @@ public class PaintingsPage extends BasePage<PaintingsPage> {
     public PaintingPage selectPainting(String titlePainting) {
         paintingsGrid.findBy(text(titlePainting)).scrollTo().click();
         return new PaintingPage();
+    }
+
+    @Step("Проверка загрузки страницы 'Картины'")
+    @Override
+    public PaintingsPage checkThatPageLoaded() {
+        inputSearch.shouldBe(visible);
+        return this;
+    }
+
+    @Step("Проверка наличия картины на странице")
+    public PaintingsPage checkThatPaintingExist(String titlePainting) {
+        paintingsGrid.findBy(text(titlePainting)).scrollTo().shouldBe(visible);
+        return this;
     }
 }

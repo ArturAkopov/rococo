@@ -15,7 +15,7 @@ import static com.codeborne.selenide.Selenide.$$;
 @Getter
 public class MuseumsPage extends BasePage<MuseumsPage> {
 
-    public final static String MUSEUM_PAGE_URL = CONFIG.frontUrl() + "/museum";
+    public final static String MUSEUM_PAGE_URL = CONFIG.frontUrl() + "museum";
 
     private final Header header;
     private final SelenideElement
