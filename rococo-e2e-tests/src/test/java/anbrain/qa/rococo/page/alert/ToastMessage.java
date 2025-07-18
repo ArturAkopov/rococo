@@ -8,7 +8,9 @@ public enum ToastMessage {
     PROFILE_UPDATED("Профиль обновлен"),
     PASSWORDS_SHOULD_BE_EQUAL("Passwords should be equal"),
     UPDATED_PAINTING("Обновлена картина: "),
-    ADDED_PAINTINGS("Добавлена картины: ");
+    ADDED_PAINTINGS("Добавлена картины: "),
+    ADDED_ARTIST("Добавлен художник: "),
+    UPDATED_ARTIST("Обновлен художник: ");
 
     private final String message;
 
