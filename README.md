@@ -33,7 +33,7 @@
   <a href="https://www.java.com/"><img width="5%" title="Java 21" src="media/logo/Java.svg"/></a>
   <a href="https://github.com/"><img width="5%" title="GitHub" src="media/logo/github.svg"/></a>
   <a href="https://gradle.org/"><img width="5%" title="Gradle 8.6" src="media/logo/gradle.svg"/></a>
-  <a href="https://wiremock.org/"><img width="9%" title="WireMock" src="media/logo/21368587.png"/></a>
+  <a href="https://wiremock.org/"><img width="9%" title="WireMock" src="media/logo/wiremock.png"/></a>
 </p>
 
 ---
