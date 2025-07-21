@@ -14,21 +14,31 @@
 
 ## :scroll: Содержание:
 
-+ [Архитектура системы](#архитектура-системы)
-+ [Минимальные требования](#минимальные-требования)
-+ [Запуск проекта](#запуск-проекта)
-+
-    - [Локальный запуск](#computer-локальный-запуск)
-+
-    -
-        - [Доступные сервисы](#доступные-сервисы)
-+
-    - [Запуск в Docker](#whale-запуск-в-docker)
-+ [Тестирование](#mag-тестирование)
++ [:building_construction: Архитектура системы](#building_construction-архитектура-системы)
++ [:warning: Минимальные требования](#warning-минимальные-требования)
++ [:rocket: Запуск проекта](#rocket-запуск-проекта)
+  - [:desktop_computer: Локальный запуск](#desktop_computer-локальный-запуск)
+    - [:electric_plug: Доступные сервисы](#electric_plug-доступные-сервисы)
+  - [:whale: Запуск в Docker](#whale-запуск-в-docker)
++ [:mag: Тестирование](#mag-тестирование)
+  - [:microscope: Unit-тесты](#microscope-unit-тесты)
+  - [:handshake: Контрактные тесты](#handshake-контрактные-тесты)
+  - [:gear: Интеграционные тесты](#gear-интеграционные-тесты)
+  - [:spider_web: Web тесты](#spider_web-web-тесты)+ [:building_construction: Архитектура системы](#building_construction-архитектура-системы)
++ [:warning: Минимальные требования](#warning-минимальные-требования)
++ [:rocket: Запуск проекта](#rocket-запуск-проекта)
+  - [:desktop_computer: Локальный запуск](#desktop_computer-локальный-запуск)
+    - [:electric_plug: Доступные сервисы](#electric_plug-доступные-сервисы)
+  - [:whale: Запуск в Docker](#whale-запуск-в-docker)
++ [:mag: Тестирование](#mag-тестирование)
+  - [:microscope: Unit-тесты](#microscope-unit-тесты)
+  - [:handshake: Контрактные тесты](#handshake-контрактные-тесты)
+  - [:gear: Интеграционные тесты](#gear-интеграционные-тесты)
+  - [:spider_web: Web тесты](#spider_web-web-тесты)
 
 ---
 
-## Архитектура системы
+## :building_construction: Архитектура системы
 
 ```mermaid
 flowchart TD
@@ -96,7 +106,7 @@ flowchart TD
     class Frontend,RestLayer,ServicesLayer,InfrastructureLayer1,InfrastructureLayer2 layer;
 ```
 
-### Компоненты системы:
+### :nut_and_bolt: Компоненты системы:
 
 - **Frontend**: Веб-интерфейс (Svelte)
 - **API Gateway**: Единая точка входа для всех запросов
@@ -110,9 +120,9 @@ flowchart TD
 
 ---
 
-## Минимальные требования
+## :warning: Минимальные требования
 
-### :warning: Для Windows ОС:
+### Для Windows ОС:
 
 1. **Обязательно** использовать [Git Bash](https://www.geeksforgeeks.org/working-on-git-bash/) вместо PowerShell/CMD
 2. Требуется активировать WSL 2 перед установкой Docker
@@ -221,9 +231,9 @@ npm --version
 
 ---
 
-## Запуск проекта
+## :rocket: Запуск проекта
 
-### :computer: Локальный запуск
+### :desktop_computer: Локальный запуск
 
 1. **Запуск инфраструктуры**:
 
@@ -275,7 +285,7 @@ npm run dev
 bash rococo-client.frontend.localenv.sh
 ```
 
-#### Доступные сервисы
+#### :electric_plug: Доступные сервисы
 
 | Сервис          | Назначение                          | Доступ                                |
 |-----------------|-------------------------------------|---------------------------------------|
@@ -351,7 +361,7 @@ bash docker-compose-tests.sh
 
 ## :mag: Тестирование
 
-### Unit-тесты
+### :microscope: Unit-тесты
 
 *Покрывают все бизнес-правила и сценарии*
 
@@ -364,7 +374,7 @@ bash docker-compose-tests.sh
 - Kafka listener (создание пользователя)
 - Исключения
 
-### Контрактные тесты
+### :handshake: Контрактные тесты
 
 *Проверяют API и gRPC взаимодействия*
 
@@ -379,7 +389,7 @@ bash docker-compose-tests.sh
 - Безопасность и авторизация
 - Интеграция с [Wiremock](https://wiremock.org/docs/standalone/docker/)
 
-### Интеграционные тесты
+### :gear: Интеграционные тесты
 
 *Проверяют взаимодействие между компонентами системы*
 
@@ -397,5 +407,5 @@ bash docker-compose-tests.sh
 - Валидация ответов между сервисами
 - Проверка обработки ошибок в распределенной системе
 
-### Web тесты
+### :spider_web: Web тесты
 /ToDo
