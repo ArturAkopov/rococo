@@ -65,8 +65,7 @@ public class PaintingsPage extends BasePage<PaintingsPage> {
     }
 
     @Step("Проверка наличия картины на странице")
-    public PaintingsPage checkThatPaintingExist(String titlePainting) {
+    public void checkThatPaintingExist(String titlePainting) {
         paintingsGrid.findBy(text(titlePainting)).scrollTo().shouldBe(visible);
-        return this;
     }
 }

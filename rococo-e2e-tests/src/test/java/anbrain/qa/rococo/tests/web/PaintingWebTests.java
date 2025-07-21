@@ -54,11 +54,9 @@ public class PaintingWebTests {
     }
 
     @Test
-    @User
     @Artist
     @Museum
     @Painting
-    @ApiLogin
     @DisplayName("Должна успешно найтись картина")
     void shouldSearchedPaintingSuccess(@NonNull PaintingJson painting) {
         new PaintingsPage().open()

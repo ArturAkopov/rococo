@@ -1,5 +1,6 @@
 package anbrain.qa.rococo.page;
 
+import anbrain.qa.rococo.page.components.EditArtistModal;
 import anbrain.qa.rococo.page.components.Header;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
@@ -18,18 +19,20 @@ public class ArtistsPage extends BasePage<ArtistsPage> {
     public final static String ARTIST_PAGE_URL = CONFIG.frontUrl() + "artist";
 
     private final Header header;
+    private final EditArtistModal editArtistModal;
     private final SelenideElement
             addArtistButton,
             inputSearch,
             searchButton;
-    private final ElementsCollection paintingsGrid;
+    private final ElementsCollection artistsGrid;
 
     public ArtistsPage() {
         this.header = new Header();
+        this.editArtistModal = new EditArtistModal();
         this.addArtistButton = $("#page-content button.btn");
         this.inputSearch = $("#page-content .input[title='Искать художников...'][type='search']");
         this.searchButton = $("#page-content button.btn-icon");
-        this.paintingsGrid = $$("#page-content .grid .items-center");
+        this.artistsGrid = $$("#page-content .grid .items-center");
     }
 
     @Step("Переход на страницу 'Художники'")
@@ -38,17 +41,34 @@ public class ArtistsPage extends BasePage<ArtistsPage> {
         return this;
     }
 
+    @Step("Поиск художника по имени '{artistName}'")
+    public ArtistsPage searchArtistByName(String artistName) {
+        inputSearch.setValue(artistName).pressEnter();
+        return this;
+    }
+
+    @Step("Нажатие кнопки 'Добавить художника'")
+    public ArtistsPage clickAddArtistButton() {
+        addArtistButton.click();
+        return this;
+    }
+
+    @Step("Переход на страницу художника '{nameArtist}'")
+    public ArtistPage selectArtist(String nameArtist) {
+        inputSearch.setValue(nameArtist).pressEnter();
+        artistsGrid.findBy(text(nameArtist)).scrollTo().click();
+        return new ArtistPage();
+    }
+
+    @Step("Проверка наличия художника на странице")
+    public void checkThatArtistExist(String artistName) {
+        artistsGrid.findBy(text(artistName)).scrollTo().shouldBe(visible);
+    }
+
     @Step("Проверка загрузки страницы 'Художники'")
     @Override
     public ArtistsPage checkThatPageLoaded() {
         inputSearch.shouldBe(visible);
         return this;
-    }
-
-    //ToDo
-    @Step("Переход на страницу художника '{nameArtist}'")
-    public PaintingPage selectArtist(String nameArtist) {
-        paintingsGrid.findBy(text(nameArtist)).scrollTo().click();
-        return new PaintingPage();
     }
 }

@@ -29,7 +29,7 @@ public abstract class BasePage<T extends BasePage<?>> {
         return (T) this;
     }
 
-    @Step("Проверка, что error-message содержит текст '{expectedText}'")
+    @Step("Проверка, что form__error-message содержит текст '{expectedText}'")
     @Nonnull
     public T checkErrorMessage(String expectedText) {
         error.find(Condition.text(expectedText)).scrollTo().shouldBe(Condition.visible);
