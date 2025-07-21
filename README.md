@@ -12,8 +12,6 @@
 > :telephone: *[Telegram канал](https://t.me/likeaduck)*
 ---
 
-### Используемые инструменты и технологии:
-
 ### :hammer_and_wrench: Используемые инструменты и технологии:
 
 <p align="center">
