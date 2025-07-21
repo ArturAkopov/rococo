@@ -12,29 +12,57 @@
 > :telephone: *[Telegram канал](https://t.me/likeaduck)*
 ---
 
+### Используемые инструменты и технологии:
+
+### :hammer_and_wrench: Используемые инструменты и технологии:
+
+<p align="center">
+  <a href="https://spring.io/"><img width="5%" title="Spring" src="media/logo/spring.svg"/></a>
+  <a href="https://spring.io/projects/spring-boot"><img width="5%" title="Spring Boot" src="media/logo/spring_boot.svg"/></a>
+  <a href="https://yidongnan.github.io/grpc-spring-boot-starter/"><img width="6%" title="Spring gRPC" src="media/logo/grpc.svg"/></a>
+  <a href="https://kafka.apache.org/"><img width="4%" title="Apache Kafka" src="media/logo/kafka.svg"/></a>
+  <a href="https://www.docker.com/"><img width="6%" title="Docker" src="media/logo/docker.svg"/></a>
+  <a href="https://www.mysql.com/"><img width="5%" title="MySQL" src="media/logo/mysql.svg"/></a>
+  <a href="https://svelte.dev/"><img width="5%" title="Svelte" src="media/logo/svelte.svg"/></a>
+  <a href="https://junit.org/junit5/"><img width="5%" title="JUnit 5" src="media/logo/junit5.svg"/></a>
+  <a href="https://rest-assured.io"><img width="6%" title="REST-Assured" src="media/logo/rest_assured.svg"/></a>
+  <a href="https://qameta.io/allure/"><img width="5%" title="Allure" src="media/logo/allure.svg"/></a>
+  <a href="https://selenide.org/"><img width="5%" title="Selenide" src="media/logo/selenide.svg"/></a>
+  <a href="https://aerokube.com/selenoid/"><img width="5%" title="Selenoid" src="media/logo/selenoid.svg"/></a>
+  <a href="https://github.com/fescobar/allure-docker-service"><img width="5%" title="Allure Docker Service" src="media/logo/allure_docker.svg"/></a>
+  <a href="https://github.com/features/actions"><img width="5%" title="GitHub Actions" src="media/logo/github_action.svg"/></a>
+  <a href="https://www.jetbrains.com/idea/"><img width="5%" title="IntelliJ IDEA" src="media/logo/Intelij_IDEA.svg"/></a>
+  <a href="https://www.java.com/"><img width="5%" title="Java 21" src="media/logo/Java.svg"/></a>
+  <a href="https://github.com/"><img width="5%" title="GitHub" src="media/logo/github.svg"/></a>
+  <a href="https://gradle.org/"><img width="5%" title="Gradle 8.6" src="media/logo/gradle.svg"/></a>
+  <a href="https://wiremock.org/"><img width="9%" title="WireMock" src="media/logo/21368587.png"/></a>
+</p>
+
+---
+
 ## :scroll: Содержание:
 
 + [:building_construction: Архитектура системы](#building_construction-архитектура-системы)
 + [:warning: Минимальные требования](#warning-минимальные-требования)
 + [:rocket: Запуск проекта](#rocket-запуск-проекта)
-  - [:desktop_computer: Локальный запуск](#desktop_computer-локальный-запуск)
-    - [:electric_plug: Доступные сервисы](#electric_plug-доступные-сервисы)
-  - [:whale: Запуск в Docker](#whale-запуск-в-docker)
+    - [:desktop_computer: Локальный запуск](#desktop_computer-локальный-запуск)
+        - [:electric_plug: Доступные сервисы](#electric_plug-доступные-сервисы)
+    - [:whale: Запуск в Docker](#whale-запуск-в-docker)
 + [:mag: Тестирование](#mag-тестирование)
-  - [:microscope: Unit-тесты](#microscope-unit-тесты)
-  - [:handshake: Контрактные тесты](#handshake-контрактные-тесты)
-  - [:gear: Интеграционные тесты](#gear-интеграционные-тесты)
-  - [:spider_web: Web тесты](#spider_web-web-тесты)+ [:building_construction: Архитектура системы](#building_construction-архитектура-системы)
+    - [:microscope: Unit-тесты](#microscope-unit-тесты)
+    - [:handshake: Контрактные тесты](#handshake-контрактные-тесты)
+    - [:gear: Интеграционные тесты](#gear-интеграционные-тесты)
+    - [:spider_web: Web тесты](#spider_web-web-тесты)
 + [:warning: Минимальные требования](#warning-минимальные-требования)
 + [:rocket: Запуск проекта](#rocket-запуск-проекта)
-  - [:desktop_computer: Локальный запуск](#desktop_computer-локальный-запуск)
-    - [:electric_plug: Доступные сервисы](#electric_plug-доступные-сервисы)
-  - [:whale: Запуск в Docker](#whale-запуск-в-docker)
+    - [:desktop_computer: Локальный запуск](#desktop_computer-локальный-запуск)
+        - [:electric_plug: Доступные сервисы](#electric_plug-доступные-сервисы)
+    - [:whale: Запуск в Docker](#whale-запуск-в-docker)
 + [:mag: Тестирование](#mag-тестирование)
-  - [:microscope: Unit-тесты](#microscope-unit-тесты)
-  - [:handshake: Контрактные тесты](#handshake-контрактные-тесты)
-  - [:gear: Интеграционные тесты](#gear-интеграционные-тесты)
-  - [:spider_web: Web тесты](#spider_web-web-тесты)
+    - [:microscope: Unit-тесты](#microscope-unit-тесты)
+    - [:handshake: Контрактные тесты](#handshake-контрактные-тесты)
+    - [:gear: Интеграционные тесты](#gear-интеграционные-тесты)
+    - [:spider_web: Web тесты](#spider_web-web-тесты)
 
 ---
 
@@ -322,6 +350,7 @@ bash rococo-client.frontend.localenv.sh
 ```bash
 bash docker-compose.sh
 ```
+
 #### Для полного развертывания c прогоном автотестов:
 
 ```bash
@@ -333,22 +362,22 @@ bash docker-compose-tests.sh
 | Сервис                 | Назначение                       | Доступ                             |
 |------------------------|----------------------------------|------------------------------------|
 | **API и микросервисы** |                                  |                                    |
-| rococo-gateway         | API Gateway (единая точка входа) | `http://gateway.rococo.dc:8080`    |
-| rococo-auth            | Аутентификация и авторизация     | `http://auth.rococo.dc:9000`       |
-| rococo-userdata        | Управление данными пользователей | gRPC: `userdata.rococo.dc:9090`    |
-| rococo-artist          | Управление художниками           | gRPC: `artist.rococo.dc:9091`      |
-| rococo-museum          | Управление музеями и странами    | gRPC: `museum.rococo.dc:9093`      |
-| rococo-painting        | Управление картинами             | gRPC: `painting.rococo.dc:9094`    |
+| rococo-gateway         | API Gateway (единая точка входа) | http://gateway.rococo.dc:8080      |
+| rococo-auth            | Аутентификация и авторизация     | http://auth.rococo.dc:9000         |
+| rococo-userdata        | Управление данными пользователей | `gRPC:` userdata.rococo.dc:9090    |
+| rococo-artist          | Управление художниками           | `gRPC:` artist.rococo.dc:9091      |
+| rococo-museum          | Управление музеями и странами    | `gRPC:` museum.rococo.dc:9093      |
+| rococo-painting        | Управление картинами             | `gRPC:` painting.rococo.dc:9094    |
 | **Инфраструктура**     |                                  |                                    |
 | Kafka                  | Брокер сообщений                 | `kafka:9092` (внутри сети)         |
 | Zookeeper              | Координация Kafka                | `zookeeper:2181` (внутри сети)     |
 | MySQL                  | Основная база данных             | `rococo-all-db:3306` (внутри сети) |
 | **Frontend и UI**      |                                  |                                    |
-| Frontend               | Веб-интерфейс (Svelte)           | `http://frontend.rococo.dc:3000`   |
-| Swagger UI             | Документация API                 | `http://localhost:8080/swagger-ui` |
+| Frontend               | Веб-интерфейс (Svelte)           | http://frontend.rococo.dc:3000     |
+| Swagger UI             | Документация API                 | http://localhost:8080/swagger-ui   |
 | **Тестирование**       |                                  |                                    |
-| Selenoid UI            | Управление браузерами (тесты)    | `http://localhost:9095`            |
-| Allure UI              | Отчёты автотестов                | `http://localhost:5252`            |
+| Selenoid UI            | Управление браузерами (тесты)    | http://localhost:9095              |
+| Allure UI              | Отчёты автотестов                | http://localhost:5252              |
 
 **Примечания:**
 
@@ -401,6 +430,7 @@ bash docker-compose-tests.sh
 - Поток данных через систему
 
 #### Особенности реализации:
+
 - Использование тестовых аннотаций (`@Artist`, `@Museum`, `@Painting`, `@User`, `@ApiLogin`)
 - Проверка сквозных сценариев (end-to-end)
 - Тестирование пагинации
@@ -408,4 +438,27 @@ bash docker-compose-tests.sh
 - Проверка обработки ошибок в распределенной системе
 
 ### :spider_web: Web тесты
-/ToDo
+
+*Проверяют пользовательский интерфейс и взаимодействие с фронтендом*
+
+#### Проверяемые аспекты:
+
+- Авторизация и регистрация пользователей
+- CRUD-операции с сущностями (художники, картины, музеи)
+- Валидация форм и обработка ошибок
+- Состояния системы после действий пользователя
+
+#### Особенности реализации:
+
+- Аннотации для подготовки данных (`@User`, `@Artist`, `@Painting`, `@Museum`)
+- Параметризованные тесты для граничных значений
+- Проверка toast-уведомлений и сообщений об ошибках
+- Page Object Pattern для работы с элементами UI
+- Интеграция с Selenoid для запуска в Docker
+
+#### Ключевые тест-кейсы:
+
+- Успешное добавление/обновление сущностей
+- Поиск существующих записей
+- Валидация полей форм
+- Тестирование авторизации и профиля пользователя 
