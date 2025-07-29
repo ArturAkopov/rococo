@@ -9,6 +9,8 @@ public enum ToastMessage {
     PASSWORDS_SHOULD_BE_EQUAL("Passwords should be equal"),
     UPDATED_PAINTING("Обновлена картина: "),
     ADDED_PAINTINGS("Добавлена картины: "),
+    UPDATED_MUSEUM("Обновлен музей: "),
+    ADDED_MUSEUM("Добавлен музей: "),
     ADDED_ARTIST("Добавлен художник: "),
     UPDATED_ARTIST("Обновлен художник: ");
 

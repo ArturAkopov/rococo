@@ -1,5 +1,6 @@
 package anbrain.qa.rococo.page;
 
+import anbrain.qa.rococo.page.components.EditMuseumModal;
 import anbrain.qa.rococo.page.components.Header;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
@@ -18,24 +19,50 @@ public class MuseumsPage extends BasePage<MuseumsPage> {
     public final static String MUSEUM_PAGE_URL = CONFIG.frontUrl() + "museum";
 
     private final Header header;
+    private final EditMuseumModal editMuseumModal;
     private final SelenideElement
             addMuseumButton,
             inputSearch,
             searchButton;
-    private final ElementsCollection paintingsGrid;
+    private final ElementsCollection museumsGrid;
 
     public MuseumsPage() {
         this.header = new Header();
+        this.editMuseumModal = new EditMuseumModal();
         this.addMuseumButton = $("#page-content button.btn");
         this.inputSearch = $("#page-content .input[title='Искать музей...'][type='search']");
         this.searchButton = $("#page-content button.btn-icon");
-        this.paintingsGrid = $$("#page-content .grid a[href]");
+        this.museumsGrid = $$("#page-content .grid a[href]");
     }
 
-    @Step("Переход на страницу с 'Музеи'")
+    @Step("Переход на страницу 'Музеи'")
     public MuseumsPage open() {
         Selenide.open(MUSEUM_PAGE_URL);
         return this;
+    }
+
+    @Step("Поиск музея по названию '{museumTitle}'")
+    public MuseumsPage searchMuseumByTitle(String titleMuseum) {
+        inputSearch.setValue(titleMuseum).pressEnter();
+        return this;
+    }
+
+    @Step("Нажатие кнопки 'Добавить музей'")
+    public MuseumsPage clickAddMuseumButton() {
+        addMuseumButton.click();
+        return this;
+    }
+
+    @Step("Переход на страницу музея '{titleMuseum}'")
+    public MuseumPage selectMuseum(String titleMuseum) {
+        inputSearch.setValue(titleMuseum).pressEnter();
+        museumsGrid.findBy(text(titleMuseum)).scrollTo().click();
+        return new MuseumPage();
+    }
+
+    @Step("Проверка наличия музея на странице")
+    public void checkThatMuseumExist(String titleMuseum) {
+        museumsGrid.findBy(text(titleMuseum)).scrollTo().shouldBe(visible);
     }
 
     @Step("Проверка загрузки страницы с 'Музеи'")
@@ -45,10 +72,4 @@ public class MuseumsPage extends BasePage<MuseumsPage> {
         return this;
     }
 
-    //ToDo
-    @Step("Переход на страницу художника '{titleMuseum}'")
-    public PaintingPage selectMuseum(String titleMuseum) {
-        paintingsGrid.findBy(text(titleMuseum)).scrollTo().click();
-        return new PaintingPage();
-    }
 }

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 public record GeoJson(
         @JsonProperty("city")
-        @Size(max = 50, message = "Название города не может превышать 50 символов")
+        @Size(max = 255, message = "Название города не может превышать 50 символов")
         String city,
         @JsonProperty("country")
         @Valid

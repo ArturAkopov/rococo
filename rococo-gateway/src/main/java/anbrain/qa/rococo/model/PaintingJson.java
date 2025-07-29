@@ -20,7 +20,7 @@ public record PaintingJson(
         String title,
         @Schema(description = "Описание картины", example = "Одна из самых известных картин Ван Гога, написанная в 1889 году")
         @JsonProperty("description")
-        @Size(max = 1000, message = "Описание картины не может превышать 1000 символов")
+        @Size(max = 2000, message = "Описание картины не может превышать 2000 символов")
         String description,
         @Schema(description = "Изображения картины", example = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD...")
         @JsonProperty("content")

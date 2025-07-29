@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS `country` (
 CREATE TABLE IF NOT EXISTS `museum` (
     id          BINARY(16)  UNIQUE NOT NULL PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), TRUE)),
     title       VARCHAR(255)  UNIQUE NOT NULL,
-    description VARCHAR(1000),
+    description VARCHAR(2000),
     city        VARCHAR(255),
     photo       LONGBLOB COMMENT 'Бинарные данные изображения',
     country_id  BINARY(16)  NOT NULL,

@@ -27,9 +27,9 @@ public class EditArtistModal extends BaseComponent<EditArtistModal> {
 
     @Nonnull
     @Step("Ввод имени художника '{artistName}'")
-    public EditArtistModal setArtistName(String title) {
+    public EditArtistModal setArtistName(String artistName) {
         inputArtistName.clear();
-        inputArtistName.setValue(title);
+        inputArtistName.setValue(artistName);
         return this;
     }
 
