@@ -6,9 +6,8 @@
 > интеграцией с Kafka.
 
 ---
-> *Frontend часть проекта предоставлена платформой [QA.GURU](https://qa.guru/).*  
-> ***Автор реализации:***  
-> :octocat: *[Дмитрий Тучс](https://github.com/dtuchs)*  
+> ****Frontend*** часть проекта предоставлена платформой [QA.GURU](https://qa.guru/).*  
+> *Автор: [Дмитрий Тучс](https://github.com/dtuchs)*
 > :telephone: *[Telegram канал](https://t.me/likeaduck)*
 ---
 
@@ -61,6 +60,7 @@
     - [:handshake: Контрактные тесты](#handshake-контрактные-тесты)
     - [:gear: Интеграционные тесты](#gear-интеграционные-тесты)
     - [:spider_web: Web тесты](#spider_web-web-тесты)
++ [:octopus: CI/CD Pipeline](#octopus-cicd-pipelinegithub-actions)
 
 ---
 
@@ -460,3 +460,29 @@ bash docker-compose-tests.sh
 - Поиск существующих записей
 - Валидация полей форм
 - Тестирование авторизации и профиля пользователя 
+
+## :octopus: CI/CD Pipeline(GitHub Actions)
+
+```mermaid
+flowchart LR
+PR --> Unit --> Build --> E2E --> Report
+E2E --> Notify
+```
+
+### :gear: Конфигурация:
+Триггер: PR события (opened/reopened/sync)   
+Стек: Java 21 + Docker + Selenoid (Chrome 127)   
+Профиль: docker + test   
+
+### :test_tube: Этапы:
+- Сборка образов (Jib)
+- Запуск инфраструктуры (MySQL + Kafka)
+- Прогон тестов:
+  - Unit/Contract (JUnit)
+  - E2E (Allure)
+- Отчет в PR + Allure
+
+### :whale: Особенности:
+Health-check сервисов   
+Автокомментирование результатов   
+Allure отчеты: https://allure.niffler-stage.qa.guru/projects/anbrain-rococo
