@@ -53,6 +53,7 @@ public class PaintingsPage extends BasePage<PaintingsPage> {
 
     @Step("Переход на страницу картины '{titlePainting}'")
     public PaintingPage selectPainting(String titlePainting) {
+        inputSearch.setValue(titlePainting).pressEnter();
         paintingsGrid.findBy(text(titlePainting)).scrollTo().click();
         return new PaintingPage();
     }

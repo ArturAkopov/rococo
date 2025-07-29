@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 public record GeoJson(
         @Schema(description = "Город", example = "Амстердам")
         @JsonProperty("city")
-        @Size(max = 50, message = "Название города не может превышать 50 символов")
+        @Size(max = 255, message = "Название города не может превышать 50 символов")
         String city,
         @Schema(description = "Страна", implementation = CountryJson.class)
         @JsonProperty("country")

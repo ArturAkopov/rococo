@@ -27,12 +27,6 @@ public class PaintingPage extends BasePage<PaintingPage> {
         this.editPaintingButton = $("button[data-testid='edit-painting']");
     }
 
-    @Step("Проверка успешного редактирования картины")
-    public PaintingPage checkThatPaintingSuccessUpdated(String title) {
-        checkToastMessage("Обновлена картина: " + title);
-        return this;
-    }
-
     @Step("Переход к редактированию картины")
     public EditPaintingModal toEditPainting() {
         editPaintingButton.scrollTo().click();

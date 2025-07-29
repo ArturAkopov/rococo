@@ -7,7 +7,7 @@ SET GLOBAL log_bin_trust_function_creators = 1;
 CREATE TABLE IF NOT EXISTS `painting` (
     id          BINARY(16)  UNIQUE NOT NULL PRIMARY KEY DEFAULT (UUID_TO_BIN(UUID(), TRUE)),
     title       VARCHAR(255)    NOT NULL,
-    description VARCHAR(1000),
+    description VARCHAR(2000),
     artist_id   BINARY(16)     NOT NULL,
     museum_id   BINARY(16),
     content     LONGBLOB COMMENT 'Бинарные данные изображения',

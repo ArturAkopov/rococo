@@ -18,7 +18,7 @@ public record MuseumJson(
         String title,
         @Schema(description = "Описание музея", example = "Художественный музей в Амстердаме, хранящий крупнейшую коллекцию картин Винсента Ван Гога")
         @JsonProperty("description")
-        @Size(max = 1000, message = "Описание музея не может превышать 1000 символов")
+        @Size(max = 2000, message = "Описание музея не может превышать 2000 символов")
         String description,
         @Schema(description = "Фотография музея", example = "data:image/jpeg;base64,/9j/2wBDAAQDAwQDAwQEAw...")
         @JsonProperty("photo")
