@@ -30,6 +30,8 @@ public interface Config {
 
     String allureDockerServiceUrl();
 
+    String screenshotBaseDir();
+
     default List<String> kafkaTopics() {
         return List.of("users");
     }
