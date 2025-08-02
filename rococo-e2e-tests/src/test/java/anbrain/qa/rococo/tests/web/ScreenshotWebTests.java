@@ -15,7 +15,7 @@ import java.io.IOException;
 @DisplayName("[WEB] ScreenshotTests")
 public class ScreenshotWebTests {
 
-    @ScreenShotTest(expected = "expected-artistName.png")
+    @ScreenShotTest(expected = "expected-artistName.png", rewriteExpected = true)
     @User
     @ApiLogin
     @DisplayName("Должно появится сообщение об ошибке при добавлении художника с пустым именем")
@@ -28,7 +28,7 @@ public class ScreenshotWebTests {
                 .checkArtistCardImage(expected);
     }
 
-    @ScreenShotTest(expected = "expected-artistImage.png")
+    @ScreenShotTest(expected = "expected-artistImage.png", rewriteExpected = true)
     @User
     @ApiLogin
     @DisplayName("Должно появится сообщение об ошибке при добавлении художника с пустым изображением")
@@ -42,7 +42,7 @@ public class ScreenshotWebTests {
                 .checkArtistCardImage(expected);
     }
 
-    @ScreenShotTest(expected = "expected-artistBiography.png")
+    @ScreenShotTest(expected = "expected-artistBiography.png", rewriteExpected = true)
     @User
     @ApiLogin
     @DisplayName("Должно появится сообщение об ошибке при добавлении художника с пустой биографией")
