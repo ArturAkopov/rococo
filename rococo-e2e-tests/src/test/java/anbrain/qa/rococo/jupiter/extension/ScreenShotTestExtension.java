@@ -56,7 +56,7 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
                 ImageIO.write(
                         actual,
                         "png",
-                        new File("rococo-e2e-tests/src/test/resources/" + CFG.screenshotBaseDir() + screenShotTest.expected()).getAbsoluteFile()
+                        new File("rococo-e2e-tests/.screen-output/" + CFG.screenshotBaseDir() + screenShotTest.expected()).getAbsoluteFile()
                 );
             }
         }
