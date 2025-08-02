@@ -119,7 +119,7 @@ public class RandomDataUtils {
     }
 
     public static String randomCountry() {
-        return COUNTRY_LIST.get(faker.random().nextInt(197));
+        return COUNTRY_LIST.get(faker.random().nextInt(195));
     }
 
 }
