@@ -27,3 +27,4 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+/rococo-e2e-tests/.screen-output/
