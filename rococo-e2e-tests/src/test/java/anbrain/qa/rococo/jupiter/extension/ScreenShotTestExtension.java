@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +73,20 @@ public class ScreenShotTestExtension implements ParameterResolver, TestExecution
                     "Screenshot diff",
                     "application/vnd.allure.image.diff",
                     objectMapper.writeValueAsString(screenDif)
+            );
+
+            Allure.addAttachment(
+                    "Expected result",
+                    "image/png",
+                    new ByteArrayInputStream(imageToBytes(getExpected())),
+                    "png"
+            );
+
+            Allure.addAttachment(
+                    "Actual result",
+                    "image/png",
+                    new ByteArrayInputStream(imageToBytes(getActual())),
+                    "png"
             );
         }
         throw throwable;
