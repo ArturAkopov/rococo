@@ -2,7 +2,6 @@ package anbrain.qa.rococo.config;
 
 import lombok.NonNull;
 
-import javax.annotation.Nonnull;
 
 enum LocalConfig implements Config {
     INSTANCE;
@@ -55,10 +54,16 @@ enum LocalConfig implements Config {
         return "127.0.0.1:9092";
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String allureDockerServiceUrl() {
         return "http://127.0.0.1:5050/";
+    }
+
+    @NonNull
+    @Override
+    public String screenshotBaseDir() {
+        return "screenshots/local/";
     }
 
 }

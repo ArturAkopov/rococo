@@ -187,6 +187,7 @@ services:
       - BROWSER=${BROWSER}
     volumes:
       - allure-results:/rococo/rococo-e2e-tests/build/allure-results
+      - ./rococo-e2e-tests/.screen-output/screenshots/selenoid:/rococo/rococo-e2e-tests/.screen-output/screenshots/selenoid
     depends_on:
       frontend.rococo.dc:
         condition: service_started
